@@ -1,0 +1,11 @@
+#home-page {
+  min-height: 480px;
+}
+
+#home-page > div:nth-child(2) {
+  flex-grow: 1;
+}
+
+#home-page > div:nth-child(3) {
+  flex-grow: 2;
+}
