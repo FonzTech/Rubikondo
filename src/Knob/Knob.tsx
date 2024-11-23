@@ -19,7 +19,7 @@ const Knob: React.FC<KnobProps> = ({
 
   const startRotation = useRef<number>(THREE.MathUtils.degToRad(135));
   const currentRotationInRad = useRef<number>(startRotation.current!);
-  const [currentRotationInDeg, setCurrentRotationInDeg] = useState<number>(THREE.MathUtils.radToDeg(startRotation.current!));
+  const [currentRotationInDeg, setCurrentRotationInDeg] = useState<string>(THREE.MathUtils.radToDeg(startRotation.current!).toFixed(2));
 
   const centerPoint = useRef<THREE.Vector2 | null>(null);
   const startPoint = useRef<THREE.Vector2 | null>(null);
@@ -73,7 +73,7 @@ const Knob: React.FC<KnobProps> = ({
         normalizedAngle > ANGLE_BOUNDARY_CENTER ?
           ANGLE_BOUNDARY_LEFT :
           ANGLE_BOUNDARY_RIGHT;
-    setCurrentRotationInDeg(THREE.MathUtils.radToDeg(viewAngle));
+    setCurrentRotationInDeg(THREE.MathUtils.radToDeg(viewAngle).toFixed(2));
   }
 
   const onDocumentMouseUp = (event: React.MouseEvent<Document>) => {
@@ -90,6 +90,7 @@ const Knob: React.FC<KnobProps> = ({
 
   return (
     <img
+      data-testid="knob"
       ref={componentRef}
       className="knob"
       src={KnobSvg}

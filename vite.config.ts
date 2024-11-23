@@ -3,10 +3,12 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react()
+  ],
   server: {
     watch: {
-      usePolling: true,
+      usePolling: true
     },
   },
   test: {
@@ -14,7 +16,7 @@ export default defineConfig({
     globals: true,
     coverage: {
       provider: 'istanbul',
-      reporter: ['text', 'json', 'html'],
-    },
-  },
+      reporter: ['text', 'json', 'html']
+    }
+  }
 })

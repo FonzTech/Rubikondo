@@ -8,7 +8,7 @@ const HomePage: React.FC = () => {
   const [gameSize, setGameSize] = useState<number>(2);
 
   return (
-    <Container id="home-page" fluid className="d-flex flex-column vh-100 text-center">
+    <Container id="home-page" fluid className="d-flex flex-column vh-100 text-center" data-testid="home-page">
       <div className="fs-3 pt-2 pb-2">
         <b>Hi! Welcome to my Rubikondo!</b>
         <div className="fs-3">This is a browser game for Rubik's Cube.</div>
