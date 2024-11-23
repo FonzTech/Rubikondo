@@ -2,6 +2,9 @@
   min-height: 480px;
 }
 
-#home-page > div:nth-child(3) {
-  flex-grow: 2;
+/* Bootstrap's lg-class */
+@media (min-width: 993px) {
+  #home-page > div:nth-child(2) {
+    flex-grow: 2;
+  }
 }

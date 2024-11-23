@@ -5,7 +5,7 @@ import {useRef, useState} from "react";
 import * as THREE from "three";
 
 interface KnobProps {
-  minHeight: string;
+  minHeight: string
 }
 
 const ANGLE_BOUNDARY_LEFT: Readonly<number> = THREE.MathUtils.degToRad(135);
