@@ -1,0 +1,7 @@
+.knob {
+  width: auto;
+  height: 256px;
+  object-fit: contain;
+  transform-origin: 50% 50%;
+  cursor: grab;
+}
