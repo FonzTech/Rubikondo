@@ -13,7 +13,7 @@ const ANGLE_BOUNDARY_RIGHT: Readonly<number> = THREE.MathUtils.degToRad(45);
 const ANGLE_BOUNDARY_CENTER: Readonly<number> = THREE.MathUtils.degToRad(90);
 
 const Knob: React.FC<KnobProps> = ({
-  minHeight = "256px",
+  minHeight = "64px",
 }) => {
   const componentRef = useRef<HTMLImageElement | null>(null);
 

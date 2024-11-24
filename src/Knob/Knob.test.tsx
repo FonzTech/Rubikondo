@@ -29,6 +29,12 @@ test('renders and check for rotation via mouse movement', () => {
   expect(knob.getBoundingClientRect().width).toBe(100);
   expect(knob.getBoundingClientRect().height).toBe(110);
 
+  // Test on document, but not on component
+  fireEvent.mouseMove(document, { clientX: 156, clientY: 139 });
+  fireEvent.mouseMove(document, { clientX: 139, clientY: 156 });
+  fireEvent.mouseUp(document);
+  expect(knob).toHaveStyle("transform: rotate(135.00deg)");
+
   // Rotate clockwise from right side
   fireEvent.mouseDown(knob, { clientX: 160, clientY: 140 });
   fireEvent.mouseMove(document, { clientX: 170, clientY: 150 });
@@ -62,6 +68,12 @@ test('renders and check for rotation via mouse movement', () => {
   // Test right boundary
   fireEvent.mouseDown(knob, { clientX: 120, clientY: 150 });
   fireEvent.mouseMove(document, { clientX: 131, clientY: 150 });
+  fireEvent.mouseUp(document);
+  expect(knob).toHaveStyle("transform: rotate(45.00deg)");
+
+  // Test on document, but not on component
+  fireEvent.mouseMove(document, { clientX: 156, clientY: 139 });
+  fireEvent.mouseMove(document, { clientX: 139, clientY: 156 });
   fireEvent.mouseUp(document);
   expect(knob).toHaveStyle("transform: rotate(45.00deg)");
 });

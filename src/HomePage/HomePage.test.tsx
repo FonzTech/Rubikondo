@@ -11,6 +11,6 @@ test('renders home page', () => {
   const knob = screen.getByTestId("knob");
   expect(knob).toBeInTheDocument();
 
-  const canvasPreview = screen.getByTestId("canvas-preview");
+  const canvasPreview = screen.getByTestId("canvas-game");
   expect(canvasPreview).toBeInTheDocument();
 });

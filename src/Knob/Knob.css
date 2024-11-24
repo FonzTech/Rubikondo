@@ -1,7 +1,13 @@
 .knob {
   width: auto;
-  height: 256px;
+  height: 160px;
   object-fit: contain;
   transform-origin: 50% 50%;
   cursor: grab;
+}
+
+@media (min-width: 992px) {
+  .knob {
+    height: 256px;
+  }
 }
