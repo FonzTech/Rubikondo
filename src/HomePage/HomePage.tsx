@@ -39,7 +39,12 @@ const HomePage: React.FC = () => {
         </Col>
         <Col xs={12} lg={8}>
           <CanvasGame
-            addStyle={{width: "100%", flexGrow: "1", minHeight: "256px"}}
+            addStyle={{
+              width: "100%",
+              flexGrow: "1",
+              minHeight: "256px",
+              height: "100%"
+            }}
             canvasLogic={new CubePreview()}
           />
         </Col>
