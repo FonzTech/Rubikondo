@@ -69,7 +69,7 @@ const CanvasGame: React.FC<CanvasGameProps> = ({
 
   return (
     <div
-      data-testid={"canvas-game"}
+      data-testid="canvas-game"
       ref={canvasRef}
       style={{
         ...addStyle
