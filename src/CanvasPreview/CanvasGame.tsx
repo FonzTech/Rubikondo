@@ -15,12 +15,12 @@ const CanvasGame: React.FC<CanvasGameProps> = ({
   const canvasRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (!canvasRef.current) {
+    if (!canvasRef.current || canvasLogic === null) {
       return;
     }
 
     // Get bounding rect
-    let rect = canvasRef.current!.getBoundingClientRect();
+    let rect = canvasLogic!.getBoundingClientRect(canvasRef.current!);
 
     // Create a clock to track time
     const clock = new THREE.Clock();
@@ -30,19 +30,18 @@ const CanvasGame: React.FC<CanvasGameProps> = ({
     const camera = new THREE.PerspectiveCamera(75, rect.width / rect.height, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({alpha: true});
 
+    // Setup
     renderer.setSize(rect.width, rect.height);
     canvasRef.current!.appendChild(renderer.domElement);
 
     // Handle game logic
-    if (canvasLogic !== null) {
-      canvasLogic.frameStep({clock, scene, camera, renderer});
-    }
+    canvasLogic!.frameStep({clock, scene, camera, renderer});
 
     // Resize handler
     const handleResize = () => {
       // Make browser recalculate minimum possible height
       renderer.setSize(1, 1);
-      rect = canvasRef.current!.getBoundingClientRect(); // This updates layout
+      let rect = canvasLogic!.getBoundingClientRect(canvasRef.current!); // This updates layout
 
       // Set correct size and aspect ratio
       camera.aspect = rect.width / rect.height;

@@ -2,6 +2,10 @@ import * as THREE from "three";
 import {CanvasInterface, CanvasFrameStepProps} from "../CanvasInterface/CanvasInterface.tsx";
 
 class CubePreview implements CanvasInterface {
+  getBoundingClientRect(element: HTMLElement): DOMRect {
+    return element.getBoundingClientRect();
+  };
+
   frameStep(props: CanvasFrameStepProps): void {
 
     // Create a geometry and material

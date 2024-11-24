@@ -8,5 +8,6 @@ export interface CanvasFrameStepProps {
 }
 
 export interface CanvasInterface {
+  getBoundingClientRect(element: HTMLElement): DOMRect;
   frameStep(props: CanvasFrameStepProps): void;
 }

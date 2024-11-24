@@ -3,7 +3,7 @@
 }
 
 /* Bootstrap's lg-class */
-@media (min-width: 993px) {
+@media (min-width: 992px) {
   #home-page > div:nth-child(2) {
     flex-grow: 2;
   }
