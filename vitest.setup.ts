@@ -1,7 +1,7 @@
 // vitest.setup.ts
 
 import { vi } from 'vitest';
-import {Vector3} from "three/src/math/Vector3";
+import * as THREE from "three";
 
 // Mock the WebGLRenderer
 export const mock_Three_WebGLRenderer_setSize = vi.fn();
@@ -21,7 +21,7 @@ vi.mock('three', async () => {
     })),
     PerspectiveCamera: vi.fn().mockImplementation(() => ({
       updateProjectionMatrix: mock_Three_PerspectiveCamera_updateProjectionMatrix,
-      position: new Vector3()
+      position: new THREE.Vector3()
     }))
   };
 });
