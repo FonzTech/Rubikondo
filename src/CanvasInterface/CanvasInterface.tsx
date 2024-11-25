@@ -1,6 +1,6 @@
 import * as THREE from "three";
 
-export interface CanvasFrameStepProps {
+export interface CanvasUseEffectProps {
   clock: THREE.Clock,
   scene: THREE.Scene,
   camera: THREE.Camera,
@@ -9,5 +9,5 @@ export interface CanvasFrameStepProps {
 
 export interface CanvasInterface {
   getBoundingClientRect(element: HTMLElement): DOMRect;
-  frameStep(props: CanvasFrameStepProps): void;
+  useEffectStep(props: CanvasUseEffectProps): void;
 }

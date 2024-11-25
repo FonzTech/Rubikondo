@@ -4,7 +4,7 @@ import './HomePage.css';
 import {useState} from "react";
 import Knob from "../Knob/Knob.tsx";
 import CanvasGame from "../CanvasPreview/CanvasGame.tsx";
-import CubePreview from "../CubePreview/CubePreview.tsx";
+import {CubePreview} from "../CubePreview/CubePreview.tsx";
 
 const HomePage: React.FC = () => {
   const [gameSize, setGameSize] = useState<number>(2);
@@ -45,7 +45,7 @@ const HomePage: React.FC = () => {
               minHeight: "256px",
               height: "100%"
             }}
-            canvasLogic={new CubePreview()}
+            canvasLogicInstantiator={() => new CubePreview()}
           />
         </Col>
       </Row>

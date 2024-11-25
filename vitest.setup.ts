@@ -3,9 +3,11 @@
 import { vi } from 'vitest';
 import * as THREE from "three";
 
-// Mock the WebGLRenderer
+// WebGLRenderer
 export const mock_Three_WebGLRenderer_setSize = vi.fn();
 export const mock_Three_WebGLRenderer_render = vi.fn();
+
+// Perspective camera
 export const mock_Three_PerspectiveCamera_updateProjectionMatrix = vi.fn();
 
 vi.mock('three', async () => {

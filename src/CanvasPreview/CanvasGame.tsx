@@ -5,22 +5,30 @@ import { CanvasInterface } from "../CanvasInterface/CanvasInterface.tsx";
 
 interface CanvasGameProps {
   addStyle: React.CSSProperties,
-  canvasLogic: CanvasInterface | null
+  canvasLogicInstantiator: () => CanvasInterface
 }
 
 const CanvasGame: React.FC<CanvasGameProps> = ({
   addStyle = {},
-  canvasLogic = null
+  canvasLogicInstantiator = null
 }) => {
+  // Enable cache for ThreeJs
+  THREE.Cache.enabled = true;
+
+  // Store component ref
   const canvasRef = useRef<HTMLDivElement | null>(null);
 
+  // Use effect
   useEffect(() => {
-    if (!canvasRef.current || canvasLogic === null) {
+    if (!canvasRef.current || canvasLogicInstantiator === null) {
       return;
     }
 
+    // Instantiate canvas logic
+    const canvasLogic = canvasLogicInstantiator();
+
     // Get bounding rect
-    let rect = canvasLogic!.getBoundingClientRect(canvasRef.current!);
+    let rect = canvasLogic.getBoundingClientRect(canvasRef.current!);
 
     // Create a clock to track time
     const clock = new THREE.Clock();
@@ -35,13 +43,13 @@ const CanvasGame: React.FC<CanvasGameProps> = ({
     canvasRef.current!.appendChild(renderer.domElement);
 
     // Handle game logic
-    canvasLogic!.frameStep({clock, scene, camera, renderer});
+    canvasLogic.useEffectStep({clock, scene, camera, renderer});
 
     // Resize handler
     const handleResize = () => {
       // Make browser recalculate minimum possible height
       renderer.setSize(1, 1);
-      let rect = canvasLogic!.getBoundingClientRect(canvasRef.current!); // This updates layout
+      let rect = canvasLogic.getBoundingClientRect(canvasRef.current!); // This updates layout
 
       // Set correct size and aspect ratio
       camera.aspect = rect.width / rect.height;

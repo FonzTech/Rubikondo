@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import CanvasGame from "./CanvasGame.tsx";
-import {CanvasFrameStepProps, CanvasInterface} from "../CanvasInterface/CanvasInterface.tsx";
+import {CanvasUseEffectProps, CanvasInterface} from "../CanvasInterface/CanvasInterface.tsx";
 import {
   mock_Three_PerspectiveCamera_updateProjectionMatrix,
   mock_Three_WebGLRenderer_setSize
@@ -22,7 +22,7 @@ class CanvasLogicTest implements CanvasInterface {
     return {x: 0, y: 0, width: this.mockedWidth, height: this.mockedHeight} as DOMRect;
   };
 
-  frameStep(props: CanvasFrameStepProps): void {
+  useEffectStep(props: CanvasUseEffectProps): void {
     ++this.framesStepped;
 
     expect(props).not.toBeNull()

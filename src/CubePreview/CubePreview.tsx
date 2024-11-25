@@ -1,43 +1,95 @@
 import * as THREE from "three";
-import {CanvasInterface, CanvasFrameStepProps} from "../CanvasInterface/CanvasInterface.tsx";
+import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+import {CanvasInterface, CanvasUseEffectProps} from "../CanvasInterface/CanvasInterface.tsx";
+import Utils from "../Utils/Utils.tsx";
 
-class CubePreview implements CanvasInterface {
-  cube: THREE.Mesh | null;
+export class CubePreview implements CanvasInterface {
+  props: CanvasUseEffectProps | null;
+  cubeMesh: THREE.Group<THREE.Object3DEventMap> | null;
+  texture: THREE.Texture | null;
+
+  objLoader: OBJLoader;
+  textureLoader: THREE.TextureLoader;
 
   constructor() {
-    this.cube = null;
+    this.props = null;
+    this.cubeMesh = null;
+    this.texture = null;
+
+    this.objLoader = new OBJLoader().setPath(document.URL);
+    this.textureLoader = new THREE.TextureLoader();
   }
 
   getBoundingClientRect(element: HTMLElement): DOMRect {
     return element.getBoundingClientRect();
   };
 
-  frameStep(props: CanvasFrameStepProps): void {
-    // Create a geometry and material
-    const geometry = new THREE.BoxGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 }); // Green cube
-    this.cube = new THREE.Mesh(geometry, material);
+  useEffectStep(props: CanvasUseEffectProps): void {
+    // Set props
+    this.props = props;
+
+    // Add lighting
+    props.scene!.add(new THREE.AmbientLight(0xffffff, 0.75)); // Soft global illumination
+
+    // Load Obj model
+    this.objLoader.load(Utils.MESH_CUBE_PATH, (object) => this.meshLoaded(object));
+
+    // Load texture
+    this.textureLoader.load(Utils.TEXTURE_CUBE_PATH, (texture) => this.textureLoaded(texture));
 
     // Add the cube to the scene
-    props.scene.add(this.cube!);
     props.camera.position.z = 2;
 
-    // Animation loop
+    // Start animation loop
     const animate = () => {
+      // Request animation frame
       requestAnimationFrame(animate);
 
-      const dt = props.clock.getDelta();
-      this.advanceFrame(dt);
+      // Logic for advance frame
+      if (this.cubeMesh !== null) {
+        const dt = this.props!.clock.getDelta();
+        this.advanceFrame(dt);
 
-      props.renderer.render(props.scene, props.camera);
+        // Render scene
+        this.props!.renderer.render(this.props!.scene, this.props!.camera);
+      }
     };
     animate();
   };
 
+  meshLoaded(object: THREE.Group<THREE.Object3DEventMap>): void {
+    this.cubeMesh = object;
+    this.assetLoaded();
+  }
+
+  textureLoaded(texture: THREE.Texture): void {
+    this.texture = texture;
+    this.assetLoaded();
+  }
+
   advanceFrame(dt: number): void {
-    this.cube!.rotation.x += 0.4 * dt;
-    this.cube!.rotation.y += 0.4 * dt;
+    this.cubeMesh!.rotation.x += 0.4 * dt;
+    this.cubeMesh!.rotation.y += 0.4 * dt;
+  }
+
+  assetLoaded(): void {
+    // Check if both mesh and texture are present
+    if (this.cubeMesh === null || this.texture === null) {
+      return;
+    }
+
+    // Apply texture to mesh
+    this.cubeMesh!.traverse((child) => {
+      // Texturize mesh
+      if (child.isMesh) {
+        child.material = new THREE.MeshStandardMaterial({
+          map: this.texture!,
+          color: 0xffffffff
+        });
+      }
+    });
+
+    // Add cube to scene
+    this.props!.scene.add(this.cubeMesh!);
   }
 }
-
-export default CubePreview;
