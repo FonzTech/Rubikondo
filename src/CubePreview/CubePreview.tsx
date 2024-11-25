@@ -3,7 +3,7 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import {CanvasInterface, CanvasUseEffectProps} from "../CanvasInterface/CanvasInterface.tsx";
 import Utils from "../Utils/Utils.tsx";
 
-export class CubePreview implements CanvasInterface {
+class CubePreview implements CanvasInterface {
   props: CanvasUseEffectProps | null;
   cubeMesh: THREE.Group<THREE.Object3DEventMap> | null;
   texture: THREE.Texture | null;
@@ -93,3 +93,5 @@ export class CubePreview implements CanvasInterface {
     this.props!.scene.add(this.cubeMesh!);
   }
 }
+
+export default CubePreview;

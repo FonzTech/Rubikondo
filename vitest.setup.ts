@@ -3,6 +3,11 @@
 import { vi } from 'vitest';
 import * as THREE from "three";
 
+// Globals
+export const mock_Global_requestAnimationFrame = vi.fn();
+
+global.requestAnimationFrame = mock_Global_requestAnimationFrame;
+
 // WebGLRenderer
 export const mock_Three_WebGLRenderer_setSize = vi.fn();
 export const mock_Three_WebGLRenderer_render = vi.fn();
@@ -10,6 +15,10 @@ export const mock_Three_WebGLRenderer_render = vi.fn();
 // Perspective camera
 export const mock_Three_PerspectiveCamera_updateProjectionMatrix = vi.fn();
 
+// Scene
+export const mock_Three_Scene_add = vi.fn();
+
+// ThreeJs Mock
 vi.mock('three', async () => {
   // Import the original 'three' module without any mock
   const actualThree = await vi.importActual('three');
@@ -24,6 +33,15 @@ vi.mock('three', async () => {
     PerspectiveCamera: vi.fn().mockImplementation(() => ({
       updateProjectionMatrix: mock_Three_PerspectiveCamera_updateProjectionMatrix,
       position: new THREE.Vector3()
+    })),
+    Scene: vi.fn().mockImplementation(() => ({
+      add: mock_Three_Scene_add
     }))
   };
+});
+
+// This will run before each test
+beforeEach(() => {
+  // Clear all mocks before each test
+  vi.clearAllMocks();
 });

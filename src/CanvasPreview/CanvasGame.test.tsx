@@ -34,15 +34,14 @@ class CanvasLogicTest implements CanvasInterface {
 }
 
 test('renders canvas preview', () => {
-  // Shared mocked implementation
+  // Render component
   const canvasLogicTest = new CanvasLogicTest();
   canvasLogicTest.mockedWidth = 640;
   canvasLogicTest.mockedHeight = 480;
 
-  // Render component
   render(<CanvasGame
     addStyle={{}}
-    canvasLogic={canvasLogicTest}
+    canvasLogicInstantiator={() => canvasLogicTest}
   />);
 
   // Basic test
