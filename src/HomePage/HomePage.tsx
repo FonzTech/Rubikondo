@@ -1,13 +1,16 @@
 import * as React from 'react'
 import {Container, Row, Col} from "react-bootstrap";
 import './HomePage.css';
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import Knob from "../Knob/Knob.tsx";
 import CanvasGame from "../CanvasPreview/CanvasGame.tsx";
 import CubePreview from "../CubePreview/CubePreview.tsx";
 
+const STARTING_ROTATION_IN_DEGREES: Readonly<number> = 180;
+const STARTING_GAME_SIZE: Readonly<number> = 3;
+
 const HomePage: React.FC = () => {
-  const [gameSize, setGameSize] = useState<number>(2);
+  const [gameSize, setGameSize] = useState<number>(STARTING_GAME_SIZE);
 
   return (
     <Container id="home-page" fluid className="vh-100 text-center d-flex flex-column" data-testid="home-page">
@@ -33,7 +36,11 @@ const HomePage: React.FC = () => {
               <b>Choose cube size for your game:</b>
             </div>
             <div>
-              <Knob minHeight="128px"/>
+              <Knob
+                minHeight="128px"
+                startingRotation={STARTING_ROTATION_IN_DEGREES}
+                rotateCallback={(value) => setGameSize(value)}
+              />
             </div>
           </div>
         </Col>
@@ -46,6 +53,7 @@ const HomePage: React.FC = () => {
               height: "100%"
             }}
             canvasLogicInstantiator={() => new CubePreview()}
+            gameSize={gameSize}
           />
         </Col>
       </Row>

@@ -3,9 +3,13 @@ import '@testing-library/jest-dom';
 import CanvasGame from "./CanvasGame.tsx";
 import {CanvasUseEffectProps, CanvasInterface} from "../CanvasInterface/CanvasInterface.tsx";
 import {
+  mock_CanvasGame_getRubikCubeImpl,
   mock_Three_PerspectiveCamera_updateProjectionMatrix,
   mock_Three_WebGLRenderer_setSize
 } from "../../vitest.setup.ts";
+import CubePreview from "../CubePreview/CubePreview.tsx";
+
+CubePreview.getRubikCubeImpl = mock_CanvasGame_getRubikCubeImpl;
 
 class CanvasLogicTest implements CanvasInterface {
   framesStepped: number;
@@ -31,6 +35,8 @@ class CanvasLogicTest implements CanvasInterface {
     expect(props.renderer).not.toBeNull()
     expect(props.scene).not.toBeNull()
   };
+
+  gameSizeChange(_: number) {}
 }
 
 test('renders canvas preview', () => {
@@ -42,6 +48,7 @@ test('renders canvas preview', () => {
   render(<CanvasGame
     addStyle={{}}
     canvasLogicInstantiator={() => canvasLogicTest}
+    gameSize={gameSize}
   />);
 
   // Basic test
@@ -64,6 +71,6 @@ test('renders canvas preview', () => {
   expect(mock_Three_WebGLRenderer_setSize).toHaveBeenCalledTimes(3);
   expect(mock_Three_PerspectiveCamera_updateProjectionMatrix).toHaveBeenCalledTimes(1);
 
-  // Final test
+  // Frames stepped
   expect(canvasLogicTest.framesStepped).toBe(1);
 });

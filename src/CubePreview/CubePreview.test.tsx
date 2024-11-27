@@ -2,11 +2,14 @@ import '@testing-library/jest-dom';
 import CubePreview from "./CubePreview.tsx";
 import {CanvasUseEffectProps} from "../CanvasInterface/CanvasInterface.tsx";
 import {
-  mock_Global_requestAnimationFrame,
+  mock_CanvasGame_getRubikCubeImpl,
+  mock_Global_requestAnimationFrame, mock_RubikCube_advanceFrame, mock_RubikCube_spawnFullCube,
   mock_Three_Scene_add,
   mock_Three_WebGLRenderer_render
 } from "../../vitest.setup.ts";
 import * as THREE from "three";
+
+CubePreview.getRubikCubeImpl = mock_CanvasGame_getRubikCubeImpl;
 
 describe('cube preview logic', () => {
   it('should return element bounding client rect', () => {
@@ -67,8 +70,11 @@ describe('cube preview logic', () => {
 
     expect(cubeMeshTraverse).toHaveBeenCalledTimes(1);
 
+    /*
     expect(mock_Three_Scene_add).toHaveBeenCalledWith(cubeMesh);
     expect(mock_Three_Scene_add).toHaveBeenCalledTimes(1);
+     */
+    expect(mock_RubikCube_spawnFullCube).toHaveBeenCalledTimes(1);
 
     expect(cp.texture).not.toBeNull();
     expect(cp.cubeMesh).not.toBeNull();
@@ -109,8 +115,11 @@ describe('cube preview logic', () => {
 
     expect(cubeMeshTraverse).toHaveBeenCalledTimes(1);
 
+    /*
     expect(mock_Three_Scene_add).toHaveBeenCalledWith(cubeMesh);
     expect(mock_Three_Scene_add).toHaveBeenCalledTimes(1);
+     */
+    expect(mock_RubikCube_spawnFullCube).toHaveBeenCalledTimes(1);
 
     expect(cp.texture).not.toBeNull();
     expect(cp.cubeMesh).not.toBeNull();
@@ -128,8 +137,12 @@ describe('cube preview logic', () => {
 
     cp.advanceFrame(1);
 
+    /*
     expect(cp.cubeMesh!.rotation.x).toBe(0.4);
     expect(cp.cubeMesh!.rotation.y).toBe(0.4);
+     */
+
+    expect(mock_RubikCube_advanceFrame).toHaveBeenCalledTimes(1);
   });
 
   test('use effect step', () => {

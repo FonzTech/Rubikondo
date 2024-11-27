@@ -6,24 +6,39 @@ import * as THREE from "three";
 
 interface KnobProps {
   minHeight: string
+  startingRotation: number,
+  rotateCallback: (value: number) => void | null
 }
 
 const ANGLE_BOUNDARY_LEFT: Readonly<number> = THREE.MathUtils.degToRad(135);
 const ANGLE_BOUNDARY_RIGHT: Readonly<number> = THREE.MathUtils.degToRad(45);
 const ANGLE_BOUNDARY_CENTER: Readonly<number> = THREE.MathUtils.degToRad(90);
 
+const ANGLE_BOUNDARY_ROUNDTRIP: Readonly<number> = THREE.MathUtils.degToRad(225);
+const ANGLE_BOUNDARY_MAX: Readonly<number> = THREE.MathUtils.degToRad(270);
+
+const MIN_CALLBACK_VALUE: Readonly<number> = 2;
+const STEP_CALLBACK_VALUE: Readonly<number> = 6;
+
 const Knob: React.FC<KnobProps> = ({
   minHeight = "64px",
+  startingRotation = 3,
+  rotateCallback = null
 }) => {
   const componentRef = useRef<HTMLImageElement | null>(null);
 
-  const startRotation = useRef<number>(THREE.MathUtils.degToRad(135));
+  const startRotation = useRef<number>(THREE.MathUtils.degToRad(startingRotation));
   const currentRotationInRad = useRef<number>(startRotation.current!);
   const [currentRotationInDeg, setCurrentRotationInDeg] = useState<string>(THREE.MathUtils.radToDeg(startRotation.current!).toFixed(2));
 
   const centerPoint = useRef<THREE.Vector2 | null>(null);
   const startPoint = useRef<THREE.Vector2 | null>(null);
   const currentPoint = useRef<THREE.Vector2 | null>(null);
+
+  const getValueForCallback = (radians: number): number => {
+    const theta = radians < ANGLE_BOUNDARY_LEFT ? radians + ANGLE_BOUNDARY_ROUNDTRIP : (radians - ANGLE_BOUNDARY_LEFT);
+    return Math.round(MIN_CALLBACK_VALUE + theta / ANGLE_BOUNDARY_MAX * STEP_CALLBACK_VALUE);
+  }
 
   const onImageMouseDown = (event: React.MouseEvent<HTMLImageElement>) => {
     if (componentRef.current === null) {
@@ -74,6 +89,12 @@ const Knob: React.FC<KnobProps> = ({
           ANGLE_BOUNDARY_LEFT :
           ANGLE_BOUNDARY_RIGHT;
     setCurrentRotationInDeg(THREE.MathUtils.radToDeg(viewAngle).toFixed(2));
+
+    // Call callback, if possible
+    if (rotateCallback !== null) {
+      const value = getValueForCallback(viewAngle);
+      rotateCallback(value);
+    }
   }
 
   const onDocumentMouseUp = (event: React.MouseEvent<Document>) => {

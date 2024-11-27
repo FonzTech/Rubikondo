@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import {CanvasInterface, CanvasUseEffectProps} from "../CanvasInterface/CanvasInterface.tsx";
 import Utils from "../Utils/Utils.tsx";
+import RubikCube from "../RubikCube/RubikCube.tsx";
 
 class CubePreview implements CanvasInterface {
   props: CanvasUseEffectProps | null;
@@ -11,6 +12,12 @@ class CubePreview implements CanvasInterface {
   objLoader: OBJLoader;
   textureLoader: THREE.TextureLoader;
 
+  rubikCube: RubikCube;
+
+  static getRubikCubeImpl(): RubikCube {
+    return new RubikCube();
+  }
+
   constructor() {
     this.props = null;
     this.cubeMesh = null;
@@ -18,6 +25,8 @@ class CubePreview implements CanvasInterface {
 
     this.objLoader = new OBJLoader().setPath(document.URL);
     this.textureLoader = new THREE.TextureLoader();
+
+    this.rubikCube = CubePreview.getRubikCubeImpl();
   }
 
   getBoundingClientRect(element: HTMLElement): DOMRect {
@@ -38,7 +47,7 @@ class CubePreview implements CanvasInterface {
     this.textureLoader.load(Utils.TEXTURE_CUBE_PATH, (texture) => this.textureLoaded(texture));
 
     // Add the cube to the scene
-    props.camera.position.z = 2;
+    props.camera.position.z = 4;
 
     // Start animation loop
     const animate = () => {
@@ -57,6 +66,10 @@ class CubePreview implements CanvasInterface {
     animate();
   };
 
+  gameSizeChange(gameSize: number) {
+    console.log("gameSize updated", gameSize);
+  }
+
   meshLoaded(object: THREE.Group<THREE.Object3DEventMap>): void {
     this.cubeMesh = object;
     this.assetLoaded();
@@ -68,8 +81,7 @@ class CubePreview implements CanvasInterface {
   }
 
   advanceFrame(dt: number): void {
-    this.cubeMesh!.rotation.x += 0.4 * dt;
-    this.cubeMesh!.rotation.y += 0.4 * dt;
+    this.rubikCube.advanceFrame(dt);
   }
 
   assetLoaded(): void {
@@ -90,7 +102,7 @@ class CubePreview implements CanvasInterface {
     });
 
     // Add cube to scene
-    this.props!.scene.add(this.cubeMesh!);
+    this.rubikCube.spawnFullCube(this.props!.scene, this.cubeMesh!)
   }
 }
 

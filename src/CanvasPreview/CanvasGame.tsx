@@ -5,18 +5,21 @@ import { CanvasInterface } from "../CanvasInterface/CanvasInterface.tsx";
 
 interface CanvasGameProps {
   addStyle: React.CSSProperties,
-  canvasLogicInstantiator: () => CanvasInterface
+  canvasLogicInstantiator: () => CanvasInterface,
+  gameSize: number
 }
 
 const CanvasGame: React.FC<CanvasGameProps> = ({
   addStyle = {},
-  canvasLogicInstantiator = null
+  canvasLogicInstantiator = null,
+  gameSize = 3
 }) => {
   // Enable cache for ThreeJs
   THREE.Cache.enabled = true;
 
   // Store component ref
   const canvasRef = useRef<HTMLDivElement | null>(null);
+  const canvasLogic = useRef<CanvasInterface | null>(null);
 
   // Use effect
   useEffect(() => {
@@ -25,10 +28,10 @@ const CanvasGame: React.FC<CanvasGameProps> = ({
     }
 
     // Instantiate canvas logic
-    const canvasLogic = canvasLogicInstantiator();
+    canvasLogic.current = canvasLogicInstantiator();
 
     // Get bounding rect
-    let rect = canvasLogic.getBoundingClientRect(canvasRef.current!);
+    let rect = canvasLogic.current!.getBoundingClientRect(canvasRef.current!);
 
     // Create a clock to track time
     const clock = new THREE.Clock();
@@ -43,13 +46,13 @@ const CanvasGame: React.FC<CanvasGameProps> = ({
     canvasRef.current!.appendChild(renderer.domElement);
 
     // Handle game logic
-    canvasLogic.useEffectStep({clock, scene, camera, renderer});
+    canvasLogic.current!.useEffectStep({clock, scene, camera, renderer, gameSize});
 
     // Resize handler
     const handleResize = () => {
       // Make browser recalculate minimum possible height
       renderer.setSize(1, 1);
-      let rect = canvasLogic.getBoundingClientRect(canvasRef.current!); // This updates layout
+      let rect = canvasLogic.current!.getBoundingClientRect(canvasRef.current!); // This updates layout
 
       // Set correct size and aspect ratio
       camera.aspect = rect.width / rect.height;
@@ -74,6 +77,13 @@ const CanvasGame: React.FC<CanvasGameProps> = ({
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (canvasLogic === null) {
+      return;
+    }
+    canvasLogic.current!.gameSizeChange(gameSize);
+  }, [gameSize]);
 
   return (
     <div

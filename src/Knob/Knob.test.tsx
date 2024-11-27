@@ -11,7 +11,13 @@ test('renders knob with min height 300px', () => {
 });
 
 test('renders and check for rotation via mouse movement', () => {
-  render(<Knob minHeight="300px" />);
+  const mock_rotateCallback = vi.fn();
+
+  render(<Knob
+    minHeight="300px"
+    startingRotation={135}
+    rotateCallback={mock_rotateCallback}
+  />);
 
   const knob = screen.getByTestId("knob");
   expect(knob).toBeInTheDocument();
@@ -76,4 +82,7 @@ test('renders and check for rotation via mouse movement', () => {
   fireEvent.mouseMove(document, { clientX: 139, clientY: 156 });
   fireEvent.mouseUp(document);
   expect(knob).toHaveStyle("transform: rotate(45.00deg)");
+
+  // Expect rotate callback to be called
+  expect(mock_rotateCallback).toHaveBeenCalledTimes(6);
 });

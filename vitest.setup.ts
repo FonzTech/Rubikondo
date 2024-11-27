@@ -8,6 +8,19 @@ export const mock_Global_requestAnimationFrame = vi.fn();
 
 global.requestAnimationFrame = mock_Global_requestAnimationFrame;
 
+// RubikCube
+export const mock_RubikCube_spawnFullCube = vi.fn();
+export const mock_RubikCube_advanceFrame = vi.fn();
+export const mock_RubikCube_gameSizeChange = vi.fn();
+
+export const mock_CanvasGame_getRubikCubeImpl = vi.fn().mockImplementation(() => ({
+  spawnFullCube: mock_RubikCube_spawnFullCube,
+  advanceFrame: mock_RubikCube_advanceFrame,
+  gameSizeChange: mock_RubikCube_gameSizeChange
+}));
+
+// USE LIKE THIS -> CubePreview.getRubikCubeImpl = mock_CanvasGame_getRubikCubeImpl;
+
 // WebGLRenderer
 export const mock_Three_WebGLRenderer_setSize = vi.fn();
 export const mock_Three_WebGLRenderer_render = vi.fn();
