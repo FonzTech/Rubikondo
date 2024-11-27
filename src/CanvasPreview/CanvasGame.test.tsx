@@ -48,7 +48,7 @@ test('renders canvas preview', () => {
   render(<CanvasGame
     addStyle={{}}
     canvasLogicInstantiator={() => canvasLogicTest}
-    gameSize={gameSize}
+    gameSize={3}
   />);
 
   // Basic test
