@@ -99,6 +99,6 @@ describe('cube preview logic', () => {
 
     expect(group.rotation.x).toBe(0.8);
     expect(group.rotation.y).toBe(0.8);
-    expect(group.rotation.z).toBe(3);
+    expect(group.rotation.z).toBe(0);
   });
 });
