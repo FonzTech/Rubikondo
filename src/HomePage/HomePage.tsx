@@ -1,13 +1,14 @@
 import * as React from 'react'
 import {Container, Row, Col} from "react-bootstrap";
 import './HomePage.css';
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import Knob from "../Knob/Knob.tsx";
 import CanvasGame from "../CanvasPreview/CanvasGame.tsx";
 import CubePreview from "../CubePreview/CubePreview.tsx";
+import Utils from "../Utils/Utils.tsx";
 
 const STARTING_ROTATION_IN_DEGREES: Readonly<number> = 180;
-const STARTING_GAME_SIZE: Readonly<number> = 3;
+const STARTING_GAME_SIZE: Readonly<number> = Utils.DEFAULT_GAME_SIZE;
 
 const HomePage: React.FC = () => {
   const [gameSize, setGameSize] = useState<number>(STARTING_GAME_SIZE);

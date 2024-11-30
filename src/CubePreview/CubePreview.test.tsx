@@ -3,15 +3,50 @@ import CubePreview from "./CubePreview.tsx";
 import {CanvasUseEffectProps} from "../CanvasInterface/CanvasInterface.tsx";
 import {
   mock_CanvasGame_getRubikCubeImpl,
-  mock_Global_requestAnimationFrame, mock_RubikCube_advanceFrame, mock_RubikCube_spawnFullCube,
+  mock_Global_requestAnimationFrame,
+  mock_RubikCube_advanceFrame,
+  mock_RubikCube_gameSizeChange,
+  mock_RubikCube_spawnFullCube,
   mock_Three_Scene_add,
   mock_Three_WebGLRenderer_render
 } from "../../vitest.setup.ts";
 import * as THREE from "three";
+import {vi} from "vitest";
 
 CubePreview.getRubikCubeImpl = mock_CanvasGame_getRubikCubeImpl;
 
 describe('cube preview logic', () => {
+  it('game size camera distance', () => {
+    const cp = new CubePreview();
+
+    cp.gameSize = 0;
+    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("0.40");
+
+    cp.gameSize = 1;
+    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("1.70");
+
+    cp.gameSize = 2;
+    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("3.00");
+
+    cp.gameSize = 3;
+    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("4.30");
+
+    cp.gameSize = 4;
+    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("5.60");
+
+    cp.gameSize = 5;
+    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("6.90");
+
+    cp.gameSize = 6;
+    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("8.20");
+
+    cp.gameSize = 7;
+    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("9.50");
+
+    cp.gameSize = 8;
+    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("10.80");
+  });
+
   it('should return element bounding client rect', () => {
     const cp = new CubePreview();
     const element = {
@@ -189,5 +224,37 @@ describe('cube preview logic', () => {
 
     expect(mock_Three_WebGLRenderer_render).toHaveBeenCalledWith(scene, camera);
     expect(mock_Three_WebGLRenderer_render).toHaveBeenCalledTimes(1);
+  });
+
+  test('game size change without camera', () => {
+    const mock_getCameraDistanceForGameSize = vi.fn();
+
+    const cp = new CubePreview();
+    cp.getCameraDistanceForGameSize = mock_getCameraDistanceForGameSize;
+    cp.gameSizeChange(3);
+
+    expect(cp.gameSize).toBe(3);
+    expect(mock_RubikCube_gameSizeChange).toHaveBeenCalledTimes(1);
+    expect(mock_getCameraDistanceForGameSize).toHaveBeenCalledTimes(0);
+  });
+
+  test('game size change with camera', () => {
+    const mock_getCameraDistanceForGameSize = vi.fn().mockReturnValue(10);
+
+    const cp = new CubePreview();
+    cp.getCameraDistanceForGameSize = mock_getCameraDistanceForGameSize;
+    cp.props = {
+      clock: vi.fn(),
+      scene: vi.fn(),
+      camera: new THREE.Camera(),
+      render: vi.fn(),
+      gameSize: 1
+    };
+    cp.gameSizeChange(3);
+
+    expect(cp.gameSize).toBe(3);
+    expect(cp.props!.camera.position.z).toBe(10);
+    expect(mock_RubikCube_gameSizeChange).toHaveBeenCalledTimes(1);
+    expect(mock_getCameraDistanceForGameSize).toHaveBeenCalledTimes(1);
   });
 });

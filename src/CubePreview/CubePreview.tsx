@@ -5,6 +5,8 @@ import Utils from "../Utils/Utils.tsx";
 import RubikCube from "../RubikCube/RubikCube.tsx";
 
 class CubePreview implements CanvasInterface {
+  static readonly DEBUG_AXIS_LENGTH = 15;
+
   props: CanvasUseEffectProps | null;
   cubeMesh: THREE.Group<THREE.Object3DEventMap> | null;
   texture: THREE.Texture | null;
@@ -13,9 +15,10 @@ class CubePreview implements CanvasInterface {
   textureLoader: THREE.TextureLoader;
 
   rubikCube: RubikCube;
+  gameSize: number;
 
   static getRubikCubeImpl(): RubikCube {
-    return new RubikCube();
+    return new RubikCube(Utils.DEFAULT_GAME_SIZE);
   }
 
   constructor() {
@@ -27,6 +30,7 @@ class CubePreview implements CanvasInterface {
     this.textureLoader = new THREE.TextureLoader();
 
     this.rubikCube = CubePreview.getRubikCubeImpl();
+    this.gameSize = Utils.DEFAULT_GAME_SIZE;
   }
 
   getBoundingClientRect(element: HTMLElement): DOMRect {
@@ -47,7 +51,39 @@ class CubePreview implements CanvasInterface {
     this.textureLoader.load(Utils.TEXTURE_CUBE_PATH, (texture) => this.textureLoaded(texture));
 
     // Add the cube to the scene
-    props.camera.position.z = 4;
+    props.camera.position.z = this.getCameraDistanceForGameSize();
+
+    // Create axis for debug
+    if (CubePreview.DEBUG_AXIS_LENGTH > 0) {
+      // X-axis (Red)
+      const xGeometry = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(0, 0, 0),  // Start point
+        new THREE.Vector3(CubePreview.DEBUG_AXIS_LENGTH, 0, 0) // End point
+      ]);
+      const xMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 }); // Red for X-axis
+      const xAxis = new THREE.Line(xGeometry, xMaterial);
+
+      // Y-axis (Green)
+      const yGeometry = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(0, 0, 0),
+        new THREE.Vector3(0, CubePreview.DEBUG_AXIS_LENGTH, 0)
+      ]);
+      const yMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 }); // Green for Y-axis
+      const yAxis = new THREE.Line(yGeometry, yMaterial);
+
+      // Z-axis (Blue)
+      const zGeometry = new THREE.BufferGeometry().setFromPoints([
+        new THREE.Vector3(0, 0, 0),
+        new THREE.Vector3(0, 0, CubePreview.DEBUG_AXIS_LENGTH)
+      ]);
+      const zMaterial = new THREE.LineBasicMaterial({ color: 0x0000ff }); // Blue for Z-axis
+      const zAxis = new THREE.Line(zGeometry, zMaterial);
+
+      // Add axes to the scene
+      props.scene.add(xAxis);
+      props.scene.add(yAxis);
+      props.scene.add(zAxis);
+    }
 
     // Start animation loop
     const animate = () => {
@@ -67,7 +103,18 @@ class CubePreview implements CanvasInterface {
   };
 
   gameSizeChange(gameSize: number) {
-    console.log("gameSize updated", gameSize);
+    // Call game size change on Rubik's Cube handler
+    this.gameSize = gameSize;
+    this.rubikCube.gameSizeChange(gameSize, this.props ? this.props!.scene : null, this.cubeMesh);
+
+    // Move camera accordingly
+    if (this.props && this.props!.camera) {
+      this.props!.camera.position.z = this.getCameraDistanceForGameSize();
+    }
+  }
+
+  getCameraDistanceForGameSize(): number {
+    return 3 + (this.gameSize - 2) * 1.3;
   }
 
   meshLoaded(object: THREE.Group<THREE.Object3DEventMap>): void {
