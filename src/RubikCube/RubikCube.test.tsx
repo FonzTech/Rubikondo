@@ -97,8 +97,8 @@ describe('cube preview logic', () => {
     rc.group = group;
     rc.advanceFrame(1);
 
-    expect(group.rotation.x).toBe(1.4);
-    expect(group.rotation.y).toBe(2.4);
+    expect(group.rotation.x).toBe(0.8);
+    expect(group.rotation.y).toBe(0.8);
     expect(group.rotation.z).toBe(3);
   });
 });
