@@ -105,7 +105,7 @@ class CubePreview implements CanvasInterface {
   gameSizeChange(gameSize: number) {
     // Call game size change on Rubik's Cube handler
     this.gameSize = gameSize;
-    this.rubikCube.gameSizeChange(gameSize, this.props ? this.props!.scene : null, this.cubeMesh);
+    this.rubikCube.gameSizeChange(gameSize, this.props ? this.props!.scene : null, this.cubeMesh, this.texture);
 
     // Move camera accordingly
     if (this.props && this.props!.camera) {
@@ -137,19 +137,8 @@ class CubePreview implements CanvasInterface {
       return;
     }
 
-    // Apply texture to mesh
-    this.cubeMesh!.traverse((child) => {
-      // Texturize mesh
-      if (child.isMesh) {
-        child.material = new THREE.MeshStandardMaterial({
-          map: this.texture!,
-          color: 0xffffffff
-        });
-      }
-    });
-
     // Add cube to scene
-    this.rubikCube.spawnFullCube(this.props!.scene, this.cubeMesh!)
+    this.rubikCube.spawnFullCube(this.props!.scene, this.cubeMesh!, this.texture!)
   }
 }
 

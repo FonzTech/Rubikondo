@@ -91,10 +91,7 @@ describe('cube preview logic', () => {
     const scene = new THREE.Scene();
     const texture = vi.fn();
 
-    const cubeMeshTraverse = vi.fn();
-
     const cubeMesh = vi.fn();
-    cubeMesh.traverse = cubeMeshTraverse;
 
     const cp = new CubePreview();
     cp.props = {scene: scene} as CanvasUseEffectProps;
@@ -102,8 +99,6 @@ describe('cube preview logic', () => {
     cp.texture = texture;
 
     cp.assetLoaded();
-
-    expect(cubeMeshTraverse).toHaveBeenCalledTimes(1);
 
     /*
     expect(mock_Three_Scene_add).toHaveBeenCalledWith(cubeMesh);
@@ -137,18 +132,13 @@ describe('cube preview logic', () => {
     const scene = new THREE.Scene();
     const texture = vi.fn();
 
-    const cubeMeshTraverse = vi.fn();
-
     const cubeMesh = vi.fn();
-    cubeMesh.traverse = cubeMeshTraverse;
 
     const cp = new CubePreview();
     cp.props = {scene: scene} as CanvasUseEffectProps;
     cp.cubeMesh = cubeMesh;
 
     cp.textureLoaded(texture);
-
-    expect(cubeMeshTraverse).toHaveBeenCalledTimes(1);
 
     /*
     expect(mock_Three_Scene_add).toHaveBeenCalledWith(cubeMesh);
