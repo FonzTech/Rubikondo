@@ -30,7 +30,8 @@ describe('cube preview logic', () => {
       const rc = new RubikCube(3);
       rc.getCubeMesh = mock_getCubeMesh;
       rc.getNewGroup = vi.fn().mockImplementation(() => ({
-        add: vi.fn()
+        add: vi.fn(),
+        rotateOnAxis: vi.fn()
       }));
       if (existentGroup) {
         rc.group = vi.fn();
@@ -42,7 +43,7 @@ describe('cube preview logic', () => {
       }
 
       expect(mock_Three_Scene_Add).toHaveBeenCalledTimes(1);
-      expect(mock_getCubeMesh).toHaveBeenCalledTimes(27);
+      expect(mock_getCubeMesh).toHaveBeenCalledTimes(54);
     });
   });
 
@@ -57,7 +58,6 @@ describe('cube preview logic', () => {
     // First test
     const rc = new RubikCube(3);
     rc.spawnFullCube = mock_spawnFullCube;
-    rc.getNewGroup = vi.fn();
 
     expect(rc.gameSize).toBe(3);
 
