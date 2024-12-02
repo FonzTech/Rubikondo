@@ -13,13 +13,13 @@ class Utils {
   static readonly CUBE_FACE_INDEX_TOP = 4;
   static readonly CUBE_FACE_INDEX_BOTTOM = 5;
 
-  static readonly CUBE_COLOR_BLACK = THREE.Color.NAMES.black;
-  static readonly CUBE_COLOR_WHITE = THREE.Color.NAMES.white;
-  static readonly CUBE_COLOR_ORANGE = THREE.Color.NAMES.orange;
-  static readonly CUBE_COLOR_GREEN = THREE.Color.NAMES.lime;
-  static readonly CUBE_COLOR_RED = THREE.Color.NAMES.red;
-  static readonly CUBE_COLOR_BLUE = THREE.Color.NAMES.skyblue;
-  static readonly CUBE_COLOR_YELLOW = THREE.Color.NAMES.yellow;
+  static readonly CUBE_COLOR_BLACK = new THREE.Color(THREE.Color.NAMES.black);
+  static readonly CUBE_COLOR_WHITE = new THREE.Color(THREE.Color.NAMES.white);
+  static readonly CUBE_COLOR_ORANGE = new THREE.Color(THREE.Color.NAMES.orange);
+  static readonly CUBE_COLOR_GREEN = new THREE.Color(THREE.Color.NAMES.lime);
+  static readonly CUBE_COLOR_RED = new THREE.Color(THREE.Color.NAMES.red);
+  static readonly CUBE_COLOR_BLUE = new THREE.Color(THREE.Color.NAMES.skyblue);
+  static readonly CUBE_COLOR_YELLOW = new THREE.Color(THREE.Color.NAMES.yellow);
 
   static readonly CUBE_VERTEX_SHADER = `
     varying vec3 vNormal;

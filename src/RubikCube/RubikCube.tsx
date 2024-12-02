@@ -7,6 +7,7 @@ class RubikCube {
   rotation: number;
   lightPosition: THREE.Vector3;
   materials: THREE.ShaderMaterial[];
+  cubeColors: Map<string, THREE.Color>;
 
   constructor(gameSize: number) {
     this.group = new THREE.Group();
@@ -14,6 +15,7 @@ class RubikCube {
     this.rotation = 0;
     this.lightPosition = new THREE.Vector3(0, 0, 0);
     this.materials = [];
+    this.cubeColors = new Map<string, THREE.Color>();
   }
 
   spawnFullCube(scene: THREE.Scene, cube: THREE.Group<THREE.Object3DEventMap>, texture: THREE.Texture): void {
@@ -27,34 +29,13 @@ class RubikCube {
     this.lightPosition.set(0, 0, this.gameSize);
     this.materials = [];
     
-    // Create cube colors
-    const limit = this.gameSize;
-
-    const cubeColors = new Map<string, THREE.Color>();
-    for (let fi = 0; fi < 6; ++fi) {
-      for (let x = 0; x < limit; ++x) {
-        for (let y = 0; y < limit; ++y) {
-          const key = `${fi}_${x}_${y}`;
-          cubeColors.set(key, new THREE.Color(
-            fi == 0 ?
-              Utils.CUBE_COLOR_WHITE :
-              fi == 1 ?
-                Utils.CUBE_COLOR_ORANGE :
-                fi == 2 ?
-                  Utils.CUBE_COLOR_GREEN :
-                  fi == 3 ?
-                    Utils.CUBE_COLOR_RED :
-                    fi == 4 ?
-                      Utils.CUBE_COLOR_BLUE :
-                      Utils.CUBE_COLOR_YELLOW
-          ));
-        }
-      }
-    }
+    // Build cube colors
+    this.buildCubeColors();
 
     // Create group of six cubes
     this.group = this.getNewGroup();
 
+    const limit = this.gameSize;
     const offset = this.gameSize * -0.5;
 
     for (let fi = 0; fi < 6; ++fi) {
@@ -67,7 +48,7 @@ class RubikCube {
           );
 
           const key = `${fi}_${x}_${y}`;
-          const color = cubeColors.get(key);
+          const color = this.cubeColors.get(key);
           if (!color) {
             throw new Error(`Could not get color for face ${key}`);
           }
@@ -137,6 +118,32 @@ class RubikCube {
 
   getNewGroup(): THREE.Group {
     return new THREE.Group();
+  }
+
+  buildCubeColors(): void {
+    let limit = Math.pow(this.gameSize, 2);
+
+    this.cubeColors.clear();
+
+    const colors: THREE.Color[] =
+      new Array(limit).fill(Utils.CUBE_COLOR_WHITE)
+        .concat(new Array(limit).fill(Utils.CUBE_COLOR_ORANGE))
+        .concat(new Array(limit).fill(Utils.CUBE_COLOR_GREEN))
+        .concat(new Array(limit).fill(Utils.CUBE_COLOR_RED))
+        .concat(new Array(limit).fill(Utils.CUBE_COLOR_BLUE))
+        .concat(new Array(limit).fill(Utils.CUBE_COLOR_YELLOW));
+
+    limit = this.gameSize;
+    for (let fi = 0; fi < 6; ++fi) {
+      for (let x = 0; x < limit; ++x) {
+        for (let y = 0; y < limit; ++y) {
+          const index = Math.floor(Math.random() * colors.length);
+          const key = `${fi}_${x}_${y}`;
+          this.cubeColors.set(key, colors[index]);
+          colors.splice(index, 1);
+        }
+      }
+    }
   }
 }
 
