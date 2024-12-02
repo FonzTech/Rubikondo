@@ -1,7 +1,7 @@
 import * as React from 'react'
 import './Knob.css';
 import KnobSvg from "../assets/knob.svg";
-import {useRef, useState} from "react";
+import {UIEvent, useEffect, useRef, useState} from "react";
 import * as THREE from "three";
 
 interface KnobProps {
@@ -38,17 +38,19 @@ const Knob: React.FC<KnobProps> = ({
   const getValueForCallback = (radians: number): number => {
     const theta = radians < ANGLE_BOUNDARY_LEFT ? radians + ANGLE_BOUNDARY_ROUNDTRIP : (radians - ANGLE_BOUNDARY_LEFT);
     return Math.round(MIN_CALLBACK_VALUE + theta / ANGLE_BOUNDARY_MAX * STEP_CALLBACK_VALUE);
-  }
+  };
 
-  const onImageMouseDown = (event: React.MouseEvent<HTMLImageElement>) => {
+  // ----- DRAG START -----
+
+  const onMovementStart = (event: React.UIEvent<HTMLImageElement>, pointX: number, pointY: number): boolean => {
     if (componentRef.current === null) {
-      return;
+      return false;
     }
     event.preventDefault();
 
     startRotation.current = currentRotationInRad.current;
 
-    startPoint.current = new THREE.Vector2(event.clientX, event.clientY);
+    startPoint.current = new THREE.Vector2(pointX, pointY);
 
     const componentRect = componentRef.current!.getBoundingClientRect();
     centerPoint.current = new THREE.Vector2(
@@ -56,17 +58,39 @@ const Knob: React.FC<KnobProps> = ({
       componentRect.y + componentRect.height / 2,
     );
 
+    return true;
+  };
+
+  const onImageMouseDown = (event: React.MouseEvent<HTMLImageElement>) => {
+    if (!onMovementStart(event, event.clientX, event.clientY)) {
+      return;
+    }
+
     document.addEventListener("mousemove", onDocumentMouseOver);
     document.addEventListener("mouseup", onDocumentMouseUp);
-  }
+  };
 
-  const onDocumentMouseOver = (event: React.MouseEvent<Document>) => {
-    if (centerPoint.current === null) {
+  const onTouchStart = (event: React.TouchEvent<HTMLImageElement>) => {
+    if (!event.touches) {
       return;
+    }
+    if (!onMovementStart(event, event.touches[0].clientX, event.touches[0].clientY)) {
+      return;
+    }
+
+    document.addEventListener("touchmove", onTouchMove);
+    document.addEventListener("touchend", onTouchEnd);
+  };
+
+  // ----- DRAG MOVEMENT -----
+
+  const onMovementMove = (event: React.UIEvent<Document>, pointX: number, pointY: number) => {
+    if (centerPoint.current === null) {
+      return false;
     }
     event.preventDefault();
 
-    currentPoint.current = new THREE.Vector2(event.clientX, event.clientY);
+    currentPoint.current = new THREE.Vector2(pointX, pointY);
 
     const deltaY1 = currentPoint.current!.y - centerPoint.current!.y;
     const deltaX1 = currentPoint.current!.x - centerPoint.current!.x;
@@ -95,19 +119,61 @@ const Knob: React.FC<KnobProps> = ({
       const value = getValueForCallback(viewAngle);
       rotateCallback(value);
     }
-  }
 
-  const onDocumentMouseUp = (event: React.MouseEvent<Document>) => {
-    if (centerPoint.current === null) {
+    return true;
+  };
+
+  const onDocumentMouseOver = (event: React.MouseEvent<Document>) => {
+    onMovementMove(event, event.clientX, event.clientY);
+  };
+
+  const onTouchMove = (event: React.TouchEvent<Document>) => {
+    if (!event.touches) {
       return;
+    }
+    onMovementMove(event, event.touches[0].clientX, event.touches[0].clientY);
+  };
+
+  // ----- DRAG END -----
+
+  const onMovementEnd = (event: React.UIEvent<Document>) => {
+    if (centerPoint.current === null) {
+      return false;
     }
     event.preventDefault();
 
     centerPoint.current = null;
 
+    return true;
+  };
+
+  const onDocumentMouseUp = (event: React.MouseEvent<Document>) => {
+    if (!onMovementEnd(event)) {
+      return;
+    }
+
     document.removeEventListener("mousemove", onDocumentMouseOver);
     document.removeEventListener("mouseup", onDocumentMouseUp);
-  }
+  };
+
+  const onTouchEnd = (event: React.MouseEvent<Document>) => {
+    if (!onMovementEnd(event)) {
+      return;
+    }
+
+    document.removeEventListener("touchmove", onTouchMove, { passive: false });
+    document.removeEventListener("touchend", onTouchEnd);
+  };
+
+  useEffect(() => {
+    componentRef.current?.addEventListener("mousedown", onImageMouseDown);
+    componentRef.current?.addEventListener("touchstart", onTouchStart, { passive: false });
+
+    return () => {
+      componentRef.current?.removeEventListener("mousedown", onImageMouseDown);
+      componentRef.current?.removeEventListener("touchstart", onTouchStart);
+    };
+  }, []);
 
   return (
     <img
@@ -117,10 +183,10 @@ const Knob: React.FC<KnobProps> = ({
       src={KnobSvg}
       alt="Knob"
       style={{
+        touchAction: "none",
         minHeight: minHeight,
         transform: `rotate(${currentRotationInDeg}deg)`
       }}
-      onMouseDown={onImageMouseDown}
     />
   );
 };
