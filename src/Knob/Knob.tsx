@@ -3,6 +3,7 @@ import './Knob.css';
 import KnobSvg from "../assets/knob.svg";
 import {UIEvent, useEffect, useRef, useState} from "react";
 import * as THREE from "three";
+import DraggableHandler from "../DraggableHandler/DraggableHandler.tsx";
 
 interface KnobProps {
   minHeight: string
@@ -40,138 +41,84 @@ const Knob: React.FC<KnobProps> = ({
     return Math.round(MIN_CALLBACK_VALUE + theta / ANGLE_BOUNDARY_MAX * STEP_CALLBACK_VALUE);
   };
 
-  // ----- DRAG START -----
+  const draggableHandler: DraggableHandler = new (class extends DraggableHandler {
+      onMovementStart(event: React.UIEvent<Document>, pointX: number, pointY: number): boolean {
+        if (componentRef.current === null) {
+          return false;
+        }
+        event.preventDefault();
 
-  const onMovementStart = (event: React.UIEvent<HTMLImageElement>, pointX: number, pointY: number): boolean => {
-    if (componentRef.current === null) {
-      return false;
-    }
-    event.preventDefault();
+        startRotation.current = currentRotationInRad.current;
 
-    startRotation.current = currentRotationInRad.current;
+        startPoint.current = new THREE.Vector2(pointX, pointY);
 
-    startPoint.current = new THREE.Vector2(pointX, pointY);
+        const componentRect = componentRef.current!.getBoundingClientRect();
+        centerPoint.current = new THREE.Vector2(
+          componentRect.x + componentRect.width / 2,
+          componentRect.y + componentRect.height / 2,
+        );
 
-    const componentRect = componentRef.current!.getBoundingClientRect();
-    centerPoint.current = new THREE.Vector2(
-      componentRect.x + componentRect.width / 2,
-      componentRect.y + componentRect.height / 2,
-    );
+        return true;
+      }
 
-    return true;
-  };
+      onMovementMove(event: React.UIEvent<Document>, pointX: number, pointY: number): boolean {
+        if (centerPoint.current === null) {
+          return false;
+        }
+        event.preventDefault();
 
-  const onImageMouseDown = (event: React.MouseEvent<HTMLImageElement>) => {
-    if (!onMovementStart(event, event.clientX, event.clientY)) {
-      return;
-    }
+        currentPoint.current = new THREE.Vector2(pointX, pointY);
 
-    document.addEventListener("mousemove", onDocumentMouseOver);
-    document.addEventListener("mouseup", onDocumentMouseUp);
-  };
+        const deltaY1 = currentPoint.current!.y - centerPoint.current!.y;
+        const deltaX1 = currentPoint.current!.x - centerPoint.current!.x;
 
-  const onTouchStart = (event: React.TouchEvent<HTMLImageElement>) => {
-    if (!event.touches) {
-      return;
-    }
-    if (!onMovementStart(event, event.touches[0].clientX, event.touches[0].clientY)) {
-      return;
-    }
+        const deltaY2 = startPoint.current!.y - centerPoint.current!.y;
+        const deltaX2 = startPoint.current!.x - centerPoint.current!.x;
 
-    document.addEventListener("touchmove", onTouchMove);
-    document.addEventListener("touchend", onTouchEnd);
-  };
+        const angleInRad1 = Math.atan2(deltaY1, deltaX1);
+        const angleInRad2 = Math.atan2(deltaY2, deltaX2);
 
-  // ----- DRAG MOVEMENT -----
+        const normalizedAngle = THREE.MathUtils.euclideanModulo(startRotation.current! + angleInRad1 - angleInRad2, 2 * Math.PI);
 
-  const onMovementMove = (event: React.UIEvent<Document>, pointX: number, pointY: number) => {
-    if (centerPoint.current === null) {
-      return false;
-    }
-    event.preventDefault();
+        currentRotationInRad.current = normalizedAngle;
 
-    currentPoint.current = new THREE.Vector2(pointX, pointY);
+        const viewAngle =
+          normalizedAngle > ANGLE_BOUNDARY_LEFT ||
+          normalizedAngle < ANGLE_BOUNDARY_RIGHT ?
+            normalizedAngle :
+            normalizedAngle > ANGLE_BOUNDARY_CENTER ?
+              ANGLE_BOUNDARY_LEFT :
+              ANGLE_BOUNDARY_RIGHT;
+        setCurrentRotationInDeg(THREE.MathUtils.radToDeg(viewAngle).toFixed(2));
 
-    const deltaY1 = currentPoint.current!.y - centerPoint.current!.y;
-    const deltaX1 = currentPoint.current!.x - centerPoint.current!.x;
+        // Call callback, if possible
+        if (rotateCallback !== null) {
+          const value = getValueForCallback(viewAngle);
+          rotateCallback(value);
+        }
 
-    const deltaY2 = startPoint.current!.y - centerPoint.current!.y;
-    const deltaX2 = startPoint.current!.x - centerPoint.current!.x;
+        return true;
+      }
 
-    const angleInRad1 = Math.atan2(deltaY1, deltaX1);
-    const angleInRad2 = Math.atan2(deltaY2, deltaX2);
+      onMovementEnd(event: React.UIEvent<Document>): boolean {
+        if (centerPoint.current === null) {
+          return false;
+        }
+        event.preventDefault();
 
-    const normalizedAngle = THREE.MathUtils.euclideanModulo(startRotation.current! + angleInRad1 - angleInRad2, 2 * Math.PI);
+        centerPoint.current = null;
 
-    currentRotationInRad.current = normalizedAngle;
-
-    const viewAngle =
-      normalizedAngle > ANGLE_BOUNDARY_LEFT ||
-      normalizedAngle < ANGLE_BOUNDARY_RIGHT ?
-        normalizedAngle :
-        normalizedAngle > ANGLE_BOUNDARY_CENTER ?
-          ANGLE_BOUNDARY_LEFT :
-          ANGLE_BOUNDARY_RIGHT;
-    setCurrentRotationInDeg(THREE.MathUtils.radToDeg(viewAngle).toFixed(2));
-
-    // Call callback, if possible
-    if (rotateCallback !== null) {
-      const value = getValueForCallback(viewAngle);
-      rotateCallback(value);
-    }
-
-    return true;
-  };
-
-  const onDocumentMouseOver = (event: React.MouseEvent<Document>) => {
-    onMovementMove(event, event.clientX, event.clientY);
-  };
-
-  const onTouchMove = (event: React.TouchEvent<Document>) => {
-    if (!event.touches) {
-      return;
-    }
-    onMovementMove(event, event.touches[0].clientX, event.touches[0].clientY);
-  };
-
-  // ----- DRAG END -----
-
-  const onMovementEnd = (event: React.UIEvent<Document>) => {
-    if (centerPoint.current === null) {
-      return false;
-    }
-    event.preventDefault();
-
-    centerPoint.current = null;
-
-    return true;
-  };
-
-  const onDocumentMouseUp = (event: React.MouseEvent<Document>) => {
-    if (!onMovementEnd(event)) {
-      return;
-    }
-
-    document.removeEventListener("mousemove", onDocumentMouseOver);
-    document.removeEventListener("mouseup", onDocumentMouseUp);
-  };
-
-  const onTouchEnd = (event: React.MouseEvent<Document>) => {
-    if (!onMovementEnd(event)) {
-      return;
-    }
-
-    document.removeEventListener("touchmove", onTouchMove, { passive: false });
-    document.removeEventListener("touchend", onTouchEnd);
-  };
+        return true;
+      }
+  })();
 
   useEffect(() => {
-    componentRef.current?.addEventListener("mousedown", onImageMouseDown);
-    componentRef.current?.addEventListener("touchstart", onTouchStart, { passive: false });
+    componentRef.current?.addEventListener("mousedown", draggableHandler.onMouseDown);
+    componentRef.current?.addEventListener("touchstart", draggableHandler.onTouchStart, { passive: false });
 
     return () => {
-      componentRef.current?.removeEventListener("mousedown", onImageMouseDown);
-      componentRef.current?.removeEventListener("touchstart", onTouchStart);
+      componentRef.current?.removeEventListener("mousedown", draggableHandler.onMouseDown);
+      componentRef.current?.removeEventListener("touchstart", draggableHandler.onTouchStart);
     };
   }, []);
 
