@@ -2,20 +2,38 @@ import * as THREE from "three";
 import Utils from "../Utils/Utils.tsx";
 
 class RubikCube {
+  static readonly MAX_ANIM_MULT_FACTOR = 0.4;
+  static readonly X_AXIS = new THREE.Vector3(1, 0, 0);
+  static readonly Y_AXIS = new THREE.Vector3(0, 1, 0);
+
   group: THREE.Group;
   gameSize: number;
-  rotation: number;
+
+  rotation: THREE.Quaternion;
   lightPosition: THREE.Vector3;
   materials: THREE.ShaderMaterial[];
   cubeColors: Map<string, THREE.Color>;
 
+  dragState: boolean;
+  animMultFactory: number;
+
+  angleX: number;
+  angleY: number;
+
   constructor(gameSize: number) {
     this.group = new THREE.Group();
     this.gameSize = gameSize;
-    this.rotation = 0;
+
+    this.rotation = new THREE.Quaternion();
     this.lightPosition = new THREE.Vector3(0, 0, 0);
     this.materials = [];
     this.cubeColors = new Map<string, THREE.Color>();
+
+    this.dragState = false;
+    this.animMultFactory = 0;
+
+    this.angleX = 0;
+    this.angleY = 0;
   }
 
   spawnFullCube(scene: THREE.Scene, cube: THREE.Group<THREE.Object3DEventMap>, texture: THREE.Texture): void {
@@ -28,7 +46,7 @@ class RubikCube {
     // Setup
     this.lightPosition.set(0, 0, this.gameSize);
     this.materials = [];
-    
+
     // Build cube colors
     this.buildCubeColors();
 
@@ -87,10 +105,68 @@ class RubikCube {
 
   advanceFrame(dt: number): void {
     if (this.group !== null) {
-      const f = 0.4 * dt;
-      this.rotation += f;
-      this.group.rotation.set(this.rotation, this.rotation, 0);
+      // Rotate only if user isn't rotating by his actions
+      if (this.dragState) {
+        this.animMultFactory -= 0.02;
+        if (this.animMultFactory < 0) {
+          this.animMultFactory = 0;
+        }
+      } else {
+        this.animMultFactory += 0.02;
+        if (this.animMultFactory > RubikCube.MAX_ANIM_MULT_FACTOR) {
+          this.animMultFactory = RubikCube.MAX_ANIM_MULT_FACTOR;
+        }
+      }
+      if (this.animMultFactory > 0.000001) {
+        const f = this.animMultFactory * dt;
+        // this.rotation.x += f;
+        // this.rotation.y += f;
+      }
+
+      this.group.rotation.setFromQuaternion(this.rotation, "XYZ");
     }
+  }
+
+  onDragStart() {
+    this.dragState = true;
+  }
+
+  onDragging(delta: THREE.Vector3) {
+    if (!this.dragState) {
+      return;
+    }
+
+    // Rotate in screen space
+    const angleX = delta.x * 0.0075;
+    const angleY = delta.y * 0.0075;
+
+    this.angleX += angleX;
+    this.angleY += angleY;
+
+    const viewVector = new THREE.Vector3(0, 0, 4.3);
+    viewVector.applyEuler(new THREE.Euler(0, -this.angleX, 0, "XYZ"));
+
+    const newQuat = new THREE.Quaternion();
+
+    const verAxis = new THREE.Vector3().crossVectors(RubikCube.Y_AXIS, viewVector).normalize();
+
+    newQuat.multiply(new THREE.Quaternion()
+      .setFromAxisAngle(
+        RubikCube.Y_AXIS,
+        angleX
+      ));
+
+    newQuat.multiply(new THREE.Quaternion()
+      .setFromAxisAngle(
+        verAxis,
+        angleY
+      ));
+
+    this.rotation.multiply(newQuat);
+  }
+
+  onDragEnd() {
+    this.dragState = false;
   }
 
   gameSizeChange(gameSize: number, scene: THREE.Scene | null, cube: THREE.Group<THREE.Object3DEventMap> | null, texture: THREE.Texture | null): void {

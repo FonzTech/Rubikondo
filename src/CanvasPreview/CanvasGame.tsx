@@ -2,6 +2,7 @@ import * as React from 'react'
 import {useEffect, useRef} from "react";
 import * as THREE from "three";
 import { CanvasInterface } from "../CanvasInterface/CanvasInterface.tsx";
+import DraggableHandler from "../DraggableHandler/DraggableHandler.tsx";
 
 interface CanvasGameProps {
   addStyle: React.CSSProperties,
@@ -20,6 +21,50 @@ const CanvasGame: React.FC<CanvasGameProps> = ({
   // Store component ref
   const canvasRef = useRef<HTMLDivElement | null>(null);
   const canvasLogic = useRef<CanvasInterface | null>(null);
+
+  const dragPoint = useRef<THREE.Vector2 | null>(null);
+
+  // Draggable handler
+  const draggableHandler: DraggableHandler = new (class extends DraggableHandler {
+    onMovementStart(event: React.UIEvent<Document>, pointX: number, pointY: number): boolean {
+      if (canvasRef.current === null) {
+        return false;
+      }
+      event.preventDefault();
+
+      dragPoint.current = new THREE.Vector2(pointX, pointY);
+      canvasLogic.current!.onDragStart(new THREE.Vector2(0, 0));
+
+      return true;
+    }
+
+    onMovementMove(event: React.UIEvent<Document>, pointX: number, pointY: number): boolean {
+      if (canvasRef.current === null || dragPoint.current === null) {
+        return false;
+      }
+      event.preventDefault();
+
+      const point = new THREE.Vector2(pointX, pointY);
+      const delta = point.clone().sub(dragPoint.current!);
+      dragPoint.current = point;
+
+      canvasLogic.current!.onDragging(delta);
+
+      return true;
+    }
+
+    onMovementEnd(event: React.UIEvent<Document>): boolean {
+      if (canvasRef.current === null || dragPoint.current === null) {
+        return false;
+      }
+      event.preventDefault();
+
+      dragPoint.current = null;
+      canvasLogic.current!.onDragEnd();
+
+      return true;
+    }
+  })();
 
   // Use effect
   useEffect(() => {
@@ -78,12 +123,24 @@ const CanvasGame: React.FC<CanvasGameProps> = ({
     };
   }, []);
 
+  // Game size change
   useEffect(() => {
     if (canvasLogic === null) {
       return;
     }
     canvasLogic.current!.gameSizeChange(gameSize);
   }, [gameSize]);
+
+  // Rotate by gestures
+  useEffect(() => {
+    canvasRef.current?.addEventListener("mousedown", draggableHandler.onMouseDown);
+    canvasRef.current?.addEventListener("touchstart", draggableHandler.onTouchStart, { passive: false });
+
+    return () => {
+      canvasRef.current?.removeEventListener("mousedown", draggableHandler.onMouseDown);
+      canvasRef.current?.removeEventListener("touchstart", draggableHandler.onTouchStart);
+    };
+  }, []);
 
   return (
     <div

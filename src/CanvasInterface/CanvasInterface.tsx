@@ -12,4 +12,8 @@ export interface CanvasInterface {
   getBoundingClientRect(element: HTMLElement): DOMRect;
   useEffectStep(props: CanvasUseEffectProps): void;
   gameSizeChange(gameSize: number): void;
+
+  onDragStart(point: THREE.Vector2): void;
+  onDragging(point: THREE.Vector2): void;
+  onDragEnd(): void;
 }

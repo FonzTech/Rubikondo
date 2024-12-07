@@ -28,7 +28,6 @@ describe('draggable handler', () => {
       }
     })();
 
-
     draggableHandler.onMouseDown({ clientX: 1, clientY: 2 } as React.MouseEvent<HTMLElement>);
     draggableHandler.onMovementMove({ clientX: 3, clientY: 4 } as React.MouseEvent<Document>);
     draggableHandler.onMovementEnd({ clientX: 5, clientY: 6 } as React.MouseEvent<Document>);

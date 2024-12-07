@@ -3,6 +3,7 @@ import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import {CanvasInterface, CanvasUseEffectProps} from "../CanvasInterface/CanvasInterface.tsx";
 import Utils from "../Utils/Utils.tsx";
 import RubikCube from "../RubikCube/RubikCube.tsx";
+import {Vector2} from "three";
 
 class CubePreview implements CanvasInterface {
   static readonly DEBUG_AXIS_LENGTH = 15;
@@ -16,6 +17,8 @@ class CubePreview implements CanvasInterface {
 
   rubikCube: RubikCube;
   gameSize: number;
+
+  startDragging: boolean;
 
   static getRubikCubeImpl(): RubikCube {
     return new RubikCube(Utils.DEFAULT_GAME_SIZE);
@@ -31,6 +34,8 @@ class CubePreview implements CanvasInterface {
 
     this.rubikCube = CubePreview.getRubikCubeImpl();
     this.gameSize = Utils.DEFAULT_GAME_SIZE;
+
+    this.startDragging = false;
   }
 
   getBoundingClientRect(element: HTMLElement): DOMRect {
@@ -55,34 +60,8 @@ class CubePreview implements CanvasInterface {
 
     // Create axis for debug
     if (CubePreview.DEBUG_AXIS_LENGTH > 0) {
-      // X-axis (Red)
-      const xGeometry = new THREE.BufferGeometry().setFromPoints([
-        new THREE.Vector3(0, 0, 0),  // Start point
-        new THREE.Vector3(CubePreview.DEBUG_AXIS_LENGTH, 0, 0) // End point
-      ]);
-      const xMaterial = new THREE.LineBasicMaterial({ color: 0xff0000 }); // Red for X-axis
-      const xAxis = new THREE.Line(xGeometry, xMaterial);
-
-      // Y-axis (Green)
-      const yGeometry = new THREE.BufferGeometry().setFromPoints([
-        new THREE.Vector3(0, 0, 0),
-        new THREE.Vector3(0, CubePreview.DEBUG_AXIS_LENGTH, 0)
-      ]);
-      const yMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 }); // Green for Y-axis
-      const yAxis = new THREE.Line(yGeometry, yMaterial);
-
-      // Z-axis (Blue)
-      const zGeometry = new THREE.BufferGeometry().setFromPoints([
-        new THREE.Vector3(0, 0, 0),
-        new THREE.Vector3(0, 0, CubePreview.DEBUG_AXIS_LENGTH)
-      ]);
-      const zMaterial = new THREE.LineBasicMaterial({ color: 0x0000ff }); // Blue for Z-axis
-      const zAxis = new THREE.Line(zGeometry, zMaterial);
-
-      // Add axes to the scene
-      props.scene.add(xAxis);
-      props.scene.add(yAxis);
-      props.scene.add(zAxis);
+      const axesHelper = new THREE.AxesHelper(CubePreview.DEBUG_AXIS_LENGTH);
+      props.scene.add(axesHelper);
     }
 
     // Start animation loop
@@ -111,6 +90,24 @@ class CubePreview implements CanvasInterface {
     if (this.props && this.props!.camera) {
       this.props!.camera.position.z = this.getCameraDistanceForGameSize();
     }
+  }
+
+  onDragStart(point: Vector2) {
+    this.startDragging = true;
+    this.rubikCube.onDragStart();
+  }
+
+  onDragging(point: Vector2) {
+    if (!this.startDragging) {
+      return;
+    }
+
+    this.rubikCube.onDragging(new THREE.Vector3(point.x, point.y, 0));
+  }
+
+  onDragEnd() {
+    this.startDragging = false;
+    this.rubikCube.onDragEnd();
   }
 
   getCameraDistanceForGameSize(): number {

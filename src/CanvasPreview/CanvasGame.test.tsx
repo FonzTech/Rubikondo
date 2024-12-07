@@ -8,6 +8,7 @@ import {
   mock_Three_WebGLRenderer_setSize
 } from "../../vitest.setup.ts";
 import CubePreview from "../CubePreview/CubePreview.tsx";
+import * as THREE from "three";
 
 CubePreview.getRubikCubeImpl = mock_CanvasGame_getRubikCubeImpl;
 
@@ -37,6 +38,12 @@ class CanvasLogicTest implements CanvasInterface {
   };
 
   gameSizeChange(_: number) {}
+
+  onDragStart(point: THREE.Vector2) {}
+
+  onDragging(point: THREE.Vector2) {}
+
+  onDragEnd() {}
 }
 
 test('renders canvas preview', () => {
