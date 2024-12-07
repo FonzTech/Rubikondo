@@ -78,7 +78,7 @@ const Knob: React.FC<KnobProps> = ({
         const angleInRad1 = Math.atan2(deltaY1, deltaX1);
         const angleInRad2 = Math.atan2(deltaY2, deltaX2);
 
-        const normalizedAngle = THREE.MathUtils.euclideanModulo(startRotation.current! + angleInRad1 - angleInRad2, 2 * Math.PI);
+        const normalizedAngle = THREE.MathUtils.euclideanModulo(startRotation.current! + angleInRad1 - angleInRad2, Utils.DOUBLE_PI);
 
         currentRotationInRad.current = normalizedAngle;
 

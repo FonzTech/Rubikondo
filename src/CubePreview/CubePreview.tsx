@@ -55,8 +55,8 @@ class CubePreview implements CanvasInterface {
     // Load texture
     this.textureLoader.load(Utils.TEXTURE_CUBE_PATH, (texture) => this.textureLoaded(texture));
 
-    // Add the cube to the scene
-    props.camera.position.z = this.getCameraDistanceForGameSize();
+    // Set camera position
+    this.setCameraPosition(props.camera);
 
     // Create axis for debug
     if (CubePreview.DEBUG_AXIS_LENGTH > 0) {
@@ -88,21 +88,21 @@ class CubePreview implements CanvasInterface {
 
     // Move camera accordingly
     if (this.props && this.props!.camera) {
-      this.props!.camera.position.z = this.getCameraDistanceForGameSize();
+      this.setCameraPosition(this.props!.camera);
     }
   }
 
   onDragStart(point: Vector2) {
     this.startDragging = true;
-    this.rubikCube.onDragStart();
+    this.rubikCube.onDragStart(point);
   }
 
-  onDragging(point: Vector2) {
+  onDragging(point: Vector2, delta: THREE.Vector3) {
     if (!this.startDragging) {
       return;
     }
 
-    this.rubikCube.onDragging(new THREE.Vector3(point.x, point.y, 0));
+    this.rubikCube.onDragging(point, delta);
   }
 
   onDragEnd() {
@@ -136,6 +136,11 @@ class CubePreview implements CanvasInterface {
 
     // Add cube to scene
     this.rubikCube.spawnFullCube(this.props!.scene, this.cubeMesh!, this.texture!)
+  }
+
+  setCameraPosition(camera: THREE.Camera): void {
+    const position = Utils.VIEW_VECTOR.clone().multiplyScalar(this.getCameraDistanceForGameSize());
+    camera.position.set(position.x, position.y, position.z);
   }
 }
 

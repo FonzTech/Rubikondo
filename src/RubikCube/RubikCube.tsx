@@ -1,6 +1,14 @@
 import * as THREE from "three";
 import Utils from "../Utils/Utils.tsx";
 
+interface RubikDragState {
+  autoRotate: boolean,
+  animMultFactory: number,
+  angleX: number,
+  angleY: number,
+  signX: number
+}
+
 class RubikCube {
   static readonly MAX_ANIM_MULT_FACTOR = 0.4;
   static readonly X_AXIS = new THREE.Vector3(1, 0, 0);
@@ -14,11 +22,7 @@ class RubikCube {
   materials: THREE.ShaderMaterial[];
   cubeColors: Map<string, THREE.Color>;
 
-  dragState: boolean;
-  animMultFactory: number;
-
-  angleX: number;
-  angleY: number;
+  dragState: RubikDragState;
 
   constructor(gameSize: number) {
     this.group = new THREE.Group();
@@ -29,11 +33,13 @@ class RubikCube {
     this.materials = [];
     this.cubeColors = new Map<string, THREE.Color>();
 
-    this.dragState = false;
-    this.animMultFactory = 0;
-
-    this.angleX = 0;
-    this.angleY = 0;
+    this.dragState = {
+      autoRotate: false,
+      animMultFactory: RubikCube.MAX_ANIM_MULT_FACTOR,
+      angleX: 0,
+      angleY: 0,
+      signX: 1.0
+    };
   }
 
   spawnFullCube(scene: THREE.Scene, cube: THREE.Group<THREE.Object3DEventMap>, texture: THREE.Texture): void {
@@ -106,19 +112,19 @@ class RubikCube {
   advanceFrame(dt: number): void {
     if (this.group !== null) {
       // Rotate only if user isn't rotating by his actions
-      if (this.dragState) {
-        this.animMultFactory -= 0.02;
-        if (this.animMultFactory < 0) {
-          this.animMultFactory = 0;
+      if (this.dragState.autoRotate) {
+        this.dragState.animMultFactory -= 0.02;
+        if (this.dragState.animMultFactory < 0) {
+          this.dragState.animMultFactory = 0;
         }
       } else {
-        this.animMultFactory += 0.02;
-        if (this.animMultFactory > RubikCube.MAX_ANIM_MULT_FACTOR) {
-          this.animMultFactory = RubikCube.MAX_ANIM_MULT_FACTOR;
+        this.dragState.animMultFactory += 0.02;
+        if (this.dragState.animMultFactory > RubikCube.MAX_ANIM_MULT_FACTOR) {
+          this.dragState.animMultFactory = RubikCube.MAX_ANIM_MULT_FACTOR;
         }
       }
-      if (this.animMultFactory > 0.000001) {
-        const f = this.animMultFactory * dt;
+      if (this.dragState.animMultFactory > 0.000001) {
+        const f = this.dragState.animMultFactory * dt;
         // this.rotation.x += f;
         // this.rotation.y += f;
       }
@@ -127,24 +133,28 @@ class RubikCube {
     }
   }
 
-  onDragStart() {
-    this.dragState = true;
+  onDragStart(point: THREE.Vector2) {
+    this.dragState.autoRotate = true;
+
+    // Save sign X
+    const angleY = THREE.MathUtils.euclideanModulo(this.dragState.angleY, Utils.DOUBLE_PI);
+    this.dragState.signX = angleY > Utils.HALF_PI && angleY < Utils.ONE_AND_HALF_PI ? -1.0 : 1.0;
   }
 
-  onDragging(delta: THREE.Vector3) {
-    if (!this.dragState) {
+  onDragging(point: THREE.Vector2, delta: THREE.Vector2) {
+    if (!this.dragState.autoRotate) {
       return;
     }
 
     // Rotate in screen space
-    const angleX = delta.x * 0.0075;
-    const angleY = delta.y * 0.0075;
+    const deltaX = delta.x * 0.0075 * this.dragState.signX;
+    const deltaY = delta.y * 0.0075;
 
-    this.angleX += angleX;
-    this.angleY += angleY;
+    this.dragState.angleX += deltaX;
+    this.dragState.angleY += deltaY;
 
-    const viewVector = new THREE.Vector3(0, 0, 4.3);
-    viewVector.applyEuler(new THREE.Euler(0, -this.angleX, 0, "XYZ"));
+    const viewVector = Utils.VIEW_VECTOR.clone();
+    viewVector.applyEuler(new THREE.Euler(0, -this.dragState.angleX, 0, "XYZ"));
 
     const newQuat = new THREE.Quaternion();
 
@@ -153,20 +163,20 @@ class RubikCube {
     newQuat.multiply(new THREE.Quaternion()
       .setFromAxisAngle(
         RubikCube.Y_AXIS,
-        angleX
+        deltaX
       ));
 
     newQuat.multiply(new THREE.Quaternion()
       .setFromAxisAngle(
         verAxis,
-        angleY
+        deltaY
       ));
 
     this.rotation.multiply(newQuat);
   }
 
   onDragEnd() {
-    this.dragState = false;
+    this.dragState.autoRotate = false;
   }
 
   gameSizeChange(gameSize: number, scene: THREE.Scene | null, cube: THREE.Group<THREE.Object3DEventMap> | null, texture: THREE.Texture | null): void {

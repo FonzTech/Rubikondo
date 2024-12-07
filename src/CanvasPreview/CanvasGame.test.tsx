@@ -41,7 +41,7 @@ class CanvasLogicTest implements CanvasInterface {
 
   onDragStart(point: THREE.Vector2) {}
 
-  onDragging(point: THREE.Vector2) {}
+  onDragging(point: THREE.Vector2, delta: THREE.Vector2) {}
 
   onDragEnd() {}
 }

@@ -21,6 +21,12 @@ class Utils {
   static readonly CUBE_COLOR_BLUE = new THREE.Color(THREE.Color.NAMES.skyblue);
   static readonly CUBE_COLOR_YELLOW = new THREE.Color(THREE.Color.NAMES.yellow);
 
+  static readonly VIEW_VECTOR = new THREE.Vector3(0, 0, 1);
+
+  static readonly HALF_PI = Math.PI * 0.5;
+  static readonly DOUBLE_PI = Math.PI * 2.0;
+  static readonly ONE_AND_HALF_PI = Math.PI * 1.5;
+
   static readonly CUBE_VERTEX_SHADER = `
     varying vec3 vNormal;
     varying vec3 vPosition;

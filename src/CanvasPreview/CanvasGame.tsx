@@ -48,7 +48,7 @@ const CanvasGame: React.FC<CanvasGameProps> = ({
       const delta = point.clone().sub(dragPoint.current!);
       dragPoint.current = point;
 
-      canvasLogic.current!.onDragging(delta);
+      canvasLogic.current!.onDragging(point, delta);
 
       return true;
     }
