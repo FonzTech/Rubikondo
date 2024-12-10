@@ -147,7 +147,8 @@ const CanvasGame: React.FC<CanvasGameProps> = ({
       data-testid="canvas-game"
       ref={canvasRef}
       style={{
-        ...addStyle
+        ...addStyle,
+        cursor: "grab"
       }}
     ></div>
   );

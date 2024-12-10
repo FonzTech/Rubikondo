@@ -3,7 +3,7 @@ import {Container, Row, Col} from "react-bootstrap";
 import './HomePage.css';
 import {useState} from "react";
 import Knob from "../Knob/Knob.tsx";
-import CanvasGame from "../CanvasPreview/CanvasGame.tsx";
+import CanvasGame from "../CanvasGame/CanvasGame.tsx";
 import CubePreview from "../CubePreview/CubePreview.tsx";
 import Utils from "../Utils/Utils.tsx";
 
