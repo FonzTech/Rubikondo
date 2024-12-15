@@ -83,17 +83,18 @@ describe('cube preview logic', () => {
     const rc = new RubikCube(3);
     rc.getCubeMesh = mock_getCubeMesh;
     rc.advanceFrame(1);
-
-    expect(group.rotation.x).toBe(1);
-    expect(group.rotation.y).toBe(2);
-    expect(group.rotation.z).toBe(3);
-
-    // Second test
-    rc.group = group;
-    rc.advanceFrame(1);
+    rc.dragState.autoRotate = true;
 
     expect(group.rotation.x.toFixed(2)).toBe("1.00");
     expect(group.rotation.y.toFixed(2)).toBe("2.00");
     expect(group.rotation.z.toFixed(2)).toBe("3.00");
+
+    // Second test
+    rc.group = group;
+    rc.advanceFrame(5);
+
+    expect(group.rotation.x.toFixed(2)).toBe("0.04");
+    expect(group.rotation.y.toFixed(2)).toBe("0.04");
+    expect(group.rotation.z.toFixed(2).replace("-0.00", "0.00")).toBe("0.00");
   });
 });
