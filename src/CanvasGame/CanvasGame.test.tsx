@@ -1,23 +1,25 @@
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import CanvasGame from "./CanvasGame.tsx";
-import {CanvasUseEffectProps, CanvasInterface} from "../CanvasInterface/CanvasInterface.tsx";
+import {CanvasUseEffectProps, CanvasBase} from "../CanvasBase/CanvasBase.tsx";
 import {
-  mock_CanvasGame_getRubikCubeImpl,
+  mock_CanvasBase_getRubikCubeImpl,
   mock_Three_PerspectiveCamera_updateProjectionMatrix,
   mock_Three_WebGLRenderer_setSize
 } from "../../vitest.setup.ts";
-import CubePreview from "../CubePreview/CubePreview.tsx";
 import * as THREE from "three";
+import RubikCube from "../RubikCube/RubikCube.tsx";
 
-CubePreview.getRubikCubeImpl = mock_CanvasGame_getRubikCubeImpl;
+CanvasBase.getRubikCubeImpl = mock_CanvasBase_getRubikCubeImpl;
 
-class CanvasLogicTest implements CanvasInterface {
+class CanvasLogicTest extends CanvasBase {
   framesStepped: number;
   mockedWidth: number;
   mockedHeight: number;
 
   constructor() {
+    super(vi.fn() as RubikCube, 3);
+
     this.framesStepped = 0;
     this.mockedWidth = -1;
     this.mockedHeight = -1;

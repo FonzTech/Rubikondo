@@ -2,11 +2,6 @@ import '@testing-library/jest-dom';
 import RubikCube from "./RubikCube.tsx";
 import * as THREE from "three";
 import {vi} from "vitest";
-import {
-  mock_RubikCube_advanceFrame,
-  mock_RubikCube_gameSizeChange,
-  mock_RubikCube_spawnFullCube
-} from "../../vitest.setup.ts";
 
 describe('cube preview logic', () => {
   [ true, false ].forEach((existentGroup) => {
@@ -76,7 +71,7 @@ describe('cube preview logic', () => {
     const mock_getCubeMesh = vi.fn();
 
     const group = {
-      rotation: new THREE.Vector3(1, 2, 3)
+      rotation: new THREE.Euler(1, 2, 3, "XYZ")
     };
 
     // First test
@@ -97,8 +92,8 @@ describe('cube preview logic', () => {
     rc.group = group;
     rc.advanceFrame(1);
 
-    expect(group.rotation.x).toBe(0.8);
-    expect(group.rotation.y).toBe(0.8);
-    expect(group.rotation.z).toBe(0);
+    expect(group.rotation.x.toFixed(2)).toBe("1.00");
+    expect(group.rotation.y.toFixed(2)).toBe("2.00");
+    expect(group.rotation.z.toFixed(2)).toBe("3.00");
   });
 });

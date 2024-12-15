@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import.meta.env.VITE_API_BASE_URL;
 
 class Utils {
   static readonly MESH_CUBE_PATH = "/cube.obj";
@@ -75,6 +76,18 @@ class Utils {
         uTexture: { value: texture }
       },
     });
+  }
+
+  static isDev(): boolean {
+    return process.env.NODE_ENV === "development";
+  }
+
+  static getAxesLength(): number {
+    return Utils.isDev() ? 15 : 0;
+  }
+
+  static getAssetBasePath(): string {
+    return window.location.origin;
   }
 }
 

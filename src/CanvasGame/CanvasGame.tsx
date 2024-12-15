@@ -1,12 +1,12 @@
 import * as React from 'react'
 import {useEffect, useRef} from "react";
 import * as THREE from "three";
-import { CanvasInterface } from "../CanvasInterface/CanvasInterface.tsx";
+import { CanvasBase } from "../CanvasBase/CanvasBase.tsx";
 import DraggableHandler from "../DraggableHandler/DraggableHandler.tsx";
 
 interface CanvasGameProps {
   addStyle: React.CSSProperties,
-  canvasLogicInstantiator: () => CanvasInterface,
+  canvasLogicInstantiator: () => CanvasBase,
   gameSize: number
 }
 
@@ -20,7 +20,7 @@ const CanvasGame: React.FC<CanvasGameProps> = ({
 
   // Store component ref
   const canvasRef = useRef<HTMLDivElement | null>(null);
-  const canvasLogic = useRef<CanvasInterface | null>(null);
+  const canvasLogic = useRef<CanvasBase | null>(null);
 
   const dragPoint = useRef<THREE.Vector2 | null>(null);
 
@@ -103,6 +103,9 @@ const CanvasGame: React.FC<CanvasGameProps> = ({
       camera.aspect = rect.width / rect.height;
       camera.updateProjectionMatrix();
       renderer.setSize(rect.width, rect.height);
+
+      // Move camera accordingly
+      canvasLogic.current!.gameSizeChange(gameSize);
     };
 
     // Add event listener

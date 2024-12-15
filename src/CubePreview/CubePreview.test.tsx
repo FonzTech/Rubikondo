@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom';
 import CubePreview from "./CubePreview.tsx";
-import {CanvasUseEffectProps} from "../CanvasInterface/CanvasInterface.tsx";
+import {CanvasBase, CanvasUseEffectProps} from "../CanvasBase/CanvasBase.tsx";
 import {
-  mock_CanvasGame_getRubikCubeImpl,
+  mock_CanvasBase_getRubikCubeImpl,
   mock_Global_requestAnimationFrame,
   mock_RubikCube_advanceFrame,
   mock_RubikCube_gameSizeChange,
@@ -13,11 +13,13 @@ import {
 import * as THREE from "three";
 import {vi} from "vitest";
 
-CubePreview.getRubikCubeImpl = mock_CanvasGame_getRubikCubeImpl;
+CanvasBase.getRubikCubeImpl = mock_CanvasBase_getRubikCubeImpl;
 
 describe('cube preview logic', () => {
-  it('game size camera distance', () => {
+  it('game size camera distance landscape', () => {
     const cp = new CubePreview();
+    cp.props = {} as CanvasUseEffectProps;
+    cp.props.camera = new THREE.PerspectiveCamera();
 
     cp.gameSize = 0;
     expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("0.40");
@@ -91,7 +93,14 @@ describe('cube preview logic', () => {
     const scene = new THREE.Scene();
     const texture = vi.fn();
 
-    const cubeMesh = vi.fn();
+    const clonedCubeMesh = {
+      traverse: vi.fn(),
+      position: new THREE.Vector3()
+    };
+
+    const cubeMesh = {
+      clone: () => clonedCubeMesh
+    };
 
     const cp = new CubePreview();
     cp.props = {scene: scene} as CanvasUseEffectProps;
@@ -132,7 +141,14 @@ describe('cube preview logic', () => {
     const scene = new THREE.Scene();
     const texture = vi.fn();
 
-    const cubeMesh = vi.fn();
+    const clonedCubeMesh = {
+      traverse: vi.fn(),
+      position: new THREE.Vector3()
+    };
+
+    const cubeMesh = {
+      clone: () => clonedCubeMesh
+    };
 
     const cp = new CubePreview();
     cp.props = {scene: scene} as CanvasUseEffectProps;
@@ -197,7 +213,7 @@ describe('cube preview logic', () => {
       clock: clock,
       scene: scene,
       camera: camera,
-      renderer: renderer,
+      renderer: renderer
     } as CanvasUseEffectProps);
 
     expect(cp.props).not.toBeNull();
@@ -216,7 +232,7 @@ describe('cube preview logic', () => {
     expect(mock_Three_WebGLRenderer_render).toHaveBeenCalledTimes(1);
   });
 
-  test('game size change without camera', () => {
+  test('game size change not triggering', () => {
     const mock_getCameraDistanceForGameSize = vi.fn();
 
     const cp = new CubePreview();
@@ -224,6 +240,18 @@ describe('cube preview logic', () => {
     cp.gameSizeChange(3);
 
     expect(cp.gameSize).toBe(3);
+    expect(mock_RubikCube_gameSizeChange).toHaveBeenCalledTimes(0);
+    expect(mock_getCameraDistanceForGameSize).toHaveBeenCalledTimes(0);
+  });
+
+  test('game size change without camera', () => {
+    const mock_getCameraDistanceForGameSize = vi.fn();
+
+    const cp = new CubePreview();
+    cp.getCameraDistanceForGameSize = mock_getCameraDistanceForGameSize;
+    cp.gameSizeChange(4);
+
+    expect(cp.gameSize).toBe(4);
     expect(mock_RubikCube_gameSizeChange).toHaveBeenCalledTimes(1);
     expect(mock_getCameraDistanceForGameSize).toHaveBeenCalledTimes(0);
   });
@@ -236,13 +264,13 @@ describe('cube preview logic', () => {
     cp.props = {
       clock: vi.fn(),
       scene: vi.fn(),
-      camera: new THREE.Camera(),
+      camera: new THREE.PerspectiveCamera(),
       render: vi.fn(),
       gameSize: 1
     };
-    cp.gameSizeChange(3);
+    cp.gameSizeChange(4);
 
-    expect(cp.gameSize).toBe(3);
+    expect(cp.gameSize).toBe(4);
     expect(cp.props!.camera.position.z).toBe(10);
     expect(mock_RubikCube_gameSizeChange).toHaveBeenCalledTimes(1);
     expect(mock_getCameraDistanceForGameSize).toHaveBeenCalledTimes(1);

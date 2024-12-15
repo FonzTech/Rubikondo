@@ -13,13 +13,17 @@ export const mock_RubikCube_spawnFullCube = vi.fn();
 export const mock_RubikCube_advanceFrame = vi.fn();
 export const mock_RubikCube_gameSizeChange = vi.fn();
 
-export const mock_CanvasGame_getRubikCubeImpl = vi.fn().mockImplementation(() => ({
+export const mock_CanvasBase_getRubikCubeImpl = vi.fn().mockImplementation(() => ({
   spawnFullCube: mock_RubikCube_spawnFullCube,
   advanceFrame: mock_RubikCube_advanceFrame,
-  gameSizeChange: mock_RubikCube_gameSizeChange
+  gameSizeChange: mock_RubikCube_gameSizeChange,
+  getNewGroup: vi.fn(),
+  dragState: {
+    autoRotate: null
+  }
 }));
 
-// USE LIKE THIS -> CubePreview.getRubikCubeImpl = mock_CanvasGame_getRubikCubeImpl;
+// USE LIKE THIS -> CanvasBase.getRubikCubeImpl = mock_CanvasBase_getRubikCubeImpl;
 
 // WebGLRenderer
 export const mock_Three_WebGLRenderer_setSize = vi.fn();
@@ -30,6 +34,7 @@ export const mock_Three_PerspectiveCamera_updateProjectionMatrix = vi.fn();
 
 // Scene
 export const mock_Three_Scene_add = vi.fn();
+export const mock_Three_Scene_remove = vi.fn();
 
 // ThreeJs Mock
 vi.mock('three', async () => {
@@ -45,10 +50,12 @@ vi.mock('three', async () => {
     })),
     PerspectiveCamera: vi.fn().mockImplementation(() => ({
       updateProjectionMatrix: mock_Three_PerspectiveCamera_updateProjectionMatrix,
-      position: new THREE.Vector3()
+      position: new THREE.Vector3(),
+      aspect: 1.0
     })),
     Scene: vi.fn().mockImplementation(() => ({
-      add: mock_Three_Scene_add
+      add: mock_Three_Scene_add,
+      remove: mock_Three_Scene_remove
     }))
   };
 });
