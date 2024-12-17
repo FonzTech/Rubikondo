@@ -93,8 +93,8 @@ describe('cube preview logic', () => {
     rc.group = group;
     rc.advanceFrame(5);
 
-    expect(group.rotation.x.toFixed(2)).toBe("0.04");
-    expect(group.rotation.y.toFixed(2)).toBe("0.04");
+    expect(group.rotation.x.toFixed(2)).toBe("0.03");
+    expect(group.rotation.y.toFixed(2)).toBe("0.03");
     expect(group.rotation.z.toFixed(2).replace("-0.00", "0.00")).toBe("0.00");
   });
 });

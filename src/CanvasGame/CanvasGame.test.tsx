@@ -45,7 +45,7 @@ class CanvasLogicTest extends CanvasBase {
 
   onDragging(point: THREE.Vector2, delta: THREE.Vector2) {}
 
-  onDragEnd() {}
+  onDragEnd(point: THREE.Vector2) {}
 }
 
 test('renders canvas preview', () => {

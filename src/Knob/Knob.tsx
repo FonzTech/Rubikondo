@@ -101,7 +101,7 @@ const Knob: React.FC<KnobProps> = ({
         return true;
       }
 
-      onMovementEnd(event: React.UIEvent<Document>): boolean {
+      onMovementEnd(event: React.UIEvent<Document>, pointX: number, pointY: number): boolean {
         if (centerPoint.current === null) {
           return false;
         }

@@ -59,7 +59,7 @@ export abstract class CanvasBase {
     this.rubikCube.onDragging(point, delta);
   }
 
-  onDragEnd() {
+  onDragEnd(point: Vector2) {
     this.startDragging = false;
     this.rubikCube.onDragEnd();
   }

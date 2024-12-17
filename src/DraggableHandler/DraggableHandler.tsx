@@ -52,7 +52,7 @@ abstract class DraggableHandler {
   // ----- DRAG END -----
 
   onDocumentMouseUp(event: React.MouseEvent<Document>) {
-    if (!this.onMovementEnd(event)) {
+    if (!this.onMovementEnd(event, event.clientX, event.clientY)) {
       return;
     }
 
@@ -60,8 +60,8 @@ abstract class DraggableHandler {
     document.removeEventListener("mouseup", this.onDocumentMouseUp);
   }
 
-  onTouchEnd(event: React.MouseEvent<Document>) {
-    if (!this.onMovementEnd(event)) {
+  onTouchEnd(event: React.TouchEvent<Document>) {
+    if (!this.onMovementEnd(event, event.touches[0].clientX, event.touches[0].clientY)) {
       return;
     }
 
@@ -75,7 +75,7 @@ abstract class DraggableHandler {
 
   abstract onMovementMove(event: React.UIEvent<Document>, pointX: number, pointY: number): boolean;
 
-  abstract onMovementEnd(event: React.UIEvent<Document>): boolean;
+  abstract onMovementEnd(event: React.UIEvent<Document>, pointX: number, pointY: number): boolean;
 }
 
 export default DraggableHandler;

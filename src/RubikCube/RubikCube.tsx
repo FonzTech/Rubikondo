@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import Utils from "../Utils/Utils.tsx";
+import {Vector2} from "three";
 
 interface RubikDragState {
   autoRotate: boolean | null,
@@ -10,7 +11,7 @@ interface RubikDragState {
 }
 
 class RubikCube {
-  static readonly MAX_ANIM_MULT_FACTOR = 50;
+  static readonly MAX_ANIM_MULT_FACTOR = 0.35;
   static readonly X_AXIS = new THREE.Vector3(1, 0, 0);
   static readonly Y_AXIS = new THREE.Vector3(0, 1, 0);
 
@@ -81,7 +82,7 @@ class RubikCube {
 
           const faceGroup = this.getNewGroup();
 
-          const clone = this.getCubeMesh(cube, texture, color);
+          const clone = this.getCubeMesh(cube, texture, color, `Cube_${key}`);
           clone.position.set(position.x, position.y, position.z);
           faceGroup.add(clone);
 
@@ -115,19 +116,19 @@ class RubikCube {
     if (this.group !== null && this.dragState.autoRotate !== null) {
       // Rotate only if user isn't rotating by his actions
       if (this.dragState.autoRotate) {
-        this.dragState.animMultFactory += 1.01;
+        this.dragState.animMultFactory += 0.005;
         if (this.dragState.animMultFactory > RubikCube.MAX_ANIM_MULT_FACTOR) {
           this.dragState.animMultFactory = RubikCube.MAX_ANIM_MULT_FACTOR;
         }
       } else {
-        this.dragState.animMultFactory -= 1.01;
+        this.dragState.animMultFactory -= 0.005;
         if (this.dragState.animMultFactory < 0) {
           this.dragState.animMultFactory = 0;
         }
       }
       if (this.dragState.animMultFactory > 0.000001) {
         const f = this.dragState.animMultFactory * dt;
-        this.rotateInScreenSpace(new THREE.Vector2(f, f));
+        this.rotateInScreenSpace(f, f);
       }
 
       // Log
@@ -154,10 +155,10 @@ class RubikCube {
   }
 
   onDragging(point: THREE.Vector2, delta: THREE.Vector2) {
-    this.rotateInScreenSpace(delta);
+    this.rotateFromMouseDelta(delta);
   }
 
-  onDragEnd() {
+  onDragEnd(point: Vector2) {
     if (this.dragState.autoRotate !== null) {
       this.dragState.autoRotate = true;
     }
@@ -171,7 +172,7 @@ class RubikCube {
     }
   }
 
-  getCubeMesh(cube: THREE.Group<THREE.Object3DEventMap>, texture: THREE.Texture, color: THREE.Color): THREE.Group<THREE.Object3DEventMap> {
+  getCubeMesh(cube: THREE.Group<THREE.Object3DEventMap>, texture: THREE.Texture, color: THREE.Color, meshName: string): THREE.Group<THREE.Object3DEventMap> {
     // Apply texture to mesh
     const mesh = cube.clone();
     mesh.traverse((child) => {
@@ -179,6 +180,7 @@ class RubikCube {
       if (child.isMesh) {
         const material = Utils.getMaterialForCube(this.lightPosition, texture, color);
         child.material = material;
+        child.name = meshName;
 
         this.materials.push(material);
       }
@@ -216,11 +218,14 @@ class RubikCube {
     }
   }
 
-  rotateInScreenSpace(delta: THREE.Vector2) {
-    // Rotate in screen space
+  rotateFromMouseDelta(delta: THREE.Vector2) {
     const deltaX = delta.x * 0.0075 * this.dragState.signX;
     const deltaY = delta.y * 0.0075;
 
+    this.rotateInScreenSpace(deltaX, deltaY);
+  }
+
+  rotateInScreenSpace(deltaX: number, deltaY: number) {
     this.dragState.angleX += deltaX;
     this.dragState.angleY += deltaY;
 
@@ -234,7 +239,7 @@ class RubikCube {
     newQuat.multiply(new THREE.Quaternion()
     .setFromAxisAngle(
       RubikCube.Y_AXIS,
-    deltaX
+      deltaX
     ));
 
     newQuat.multiply(new THREE.Quaternion()

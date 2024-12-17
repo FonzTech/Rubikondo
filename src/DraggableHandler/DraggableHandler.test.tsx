@@ -22,7 +22,7 @@ describe('draggable handler', () => {
         return true;
       }
 
-      onMovementEnd(event: React.UIEvent<Document>): boolean {
+      onMovementEnd(event: React.UIEvent<Document>, pointX: number, pointY: number): boolean {
         mock_onMovementEnd();
         return true;
       }

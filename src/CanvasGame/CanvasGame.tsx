@@ -33,7 +33,7 @@ const CanvasGame: React.FC<CanvasGameProps> = ({
       event.preventDefault();
 
       dragPoint.current = new THREE.Vector2(pointX, pointY);
-      canvasLogic.current!.onDragStart(new THREE.Vector2(0, 0));
+      canvasLogic.current!.onDragStart(new THREE.Vector2(pointX, pointY));
 
       return true;
     }
@@ -53,14 +53,14 @@ const CanvasGame: React.FC<CanvasGameProps> = ({
       return true;
     }
 
-    onMovementEnd(event: React.UIEvent<Document>): boolean {
+    onMovementEnd(event: React.UIEvent<Document>, pointX: number, pointY: number): boolean {
       if (canvasRef.current === null || dragPoint.current === null) {
         return false;
       }
       event.preventDefault();
 
       dragPoint.current = null;
-      canvasLogic.current!.onDragEnd();
+      canvasLogic.current!.onDragEnd(new THREE.Vector2(pointX, pointY));
 
       return true;
     }
