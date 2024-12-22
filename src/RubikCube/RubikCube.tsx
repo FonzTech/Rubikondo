@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import Utils from "../Utils/Utils.tsx";
+import {Utils, RubikShaderInfo} from "../Utils/Utils.tsx";
 import {Vector2} from "three";
 
 interface RubikDragState {
@@ -20,7 +20,7 @@ class RubikCube {
   group: THREE.Group;
   rotation: THREE.Quaternion;
   lightPosition: THREE.Vector3;
-  materials: THREE.ShaderMaterial[];
+  materials: Map<string, RubikShaderInfo>;
   cubeColors: Map<string, THREE.Color>;
 
   dragState: RubikDragState;
@@ -33,7 +33,7 @@ class RubikCube {
     this.group = new THREE.Group();
     this.rotation = new THREE.Quaternion();
     this.lightPosition = new THREE.Vector3(0, 0, 0);
-    this.materials = [];
+    this.materials = new Map<string, RubikShaderInfo>();
     this.cubeColors = new Map<string, THREE.Color>();
 
     this.dragState = {
@@ -54,7 +54,7 @@ class RubikCube {
 
     // Setup
     this.lightPosition.set(0, 0, this.gameSize);
-    this.materials = [];
+    this.materials.clear();
 
     // Build cube colors
     this.buildCubeColors();
@@ -178,11 +178,14 @@ class RubikCube {
     mesh.traverse((child) => {
       // Texturize mesh
       if (child.isMesh) {
-        const material = Utils.getMaterialForCube(this.lightPosition, texture, color);
-        child.material = material;
+        const shaderInfo: RubikShaderInfo = {
+          material: Utils.getMaterialForCube(this.lightPosition, texture, color),
+          selected: false
+        };
+        child.material = shaderInfo.material;
         child.name = meshName;
 
-        this.materials.push(material);
+        this.materials.set(meshName, shaderInfo);
       }
     });
     return mesh;

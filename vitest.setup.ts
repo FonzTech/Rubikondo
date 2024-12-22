@@ -12,15 +12,22 @@ global.requestAnimationFrame = mock_Global_requestAnimationFrame;
 export const mock_RubikCube_spawnFullCube = vi.fn();
 export const mock_RubikCube_advanceFrame = vi.fn();
 export const mock_RubikCube_gameSizeChange = vi.fn();
+export const mock_RubikCube_rotateInScreenSpace = vi.fn();
 
 export const mock_CanvasBase_getRubikCubeImpl = vi.fn().mockImplementation(() => ({
   spawnFullCube: mock_RubikCube_spawnFullCube,
   advanceFrame: mock_RubikCube_advanceFrame,
   gameSizeChange: mock_RubikCube_gameSizeChange,
+  rotateInScreenSpace: mock_RubikCube_rotateInScreenSpace,
   getNewGroup: vi.fn(),
   dragState: {
     autoRotate: null
-  }
+  },
+  rotation: new THREE.Quaternion(),
+  onDragStart: vi.fn(),
+  onDragging: vi.fn(),
+  onDragEnd: vi.fn(),
+  materials: new Map<string, any>()
 }));
 
 // USE LIKE THIS -> CanvasBase.getRubikCubeImpl = mock_CanvasBase_getRubikCubeImpl;

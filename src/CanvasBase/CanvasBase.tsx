@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import RubikCube from "../RubikCube/RubikCube.tsx";
-import Utils from "../Utils/Utils.tsx";
+import {Utils} from "../Utils/Utils.tsx";
 import {Vector2} from "three";
 
 export interface CanvasUseEffectProps {
@@ -25,8 +25,8 @@ export abstract class CanvasBase {
 
   startDragging: boolean;
 
-  static getRubikCubeImpl(): RubikCube {
-    return new RubikCube(Utils.DEFAULT_GAME_SIZE);
+  static getRubikCubeImpl(gameSize?: number): RubikCube {
+    return new RubikCube(gameSize || Utils.DEFAULT_GAME_SIZE);
   }
 
   constructor(rubikCube: RubikCube, gameSize: number) {
@@ -85,9 +85,24 @@ export abstract class CanvasBase {
     this.setCameraPosition();
 
     // Create axis for debug
-    if (Utils.getAxesLength() > 0) {
-      const axesHelper = new THREE.AxesHelper(Utils.getAxesLength());
-      props.scene.add(axesHelper);
+    const al = Utils.getAxesLength();
+    if (al > 0) {
+      const axesGroup = new THREE.Group();
+
+      const arrowPos = new THREE.Vector3( 0,0,0 );
+      const arrowSize = 0;
+
+      // Positive axes
+      axesGroup.add(new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), arrowPos, al, 0xFF0000, arrowSize, arrowSize));
+      axesGroup.add(new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), arrowPos, al, 0x00FF00, arrowSize, arrowSize));
+      axesGroup.add(new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), arrowPos, al, 0x0000FF, arrowSize, arrowSize));
+
+      // Negative axes
+      axesGroup.add(new THREE.ArrowHelper(new THREE.Vector3(-1, 0, 0), arrowPos, al, 0x600000, arrowSize, arrowSize));
+      axesGroup.add(new THREE.ArrowHelper(new THREE.Vector3(0, -1, 0), arrowPos, al, 0x006000, arrowSize, arrowSize));
+      axesGroup.add(new THREE.ArrowHelper(new THREE.Vector3(0, 0, -1), arrowPos, al, 0x000060, arrowSize, arrowSize));
+
+      props.scene.add(axesGroup);
     }
 
     // Start animation loop
@@ -119,9 +134,9 @@ export abstract class CanvasBase {
 
   getCameraDistanceForGameSize(): number {
     if (this.props!.camera.aspect < 1) {
-      return 5 + (this.gameSize - 2) * 2.3;
+      return 12 + (this.gameSize - 2) * 5.5;
     }
-    return 3 + (this.gameSize - 2) * 1.3;
+    return 7 + (this.gameSize - 2) * 3.5;
   }
 
   assetLoaded(): void {

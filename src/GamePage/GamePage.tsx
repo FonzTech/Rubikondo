@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {Container} from "react-bootstrap";
 import CanvasGame from "../CanvasGame/CanvasGame.tsx";
-import Utils from "../Utils/Utils.tsx";
+import {Utils} from "../Utils/Utils.tsx";
 import DebugOverlay from "../DebugOverlay/DebugOverlay.tsx";
 import CubeGame from "../CubeGame/CubeGame.tsx";
 
@@ -9,7 +9,7 @@ interface GameSizeInterface {
   gameSize: number;
 }
 
-const GameSize: React.FC<GameSizeInterface> = ({
+const GamePage: React.FC<GameSizeInterface> = ({
   gameSize = Utils.DEFAULT_GAME_SIZE
 }) => {
   if (gameSize == null) {
@@ -25,7 +25,7 @@ const GameSize: React.FC<GameSizeInterface> = ({
   return (
     <DebugOverlay
       childComponent={
-        <Container id="game-page" fluid className="vh-100 text-center d-flex flex-column" data-testid="game-page">
+        <Container id="game-page" fluid className="vh-100 text-center d-flex flex-column" data-testid="game-page" data-game-size={gameSize}>
           <div>
             <div className="d-none d-lg-block fs-3 pt-2 pb-2">
               <b>Hi! Welcome to Rubikondo!</b>
@@ -54,4 +54,4 @@ const GameSize: React.FC<GameSizeInterface> = ({
   );
 };
 
-export default GameSize;
+export default GamePage;

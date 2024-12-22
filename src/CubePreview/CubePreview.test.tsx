@@ -16,37 +16,72 @@ import {vi} from "vitest";
 CanvasBase.getRubikCubeImpl = mock_CanvasBase_getRubikCubeImpl;
 
 describe('cube preview logic', () => {
-  it('game size camera distance landscape', () => {
+  it('game size camera distance portrait', () => {
     const cp = new CubePreview();
     cp.props = {} as CanvasUseEffectProps;
     cp.props.camera = new THREE.PerspectiveCamera();
 
+    // Portrait
+    cp.props.camera.aspect = 0.5;
     cp.gameSize = 0;
-    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("0.40");
+    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("1.00");
 
     cp.gameSize = 1;
-    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("1.70");
+    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("6.50");
 
     cp.gameSize = 2;
-    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("3.00");
+    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("12.00");
 
     cp.gameSize = 3;
-    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("4.30");
+    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("17.50");
 
     cp.gameSize = 4;
-    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("5.60");
+    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("23.00");
 
     cp.gameSize = 5;
-    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("6.90");
+    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("28.50");
 
     cp.gameSize = 6;
-    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("8.20");
+    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("34.00");
 
     cp.gameSize = 7;
-    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("9.50");
+    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("39.50");
 
     cp.gameSize = 8;
-    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("10.80");
+    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("45.00");
+  });
+
+  it('game size camera distance landscape', () => {
+    const cp = new CubePreview();
+    cp.props = {} as CanvasUseEffectProps;
+    cp.props.camera = new THREE.PerspectiveCamera();
+    
+    cp.gameSize = 0;
+    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("0.00");
+
+    cp.gameSize = 1;
+    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("3.50");
+
+    cp.gameSize = 2;
+    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("7.00");
+
+    cp.gameSize = 3;
+    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("10.50");
+
+    cp.gameSize = 4;
+    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("14.00");
+
+    cp.gameSize = 5;
+    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("17.50");
+
+    cp.gameSize = 6;
+    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("21.00");
+
+    cp.gameSize = 7;
+    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("24.50");
+
+    cp.gameSize = 8;
+    expect(cp.getCameraDistanceForGameSize().toFixed(2)).toBe("28.00");
   });
 
   it('should return element bounding client rect', () => {

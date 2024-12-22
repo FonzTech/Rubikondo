@@ -1,7 +1,12 @@
 import * as THREE from "three";
 import.meta.env.VITE_API_BASE_URL;
 
-class Utils {
+export interface RubikShaderInfo {
+  material: THREE.ShaderMaterial
+  selected: boolean
+}
+
+export class Utils {
   static readonly MESH_CUBE_PATH = "/cube.obj";
   static readonly TEXTURE_CUBE_PATH = "/cube.png";
 
@@ -47,9 +52,14 @@ class Utils {
     uniform vec3 uFaceColor;
     uniform sampler2D uTexture;
     
+    uniform float uSelected;
+    uniform float uSelectedAnim;
+    
     varying vec3 vNormal;
     varying vec3 vPosition;
     varying vec2 vUv;
+    
+    const vec3 SELECTED_COLOR = vec3(1.0);
     
     void main() {
         // Normalize light direction
@@ -60,7 +70,9 @@ class Utils {
     
         // Texturize and Combine light color and texture color
         vec4 objectColor = texture2D(uTexture, vUv);
-        vec3 diffuse = diff * uLightColor * objectColor.rgb * uFaceColor;
+        
+        vec3 albedo = mix(objectColor.rgb * uFaceColor, SELECTED_COLOR, uSelected * sin(uSelectedAnim));
+        vec3 diffuse = albedo * diff * uLightColor;
     
         gl_FragColor = vec4(diffuse, 1.0);
     }`;
@@ -73,7 +85,9 @@ class Utils {
         uLightPosition: { value: lightPosition },
         uLightColor: { value: new THREE.Color(1, 1, 1) },
         uFaceColor: { value: faceColor },
-        uTexture: { value: texture }
+        uTexture: { value: texture },
+        uSelected: { value: 0.0 },
+        uSelectedAnim: { value: 0.0 }
       },
     });
   }
@@ -90,5 +104,3 @@ class Utils {
     return window.location.origin;
   }
 }
-
-export default Utils;

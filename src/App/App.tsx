@@ -3,7 +3,7 @@ import {Routes, Route, BrowserRouter} from "react-router-dom";
 import HomePage from "../HomePage/HomePage.tsx";
 import PageNotFound from "../PageNotFound/PageNotFound.tsx";
 import GamePage from "../GamePage/GamePage.tsx";
-import Utils from "../Utils/Utils.tsx";
+import {Utils} from "../Utils/Utils.tsx";
 
 function App() {
   const urlSearchParams = new URLSearchParams(window.location.search);

@@ -1,6 +1,8 @@
 import * as React from "react";
+import * as THREE from "three";
 
 abstract class DraggableHandler {
+  trackingTouch: THREE.Vector2;
 
   constructor() {
     this.onMouseDown = this.onMouseDown.bind(this);
@@ -11,6 +13,8 @@ abstract class DraggableHandler {
 
     this.onDocumentMouseUp = this.onDocumentMouseUp.bind(this);
     this.onTouchEnd = this.onTouchEnd.bind(this);
+
+    this.trackingTouch = new THREE.Vector2(-100, -100);
   }
 
   // ----- DRAG START -----
@@ -32,6 +36,8 @@ abstract class DraggableHandler {
       return;
     }
 
+    this.trackingTouch.set(event.touches[0].clientX, event.touches[0].clientY);
+
     document.addEventListener("touchmove", this.onTouchMove, { passive: false });
     document.addEventListener("touchend", this.onTouchEnd, { passive: false });
   }
@@ -47,6 +53,8 @@ abstract class DraggableHandler {
       return;
     }
     this.onMovementMove(event, event.touches[0].clientX, event.touches[0].clientY);
+
+    this.trackingTouch.set(event.touches[0].clientX, event.touches[0].clientY);
   }
 
   // ----- DRAG END -----
@@ -61,7 +69,7 @@ abstract class DraggableHandler {
   }
 
   onTouchEnd(event: React.TouchEvent<Document>) {
-    if (!this.onMovementEnd(event, event.touches[0].clientX, event.touches[0].clientY)) {
+    if (!this.onMovementEnd(event, this.trackingTouch.x, this.trackingTouch.y)) {
       return;
     }
 
