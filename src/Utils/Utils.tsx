@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import.meta.env.VITE_API_BASE_URL;
 
-export interface RubikShaderInfo {
+export interface RubikInfo {
   material: THREE.ShaderMaterial
   selected: boolean
 }
@@ -102,5 +102,13 @@ export class Utils {
 
   static getAssetBasePath(): string {
     return window.location.origin;
+  }
+
+  static getCubeKey(faceIndex: number, x: number, y: number): string {
+    return `${faceIndex}_${x}_${y}`;
+  }
+
+  static getCubeKeyForGame(faceIndex: number, x: number, y: number): string {
+    return "Cube_" + Utils.getCubeKey(faceIndex, x, y);
   }
 }

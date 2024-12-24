@@ -61,7 +61,7 @@ export abstract class CanvasBase {
 
   onDragEnd(point: Vector2) {
     this.startDragging = false;
-    this.rubikCube.onDragEnd();
+    this.rubikCube.onDragEnd(point);
   }
 
   getBoundingClientRect(element: HTMLElement): DOMRect {

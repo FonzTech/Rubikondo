@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import {Utils, RubikShaderInfo} from "../Utils/Utils.tsx";
+import {Utils, RubikInfo} from "../Utils/Utils.tsx";
 import {Vector2} from "three";
 
 interface RubikDragState {
@@ -20,7 +20,7 @@ class RubikCube {
   group: THREE.Group;
   rotation: THREE.Quaternion;
   lightPosition: THREE.Vector3;
-  materials: Map<string, RubikShaderInfo>;
+  rubikInfos: Map<string, RubikInfo>;
   cubeColors: Map<string, THREE.Color>;
 
   dragState: RubikDragState;
@@ -33,7 +33,7 @@ class RubikCube {
     this.group = new THREE.Group();
     this.rotation = new THREE.Quaternion();
     this.lightPosition = new THREE.Vector3(0, 0, 0);
-    this.materials = new Map<string, RubikShaderInfo>();
+    this.rubikInfos = new Map<string, RubikInfo>();
     this.cubeColors = new Map<string, THREE.Color>();
 
     this.dragState = {
@@ -54,7 +54,7 @@ class RubikCube {
 
     // Setup
     this.lightPosition.set(0, 0, this.gameSize);
-    this.materials.clear();
+    this.rubikInfos.clear();
 
     // Build cube colors
     this.buildCubeColors();
@@ -74,7 +74,7 @@ class RubikCube {
             offset + this.gameSize
           );
 
-          const key = `${fi}_${x}_${y}`;
+          const key = Utils.getCubeKey(fi, x, y);
           const color = this.cubeColors.get(key);
           if (!color) {
             throw new Error(`Could not get color for face ${key}`);
@@ -82,7 +82,7 @@ class RubikCube {
 
           const faceGroup = this.getNewGroup();
 
-          const clone = this.getCubeMesh(cube, texture, color, `Cube_${key}`);
+          const clone = this.getCubeMesh(cube, texture, color, Utils.getCubeKeyForGame(fi, x, y));
           clone.position.set(position.x, position.y, position.z);
           faceGroup.add(clone);
 
@@ -178,14 +178,14 @@ class RubikCube {
     mesh.traverse((child) => {
       // Texturize mesh
       if (child.isMesh) {
-        const shaderInfo: RubikShaderInfo = {
+        const shaderInfo: RubikInfo = {
           material: Utils.getMaterialForCube(this.lightPosition, texture, color),
           selected: false
         };
         child.material = shaderInfo.material;
         child.name = meshName;
 
-        this.materials.set(meshName, shaderInfo);
+        this.rubikInfos.set(meshName, shaderInfo);
       }
     });
     return mesh;
@@ -213,7 +213,7 @@ class RubikCube {
       for (let x = 0; x < limit; ++x) {
         for (let y = 0; y < limit; ++y) {
           const index = Math.floor(Math.random() * colors.length);
-          const key = `${fi}_${x}_${y}`;
+          const key = Utils.getCubeKey(fi, x, y);
           this.cubeColors.set(key, colors[index]);
           colors.splice(index, 1);
         }
