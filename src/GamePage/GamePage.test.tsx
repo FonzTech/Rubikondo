@@ -4,7 +4,7 @@ import GamePage from "./GamePage.tsx";
 
 describe('renders game page', () => {
   it('game size correct', () => {
-    render(<GamePage gameSize={5}/>);
+    render(<GamePage gameSize={5} startNewGame={true} />);
 
     const page = screen.getByTestId("game-page");
     expect(page).toBeInTheDocument();
@@ -15,13 +15,27 @@ describe('renders game page', () => {
   });
 
   it('game size incorrect', () => {
-    expect(() => render(<GamePage gameSize={-2}/>)).toThrow();
-    expect(() => render(<GamePage gameSize={-1}/>)).toThrow();
-    expect(() => render(<GamePage gameSize={0}/>)).toThrow();
-    expect(() => render(<GamePage gameSize={1}/>)).toThrow();
+    expect(() => render(<GamePage gameSize={-2} startNewGame={false}/>)).toThrow();
+    expect(() => render(<GamePage gameSize={-1} startNewGame={false}/>)).toThrow();
+    expect(() => render(<GamePage gameSize={0} startNewGame={false}/>)).toThrow();
+    expect(() => render(<GamePage gameSize={1} startNewGame={false}/>)).toThrow();
 
-    expect(() => render(<GamePage gameSize={9}/>)).toThrow();
-    expect(() => render(<GamePage gameSize={10}/>)).toThrow();
-    expect(() => render(<GamePage gameSize={11}/>)).toThrow();
+    expect(() => render(<GamePage gameSize={9} startNewGame={false}/>)).toThrow();
+    expect(() => render(<GamePage gameSize={10} startNewGame={false}/>)).toThrow();
+    expect(() => render(<GamePage gameSize={11} startNewGame={false}/>)).toThrow();
+  });
+
+  it('modal tutorial present', () => {
+    render(<GamePage gameSize={5} startNewGame={true} />);
+
+    const modalTutorial = screen.getByTestId("modal-tutorial");
+    expect(modalTutorial).toBeInTheDocument();
+  });
+
+  it('modal tutorial absent', () => {
+    render(<GamePage gameSize={5} startNewGame={false} />);
+
+    const modalTutorial = screen.queryByTestId("modal-tutorial");
+    expect(modalTutorial).not.toBeInTheDocument();
   });
 });

@@ -43,10 +43,12 @@ export class Utils {
         vPosition = (modelViewMatrix * vec4(position, 1.0)).xyz;
         vUv = uv;
         
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position * 0.5, 1.0);
     }`;
 
   static readonly CUBE_FRAGMENT_SHADER = `
+    #define _DEBUG 0
+     
     uniform vec3 uLightPosition;
     uniform vec3 uLightColor;
     uniform vec3 uFaceColor;
@@ -71,8 +73,19 @@ export class Utils {
         // Texturize and Combine light color and texture color
         vec4 objectColor = texture2D(uTexture, vUv);
         
-        vec3 albedo = mix(objectColor.rgb * uFaceColor, SELECTED_COLOR, uSelected * sin(uSelectedAnim));
+        float _aus = min(uSelected * 2.0, 1.0);
+        
+        #if _DEBUG == 1
+        float _v = 1.0;
+        vec3 albedo = mix(objectColor.rgb * uFaceColor, SELECTED_COLOR, _aus * uSelectedAnim);
+        if (uSelected > 0.75) {
+          albedo.rgb = vec3(1.0, 0.0, 1.0);
+        }
+        vec3 diffuse = albedo;
+        #else
+        vec3 albedo = mix(objectColor.rgb * uFaceColor, SELECTED_COLOR, _aus * sin(uSelectedAnim));
         vec3 diffuse = albedo * diff * uLightColor;
+        #endif
     
         gl_FragColor = vec4(diffuse, 1.0);
     }`;
@@ -110,5 +123,34 @@ export class Utils {
 
   static getCubeKeyForGame(faceIndex: number, x: number, y: number): string {
     return "Cube_" + Utils.getCubeKey(faceIndex, x, y);
+  }
+
+  static generateCubeTextureForDebug(baseTexture: THREE.Texture, text: string): THREE.CanvasTexture {
+    // Create a canvas to draw on
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      throw new Error("Could not get canvas context");
+    }
+
+    // Set the size of the canvas
+    canvas.width = 128;
+    canvas.height = 128;
+
+    // Draw the base image onto the canvas first
+    ctx.drawImage(baseTexture.image, 0, 0, canvas.width, canvas.height);
+
+    // Set text styles
+    ctx.font = '12px sans-serif';
+    ctx.fillStyle = 'black';
+
+    // Draw the text on the canvas
+    ctx.fillText(text, 30, 50);
+
+    // Update the texture with the new canvas content
+    // document.body.appendChild(canvas);
+    const dynamicTexture = new THREE.CanvasTexture(canvas);
+    dynamicTexture.needsUpdate = true;
+    return dynamicTexture;
   }
 }

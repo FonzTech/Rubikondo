@@ -11,6 +11,7 @@ interface RubikDragState {
 }
 
 class RubikCube {
+  static readonly APPLY_DEBUG_TEXTURE = true;
   static readonly MAX_ANIM_MULT_FACTOR = 0.35;
   static readonly X_AXIS = new THREE.Vector3(1, 0, 0);
   static readonly Y_AXIS = new THREE.Vector3(0, 1, 0);
@@ -59,7 +60,15 @@ class RubikCube {
     // Build cube colors
     this.buildCubeColors();
 
-    // Create group of six cubes
+    // Utility function
+    const _rotateAroundPoint = (object: THREE.Group<THREE.Object3DEventMap>, point: THREE.Vector3, axis: THREE.Vector3, angle: number) => {
+      const offset = new THREE.Vector3().subVectors(object.position, point);
+      offset.applyAxisAngle(axis, angle);
+      object.position.copy(point).add(offset);
+      object.rotateOnAxis(axis, angle);
+    };
+
+    // Create group of "N-squared" cubes
     this.group = this.getNewGroup();
 
     const limit = this.gameSize;
@@ -80,11 +89,12 @@ class RubikCube {
             throw new Error(`Could not get color for face ${key}`);
           }
 
-          const faceGroup = this.getNewGroup();
+          const _texture = RubikCube.APPLY_DEBUG_TEXTURE ?
+            Utils.generateCubeTextureForDebug(texture, key) :
+            texture;
 
-          const clone = this.getCubeMesh(cube, texture, color, Utils.getCubeKeyForGame(fi, x, y));
+          const clone = this.getCubeMesh(cube, _texture!, color, Utils.getCubeKeyForGame(fi, x, y));
           clone.position.set(position.x, position.y, position.z);
-          faceGroup.add(clone);
 
           let axis = new THREE.Vector3();
           let angle = 0;
@@ -101,9 +111,9 @@ class RubikCube {
             throw new Error(`Invalid face index ${fi}`);
           }
 
-          faceGroup.rotateOnAxis(axis, angle);
+          _rotateAroundPoint(clone, new THREE.Vector3(0, 0, 0), axis, angle);
 
-          this.group.add(faceGroup);
+          this.group.add(clone);
         }
       }
     }

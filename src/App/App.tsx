@@ -25,7 +25,7 @@ function App() {
       <Routes>
         <Route path="*" element={<PageNotFound />} />
         <Route path="/" element={<HomePage />} />
-        <Route path="/game" element={<GamePage gameSize={size} />} />
+        <Route path="/game" element={<GamePage gameSize={size} startNewGame={false} />} />
       </Routes>
     </BrowserRouter>
   )
