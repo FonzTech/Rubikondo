@@ -81,16 +81,47 @@ describe('cube game implementation', () => {
 
   it('select cube row', () => {
     const cp = new CubeGame(6);
-    const result = cp.selectCubeRow(1, 2, 3);
 
-    expect(result).toStrictEqual(new Set<string>([
-      Utils.getCubeKeyForGame(1, 0, 3),
-      Utils.getCubeKeyForGame(1, 1, 3),
-      Utils.getCubeKeyForGame(1, 2, 3),
+    expect(cp.selectCubeRow(0, 1, 2)).toStrictEqual(new Set<string>([
+      "Cube_0_0_2","Cube_0_1_2","Cube_0_2_2","Cube_0_1_0","Cube_0_1_1","Cube_1_0_2",
+      "Cube_1_1_2","Cube_1_2_2","Cube_2_0_2","Cube_2_1_2","Cube_2_2_2","Cube_2_1_0",
+      "Cube_2_1_1","Cube_3_0_2","Cube_3_1_2","Cube_3_2_2","Cube_4_1_0","Cube_4_1_1",
+      "Cube_4_1_2","Cube_5_1_0","Cube_5_1_1","Cube_5_1_2"
+    ]));
 
-      Utils.getCubeKeyForGame(1, 2, 0),
-      Utils.getCubeKeyForGame(1, 2, 1),
-      Utils.getCubeKeyForGame(1, 2, 2)
+    expect(cp.selectCubeRow(1, 1, 2)).toStrictEqual(new Set<string>([
+      "Cube_0_0_2","Cube_0_1_2","Cube_0_2_2","Cube_1_0_2","Cube_1_1_2","Cube_1_2_2",
+      "Cube_1_1_0","Cube_1_1_1","Cube_2_0_2","Cube_2_1_2","Cube_2_2_2","Cube_3_0_2",
+      "Cube_3_1_2","Cube_3_2_2","Cube_3_1_0","Cube_3_1_1","Cube_4_0_1","Cube_4_1_1",
+      "Cube_4_2_1","Cube_5_0_1","Cube_5_1_1","Cube_5_2_1"
+    ]));
+
+    expect(cp.selectCubeRow(2, 1, 2)).toStrictEqual(new Set<string>([
+      "Cube_0_0_2","Cube_0_1_2","Cube_0_2_2","Cube_0_1_0","Cube_0_1_1","Cube_1_0_2",
+      "Cube_1_1_2","Cube_1_2_2","Cube_2_0_2","Cube_2_1_2","Cube_2_2_2","Cube_2_1_0",
+      "Cube_2_1_1","Cube_3_0_2","Cube_3_1_2","Cube_3_2_2","Cube_4_1_0","Cube_4_1_1",
+      "Cube_4_1_2","Cube_5_1_0","Cube_5_1_1","Cube_5_1_2"
+    ]));
+
+    expect(cp.selectCubeRow(3, 1, 2)).toStrictEqual(new Set<string>([
+      "Cube_0_0_2","Cube_0_1_2","Cube_0_2_2","Cube_1_0_2","Cube_1_1_2","Cube_1_2_2",
+      "Cube_1_1_0","Cube_1_1_1","Cube_2_0_2","Cube_2_1_2","Cube_2_2_2","Cube_3_0_2",
+      "Cube_3_1_2","Cube_3_2_2","Cube_3_1_0","Cube_3_1_1","Cube_4_0_1","Cube_4_1_1",
+      "Cube_4_2_1","Cube_5_0_1","Cube_5_1_1","Cube_5_2_1"
+    ]));
+
+    expect(cp.selectCubeRow(4, 1, 2)).toStrictEqual(new Set<string>([
+      "Cube_0_0_0","Cube_0_0_1","Cube_0_0_2","Cube_1_1_0","Cube_1_1_1","Cube_1_1_2",
+      "Cube_2_2_0","Cube_2_2_1","Cube_2_2_2","Cube_3_1_0","Cube_3_1_1","Cube_3_1_2",
+      "Cube_4_0_0","Cube_4_0_1","Cube_4_0_2","Cube_4_1_2","Cube_4_2_2","Cube_5_0_0",
+      "Cube_5_0_1","Cube_5_0_2","Cube_5_1_0","Cube_5_2_0"
+    ]));
+
+    expect(cp.selectCubeRow(5, 1, 2)).toStrictEqual(new Set<string>([
+      "Cube_0_2_0","Cube_0_2_1","Cube_0_2_2","Cube_1_1_0","Cube_1_1_1","Cube_1_1_2",
+      "Cube_2_0_0","Cube_2_0_1","Cube_2_0_2","Cube_3_1_0","Cube_3_1_1","Cube_3_1_2",
+      "Cube_4_2_0","Cube_4_2_1","Cube_4_2_2","Cube_4_0_0","Cube_4_1_0","Cube_5_2_0",
+      "Cube_5_2_1","Cube_5_2_2","Cube_5_0_2","Cube_5_1_2"
     ]));
   });
 

@@ -155,7 +155,7 @@ class CubeGame extends CanvasBase {
     const name = object.name;
     const [ _, faceIndex, x, y ] = name.split("_").map(v => parseInt(v));
     const selecteds = this.selectCubeRow(faceIndex, x, y);
-    console.log(`Selected object type is ${object.type} and name is ${name} and I select ${selecteds}`);
+    console.log(`Selected object type is ${object.type} and name is ${name} and I select`, selecteds);
 
     this.selectedAnim = 0;
 
@@ -185,24 +185,227 @@ class CubeGame extends CanvasBase {
   selectCubeRow(faceIndex: number, x: number, y: number): Set<string> {
     const names = new Set<string>();
 
-    const hors = new Map<number, Array<THREE.Vector2>>();
-    const vers = new Map<number, Array<THREE.Vector2>>();
+    const items = new Map<number, Set<THREE.Vector2>>();
+    [0, 1, 2, 3, 4, 5].forEach((fi) => items.set(fi, new Set<THREE.Vector2>()));
+
+    const _add =
+      (faceIndex: number, ...messages: THREE.Vector2[]) =>
+        messages.forEach(v => items.get(faceIndex)!.add(v));
 
     switch (faceIndex) {
       case 0:
         [0, 1, 2, 3].forEach((fi) => {
-          hors.set(fi, [
+          _add(fi,
             new THREE.Vector2(0, y),
             new THREE.Vector2(1, y),
             new THREE.Vector2(2, y)
-          ]);
+          );
         });
-        [0, 2, 4, 5].forEach((fi) => {
-          vers.set(fi, [
+        [0, 4, 5].forEach((fi) => {
+          _add(fi,
             new THREE.Vector2(x, 0),
             new THREE.Vector2(x, 1),
             new THREE.Vector2(x, 2)
-          ]);
+          );
+        });
+        [2].forEach((fi) => {
+          _add(fi,
+            new THREE.Vector2(2 - x, 0),
+            new THREE.Vector2(2 - x, 1),
+            new THREE.Vector2(2 - x, 2)
+          );
+        });
+        break;
+      case 1:
+        [0, 1, 2, 3].forEach((fi) => {
+          _add(fi,
+            new THREE.Vector2(0, y),
+            new THREE.Vector2(1, y),
+            new THREE.Vector2(2, y)
+          );
+        });
+        [1].forEach((fi) => {
+          _add(fi,
+            new THREE.Vector2(x, 0),
+            new THREE.Vector2(x, 1),
+            new THREE.Vector2(x, 2)
+          );
+        });
+        [3].forEach((fi) => {
+          _add(fi,
+            new THREE.Vector2(2 - x, 0),
+            new THREE.Vector2(2 - x, 1),
+            new THREE.Vector2(2 - x, 2)
+          );
+        });
+        [4].forEach((fi) => {
+          _add(fi,
+            new THREE.Vector2(0, 2 - x),
+            new THREE.Vector2(1, 2 - x),
+            new THREE.Vector2(2, 2 - x)
+          );
+        });
+        [5].forEach((fi) => {
+          _add(fi,
+            new THREE.Vector2(0, x),
+            new THREE.Vector2(1, x),
+            new THREE.Vector2(2, x)
+          );
+        });
+        break;
+      case 2:
+        [0, 1, 2, 3].forEach((fi) => {
+          _add(fi,
+            new THREE.Vector2(0, y),
+            new THREE.Vector2(1, y),
+            new THREE.Vector2(2, y)
+          );
+        });
+        [0].forEach((fi) => {
+          _add(fi,
+            new THREE.Vector2(2 - x, 0),
+            new THREE.Vector2(2 - x, 1),
+            new THREE.Vector2(2 - x, 2)
+          );
+        });
+        [2].forEach((fi) => {
+          _add(fi,
+            new THREE.Vector2(x, 0),
+            new THREE.Vector2(x, 1),
+            new THREE.Vector2(x, 2)
+          );
+        });
+        [4, 5].forEach((fi) => {
+          _add(fi,
+            new THREE.Vector2(2 - x, 0),
+            new THREE.Vector2(2 - x, 1),
+            new THREE.Vector2(2 - x, 2)
+          );
+        });
+        break;
+      case 3:
+        [0, 1, 2, 3].forEach((fi) => {
+          _add(fi,
+            new THREE.Vector2(0, y),
+            new THREE.Vector2(1, y),
+            new THREE.Vector2(2, y)
+          );
+        });
+        [1].forEach((fi) => {
+          _add(fi,
+            new THREE.Vector2(2 - x, 0),
+            new THREE.Vector2(2 - x, 1),
+            new THREE.Vector2(2 - x, 2)
+          );
+        });
+        [3].forEach((fi) => {
+          _add(fi,
+            new THREE.Vector2(x, 0),
+            new THREE.Vector2(x, 1),
+            new THREE.Vector2(x, 2)
+          );
+        });
+        [4].forEach((fi) => {
+          _add(fi,
+            new THREE.Vector2(0, x),
+            new THREE.Vector2(1, x),
+            new THREE.Vector2(2, x)
+          );
+        });
+        [5].forEach((fi) => {
+          _add(fi,
+            new THREE.Vector2(0, 2 - x),
+            new THREE.Vector2(1, 2 - x),
+            new THREE.Vector2(2, 2 - x)
+          );
+        });
+        break;
+      case 4:
+        [0, 4, 5].forEach((fi) => {
+          _add(fi,
+            new THREE.Vector2(2 - y, 0),
+            new THREE.Vector2(2 - y, 1),
+            new THREE.Vector2(2 - y, 2)
+          );
+        });
+        [2].forEach((fi) => {
+          _add(fi,
+            new THREE.Vector2(y, 0),
+            new THREE.Vector2(y, 1),
+            new THREE.Vector2(y, 2)
+          );
+        });
+        [4].forEach((fi) => {
+          _add(fi,
+            new THREE.Vector2(0, y),
+            new THREE.Vector2(1, y),
+            new THREE.Vector2(2, y)
+          );
+        });
+        [5].forEach((fi) => {
+          _add(fi,
+            new THREE.Vector2(0, 2 - y),
+            new THREE.Vector2(1, 2 - y),
+            new THREE.Vector2(2, 2 - y)
+          );
+        });
+        [1].forEach((fi) => {
+          _add(fi,
+            new THREE.Vector2(x, 0),
+            new THREE.Vector2(x, 1),
+            new THREE.Vector2(x, 2)
+          );
+        });
+        [3].forEach((fi) => {
+          _add(fi,
+            new THREE.Vector2(2 - x, 0),
+            new THREE.Vector2(2 - x, 1),
+            new THREE.Vector2(2 - x, 2)
+          );
+        });
+        break;
+      case 5:
+        [0, 4, 5].forEach((fi) => {
+          _add(fi,
+            new THREE.Vector2(y, 0),
+            new THREE.Vector2(y, 1),
+            new THREE.Vector2(y, 2)
+          );
+        });
+        [2].forEach((fi) => {
+          _add(fi,
+            new THREE.Vector2(2 - y, 0),
+            new THREE.Vector2(2 - y, 1),
+            new THREE.Vector2(2 - y, 2)
+          );
+        });
+        [4].forEach((fi) => {
+          _add(fi,
+            new THREE.Vector2(0, 2 - y),
+            new THREE.Vector2(1, 2 - y),
+            new THREE.Vector2(2, 2 - y)
+          );
+        });
+        [5].forEach((fi) => {
+          _add(fi,
+            new THREE.Vector2(0, y),
+            new THREE.Vector2(1, y),
+            new THREE.Vector2(2, y)
+          );
+        });
+        [1].forEach((fi) => {
+          _add(fi,
+            new THREE.Vector2(x, 0),
+            new THREE.Vector2(x, 1),
+            new THREE.Vector2(x, 2)
+          );
+        });
+        [3].forEach((fi) => {
+          _add(fi,
+            new THREE.Vector2(2 - x, 0),
+            new THREE.Vector2(2 - x, 1),
+            new THREE.Vector2(2 - x, 2)
+          );
         });
         break;
       default:
@@ -210,20 +413,13 @@ class CubeGame extends CanvasBase {
     }
 
     for (let fi = 0; fi < 6; ++fi) {
-      if (hors.has(fi)) {
-        const hor = hors.get(fi)!;
-        names.add(Utils.getCubeKeyForGame(fi, hor[0].x, hor[0].y));
-        names.add(Utils.getCubeKeyForGame(fi, hor[1].x, hor[1].y));
-        names.add(Utils.getCubeKeyForGame(fi, hor[2].x, hor[2].y));
-      }
-
-      if (vers.has(fi)) {
-        const ver = vers.get(fi)!;
-        names.add(Utils.getCubeKeyForGame(fi, ver[0].x, ver[0].y));
-        names.add(Utils.getCubeKeyForGame(fi, ver[1].x, ver[1].y));
-        names.add(Utils.getCubeKeyForGame(fi, ver[2].x, ver[2].y));
-      }
+      items.get(fi)!.forEach((v) => {
+        names.add(Utils.getCubeKeyForGame(fi, v.x, v.y));
+        names.add(Utils.getCubeKeyForGame(fi, v.x, v.y));
+        names.add(Utils.getCubeKeyForGame(fi, v.x, v.y));
+      });
     }
+    console.log("names", names);
 
     return names;
   }
