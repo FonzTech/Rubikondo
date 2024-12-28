@@ -2,6 +2,8 @@ import * as React from "react";
 import * as THREE from "three";
 
 abstract class DraggableHandler {
+  static readonly MOUSE_BUTTON_LEFT = 0;
+
   trackingTouch: THREE.Vector2;
 
   constructor() {
@@ -20,6 +22,10 @@ abstract class DraggableHandler {
   // ----- DRAG START -----
 
   onMouseDown(event: React.MouseEvent<HTMLElement>) {
+    if (event.button !== DraggableHandler.MOUSE_BUTTON_LEFT) {
+      return;
+    }
+
     if (!this.onMovementStart(event, event.clientX, event.clientY)) {
       return;
     }
@@ -45,6 +51,10 @@ abstract class DraggableHandler {
   // ----- DRAG MOVE -----
 
   onDocumentMouseOver(event: React.MouseEvent<Document>) {
+    if (event.button !== DraggableHandler.MOUSE_BUTTON_LEFT) {
+      return;
+    }
+
     this.onMovementMove(event, event.clientX, event.clientY);
   }
 
@@ -60,6 +70,10 @@ abstract class DraggableHandler {
   // ----- DRAG END -----
 
   onDocumentMouseUp(event: React.MouseEvent<Document>) {
+    if (event.button !== DraggableHandler.MOUSE_BUTTON_LEFT) {
+      return;
+    }
+
     if (!this.onMovementEnd(event, event.clientX, event.clientY)) {
       return;
     }

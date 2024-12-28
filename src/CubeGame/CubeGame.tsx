@@ -97,6 +97,7 @@ class CubeGame extends CanvasBase {
   onDragging(point: Vector2, delta: Vector2) {
     if (this.selectingInfo.status) {
       if (this.computeGesture(point)) {
+        console.log("Computed gesture is:", this.selectingInfo.direction);
         this.selectingInfo.status = false;
         this.deselectCubeFaces();
       }
@@ -189,10 +190,81 @@ class CubeGame extends CanvasBase {
     [0, 1, 2, 3, 4, 5].forEach((fi) => items.set(fi, new Set<THREE.Vector2>()));
 
     const _add =
-      (faceIndex: number, ...messages: THREE.Vector2[]) =>
-        messages.forEach(v => items.get(faceIndex)!.add(v));
+      (faceIndex: number, values: Array<THREE.Vector2>) =>
+        values.forEach(v => items.get(faceIndex)!.add(v));
+
+    const _inc = (fv: number, axisToFill: "x" | "y") =>
+      new Array<THREE.Vector2>(this.gameSize)
+        .fill(new THREE.Vector2(fv, fv))
+        .map((v, index) => v.clone().setComponent(axisToFill === "x" ? 0 : 1, index));
 
     switch (faceIndex) {
+      case 0:
+        _add(0, _inc(y, "x"));
+        _add(1, _inc(y, "x"));
+        _add(2, _inc(y, "x"));
+        _add(3, _inc(y, "x"));
+
+        _add(0, _inc(x, "y"));
+        _add(2, _inc(2 - x, "y"));
+        _add(4, _inc(x, "y"));
+        _add(5, _inc(x, "y"));
+        break;
+      case 1:
+        _add(0, _inc(y, "x"));
+        _add(1, _inc(y, "x"));
+        _add(2, _inc(y, "x"));
+        _add(3, _inc(y, "x"));
+
+        _add(1, _inc(x, "y"));
+        _add(3, _inc(2 - x, "y"));
+        _add(4, _inc(2 - x, "x"));
+        _add(5, _inc(x, "x"));
+        break;
+      case 2:
+        _add(0, _inc(y, "x"));
+        _add(1, _inc(y, "x"));
+        _add(2, _inc(y, "x"));
+        _add(3, _inc(y, "x"));
+
+        _add(0, _inc(2 - x, "y"));
+        _add(2, _inc(x, "y"));
+        _add(4, _inc(2 - x, "y"));
+        _add(5, _inc(2 - x, "y"));
+        break;
+      case 3:
+        _add(0, _inc(y, "x"));
+        _add(1, _inc(y, "x"));
+        _add(2, _inc(y, "x"));
+        _add(3, _inc(y, "x"));
+
+        _add(1, _inc(2 - x, "y"));
+        _add(3, _inc(x, "y"));
+        _add(4, _inc(x, "x"));
+        _add(5, _inc(2 - x, "x"));
+        break;
+      case 4:
+        _add(0, _inc(x, "y"));
+        _add(2, _inc(2 - x, "y"));
+        _add(4, _inc(x, "y"));
+        _add(5, _inc(x, "y"));
+
+        _add(1, _inc(x, "y"));
+        _add(3, _inc(2 - x, "y"));
+        _add(4, _inc(y, "x"));
+        _add(5, _inc(2 - y, "x"));
+        break;
+      case 5:
+        _add(0, _inc(x, "y"));
+        _add(2, _inc(2 - x, "y"));
+        _add(4, _inc(x, "y"));
+        _add(5, _inc(x, "y"));
+
+        _add(1, _inc(x, "y"));
+        _add(3, _inc(2 - x, "y"));
+        _add(4, _inc(2 - y, "x"));
+        _add(5, _inc(y, "x"));
+        break;
       default:
         throw `Invalid face index ${faceIndex}`;
     }

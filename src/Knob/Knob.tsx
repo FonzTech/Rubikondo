@@ -9,7 +9,7 @@ import {Utils} from "../Utils/Utils.tsx";
 interface KnobProps {
   minHeight: string
   startingRotation: number,
-  rotateCallback: (value: number) => void | null
+  rotateCallback: ((value: number) => void) | null
 }
 
 const ANGLE_BOUNDARY_LEFT: Readonly<number> = THREE.MathUtils.degToRad(135);

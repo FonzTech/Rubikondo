@@ -28,17 +28,17 @@ describe('draggable handler', () => {
       }
     })();
 
-    draggableHandler.onMouseDown({ clientX: 1, clientY: 2 } as React.MouseEvent<HTMLElement>);
-    draggableHandler.onMovementMove({ clientX: 3, clientY: 4 } as React.MouseEvent<Document>);
-    draggableHandler.onMovementEnd({ clientX: 5, clientY: 6 } as React.MouseEvent<Document>);
+    draggableHandler.onMouseDown({ button: DraggableHandler.MOUSE_BUTTON_LEFT, clientX: 1, clientY: 2 } as React.MouseEvent<HTMLElement>);
+    draggableHandler.onMovementMove({ button: DraggableHandler.MOUSE_BUTTON_LEFT, clientX: 3, clientY: 4 } as React.MouseEvent<Document>);
+    draggableHandler.onMovementEnd({ button: DraggableHandler.MOUSE_BUTTON_LEFT, clientX: 5, clientY: 6 } as React.MouseEvent<Document>);
 
     expect(mock_onMovementStart).toHaveBeenCalledTimes(1);
     expect(mock_onMovementMove).toHaveBeenCalledTimes(1);
     expect(mock_onMovementEnd).toHaveBeenCalledTimes(1);
 
-    draggableHandler.onTouchStart({ touches: [ { clientX: 1, clientY: 2 } ] } as React.TouchEvent<HTMLElement>);
-    draggableHandler.onTouchMove({ touches: [ { clientX: 3, clientY: 4 } ] } as React.TouchEvent<Document>);
-    draggableHandler.onTouchEnd({ touches: [ { clientX: 5, clientY: 6 } ] } as React.TouchEvent<Document>);
+    draggableHandler.onTouchStart({ touches: [ { button: DraggableHandler.MOUSE_BUTTON_LEFT, clientX: 1, clientY: 2 } ] } as React.TouchEvent<HTMLElement>);
+    draggableHandler.onTouchMove({ touches: [ { button: DraggableHandler.MOUSE_BUTTON_LEFT, clientX: 3, clientY: 4 } ] } as React.TouchEvent<Document>);
+    draggableHandler.onTouchEnd({ touches: [ { button: DraggableHandler.MOUSE_BUTTON_LEFT, clientX: 5, clientY: 6 } ] } as React.TouchEvent<Document>);
 
     expect(mock_onMovementStart).toHaveBeenCalledTimes(2);
     expect(mock_onMovementMove).toHaveBeenCalledTimes(2);

@@ -11,7 +11,7 @@ interface RubikDragState {
 }
 
 class RubikCube {
-  static readonly APPLY_DEBUG_TEXTURE = true;
+  static readonly APPLY_DEBUG_TEXTURE = process.env.NODE_ENV !== "test";
   static readonly MAX_ANIM_MULT_FACTOR = 0.35;
   static readonly X_AXIS = new THREE.Vector3(1, 0, 0);
   static readonly Y_AXIS = new THREE.Vector3(0, 1, 0);

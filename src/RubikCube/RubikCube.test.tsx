@@ -17,7 +17,10 @@ describe('cube preview logic', () => {
 
       const mock_Three_Cube = vi.fn();
 
-      const mock_getCubeMesh = vi.fn().mockReturnValue({ position: new THREE.Vector3() });
+      const mock_getCubeMesh = vi.fn().mockReturnValue({
+        position: new THREE.Vector3(),
+        rotateOnAxis: vi.fn()
+      });
 
       const mock_texture = vi.fn();
 

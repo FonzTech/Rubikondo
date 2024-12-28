@@ -83,45 +83,69 @@ describe('cube game implementation', () => {
     const cp = new CubeGame(6);
 
     expect(cp.selectCubeRow(0, 1, 2)).toStrictEqual(new Set<string>([
-      "Cube_0_0_2","Cube_0_1_2","Cube_0_2_2","Cube_0_1_0","Cube_0_1_1","Cube_1_0_2",
-      "Cube_1_1_2","Cube_1_2_2","Cube_2_0_2","Cube_2_1_2","Cube_2_2_2","Cube_2_1_0",
-      "Cube_2_1_1","Cube_3_0_2","Cube_3_1_2","Cube_3_2_2","Cube_4_1_0","Cube_4_1_1",
-      "Cube_4_1_2","Cube_5_1_0","Cube_5_1_1","Cube_5_1_2"
+      "Cube_0_0_2","Cube_0_1_2","Cube_0_2_2","Cube_0_3_2","Cube_0_4_2","Cube_0_5_2",
+      "Cube_0_1_0","Cube_0_1_1","Cube_0_1_3","Cube_0_1_4","Cube_0_1_5","Cube_1_0_2",
+      "Cube_1_1_2","Cube_1_2_2","Cube_1_3_2","Cube_1_4_2","Cube_1_5_2","Cube_2_0_2",
+      "Cube_2_1_2","Cube_2_2_2","Cube_2_3_2","Cube_2_4_2","Cube_2_5_2","Cube_2_1_0",
+      "Cube_2_1_1","Cube_2_1_3","Cube_2_1_4","Cube_2_1_5","Cube_3_0_2","Cube_3_1_2",
+      "Cube_3_2_2","Cube_3_3_2","Cube_3_4_2","Cube_3_5_2","Cube_4_1_0","Cube_4_1_1",
+      "Cube_4_1_2","Cube_4_1_3","Cube_4_1_4","Cube_4_1_5","Cube_5_1_0","Cube_5_1_1",
+      "Cube_5_1_2","Cube_5_1_3","Cube_5_1_4","Cube_5_1_5"
     ]));
 
     expect(cp.selectCubeRow(1, 1, 2)).toStrictEqual(new Set<string>([
-      "Cube_0_0_2","Cube_0_1_2","Cube_0_2_2","Cube_1_0_2","Cube_1_1_2","Cube_1_2_2",
-      "Cube_1_1_0","Cube_1_1_1","Cube_2_0_2","Cube_2_1_2","Cube_2_2_2","Cube_3_0_2",
-      "Cube_3_1_2","Cube_3_2_2","Cube_3_1_0","Cube_3_1_1","Cube_4_0_1","Cube_4_1_1",
-      "Cube_4_2_1","Cube_5_0_1","Cube_5_1_1","Cube_5_2_1"
+      "Cube_0_0_2","Cube_0_1_2","Cube_0_2_2","Cube_0_3_2","Cube_0_4_2","Cube_0_5_2",
+      "Cube_1_0_2","Cube_1_1_2","Cube_1_2_2","Cube_1_3_2","Cube_1_4_2","Cube_1_5_2",
+      "Cube_1_1_0","Cube_1_1_1","Cube_1_1_3","Cube_1_1_4","Cube_1_1_5","Cube_2_0_2",
+      "Cube_2_1_2","Cube_2_2_2","Cube_2_3_2","Cube_2_4_2","Cube_2_5_2","Cube_3_0_2",
+      "Cube_3_1_2","Cube_3_2_2","Cube_3_3_2","Cube_3_4_2","Cube_3_5_2","Cube_3_1_0",
+      "Cube_3_1_1","Cube_3_1_3","Cube_3_1_4","Cube_3_1_5","Cube_4_0_1","Cube_4_1_1",
+      "Cube_4_2_1","Cube_4_3_1","Cube_4_4_1","Cube_4_5_1","Cube_5_0_1","Cube_5_1_1",
+      "Cube_5_2_1","Cube_5_3_1","Cube_5_4_1","Cube_5_5_1"
     ]));
 
     expect(cp.selectCubeRow(2, 1, 2)).toStrictEqual(new Set<string>([
-      "Cube_0_0_2","Cube_0_1_2","Cube_0_2_2","Cube_0_1_0","Cube_0_1_1","Cube_1_0_2",
-      "Cube_1_1_2","Cube_1_2_2","Cube_2_0_2","Cube_2_1_2","Cube_2_2_2","Cube_2_1_0",
-      "Cube_2_1_1","Cube_3_0_2","Cube_3_1_2","Cube_3_2_2","Cube_4_1_0","Cube_4_1_1",
-      "Cube_4_1_2","Cube_5_1_0","Cube_5_1_1","Cube_5_1_2"
+      "Cube_0_0_2","Cube_0_1_2","Cube_0_2_2","Cube_0_3_2","Cube_0_4_2","Cube_0_5_2",
+      "Cube_0_1_0","Cube_0_1_1","Cube_0_1_3","Cube_0_1_4","Cube_0_1_5","Cube_1_0_2",
+      "Cube_1_1_2","Cube_1_2_2","Cube_1_3_2","Cube_1_4_2","Cube_1_5_2","Cube_2_0_2",
+      "Cube_2_1_2","Cube_2_2_2","Cube_2_3_2","Cube_2_4_2","Cube_2_5_2","Cube_2_1_0",
+      "Cube_2_1_1","Cube_2_1_3","Cube_2_1_4","Cube_2_1_5","Cube_3_0_2","Cube_3_1_2",
+      "Cube_3_2_2","Cube_3_3_2","Cube_3_4_2","Cube_3_5_2","Cube_4_1_0","Cube_4_1_1",
+      "Cube_4_1_2","Cube_4_1_3","Cube_4_1_4","Cube_4_1_5","Cube_5_1_0","Cube_5_1_1",
+      "Cube_5_1_2","Cube_5_1_3","Cube_5_1_4","Cube_5_1_5"
     ]));
 
     expect(cp.selectCubeRow(3, 1, 2)).toStrictEqual(new Set<string>([
-      "Cube_0_0_2","Cube_0_1_2","Cube_0_2_2","Cube_1_0_2","Cube_1_1_2","Cube_1_2_2",
-      "Cube_1_1_0","Cube_1_1_1","Cube_2_0_2","Cube_2_1_2","Cube_2_2_2","Cube_3_0_2",
-      "Cube_3_1_2","Cube_3_2_2","Cube_3_1_0","Cube_3_1_1","Cube_4_0_1","Cube_4_1_1",
-      "Cube_4_2_1","Cube_5_0_1","Cube_5_1_1","Cube_5_2_1"
+      "Cube_0_0_2","Cube_0_1_2","Cube_0_2_2","Cube_0_3_2","Cube_0_4_2","Cube_0_5_2",
+      "Cube_1_0_2","Cube_1_1_2","Cube_1_2_2","Cube_1_3_2","Cube_1_4_2","Cube_1_5_2",
+      "Cube_1_1_0","Cube_1_1_1","Cube_1_1_3","Cube_1_1_4","Cube_1_1_5","Cube_2_0_2",
+      "Cube_2_1_2","Cube_2_2_2","Cube_2_3_2","Cube_2_4_2","Cube_2_5_2","Cube_3_0_2",
+      "Cube_3_1_2","Cube_3_2_2","Cube_3_3_2","Cube_3_4_2","Cube_3_5_2","Cube_3_1_0",
+      "Cube_3_1_1","Cube_3_1_3","Cube_3_1_4","Cube_3_1_5","Cube_4_0_1","Cube_4_1_1",
+      "Cube_4_2_1","Cube_4_3_1","Cube_4_4_1","Cube_4_5_1","Cube_5_0_1","Cube_5_1_1",
+      "Cube_5_2_1","Cube_5_3_1","Cube_5_4_1","Cube_5_5_1"
     ]));
 
     expect(cp.selectCubeRow(4, 1, 2)).toStrictEqual(new Set<string>([
-      "Cube_0_0_0","Cube_0_0_1","Cube_0_0_2","Cube_1_1_0","Cube_1_1_1","Cube_1_1_2",
-      "Cube_2_2_0","Cube_2_2_1","Cube_2_2_2","Cube_3_1_0","Cube_3_1_1","Cube_3_1_2",
-      "Cube_4_0_0","Cube_4_0_1","Cube_4_0_2","Cube_4_1_2","Cube_4_2_2","Cube_5_0_0",
-      "Cube_5_0_1","Cube_5_0_2","Cube_5_1_0","Cube_5_2_0"
+      "Cube_0_1_0","Cube_0_1_1","Cube_0_1_2","Cube_0_1_3","Cube_0_1_4","Cube_0_1_5",
+      "Cube_1_1_0","Cube_1_1_1","Cube_1_1_2","Cube_1_1_3","Cube_1_1_4","Cube_1_1_5",
+      "Cube_2_1_0","Cube_2_1_1","Cube_2_1_2","Cube_2_1_3","Cube_2_1_4","Cube_2_1_5",
+      "Cube_3_1_0","Cube_3_1_1","Cube_3_1_2","Cube_3_1_3","Cube_3_1_4","Cube_3_1_5",
+      "Cube_4_1_0","Cube_4_1_1","Cube_4_1_2","Cube_4_1_3","Cube_4_1_4","Cube_4_1_5",
+      "Cube_4_0_2","Cube_4_2_2","Cube_4_3_2","Cube_4_4_2","Cube_4_5_2","Cube_5_1_0",
+      "Cube_5_1_1","Cube_5_1_2","Cube_5_1_3","Cube_5_1_4","Cube_5_1_5","Cube_5_0_0",
+      "Cube_5_2_0","Cube_5_3_0","Cube_5_4_0","Cube_5_5_0"
     ]));
 
     expect(cp.selectCubeRow(5, 1, 2)).toStrictEqual(new Set<string>([
-      "Cube_0_2_0","Cube_0_2_1","Cube_0_2_2","Cube_1_1_0","Cube_1_1_1","Cube_1_1_2",
-      "Cube_2_0_0","Cube_2_0_1","Cube_2_0_2","Cube_3_1_0","Cube_3_1_1","Cube_3_1_2",
-      "Cube_4_2_0","Cube_4_2_1","Cube_4_2_2","Cube_4_0_0","Cube_4_1_0","Cube_5_2_0",
-      "Cube_5_2_1","Cube_5_2_2","Cube_5_0_2","Cube_5_1_2"
+      "Cube_0_1_0","Cube_0_1_1","Cube_0_1_2","Cube_0_1_3","Cube_0_1_4","Cube_0_1_5",
+      "Cube_1_1_0","Cube_1_1_1","Cube_1_1_2","Cube_1_1_3","Cube_1_1_4","Cube_1_1_5",
+      "Cube_2_1_0","Cube_2_1_1","Cube_2_1_2","Cube_2_1_3","Cube_2_1_4","Cube_2_1_5",
+      "Cube_3_1_0","Cube_3_1_1","Cube_3_1_2","Cube_3_1_3","Cube_3_1_4","Cube_3_1_5",
+      "Cube_4_1_0","Cube_4_1_1","Cube_4_1_2","Cube_4_1_3","Cube_4_1_4","Cube_4_1_5",
+      "Cube_4_0_0","Cube_4_2_0","Cube_4_3_0","Cube_4_4_0","Cube_4_5_0","Cube_5_1_0",
+      "Cube_5_1_1","Cube_5_1_2","Cube_5_1_3","Cube_5_1_4","Cube_5_1_5","Cube_5_0_2",
+      "Cube_5_2_2","Cube_5_3_2","Cube_5_4_2","Cube_5_5_2"
     ]));
   });
 

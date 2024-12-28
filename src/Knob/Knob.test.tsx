@@ -1,9 +1,14 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Knob from "./Knob.tsx";
+import DraggableHandler from "../DraggableHandler/DraggableHandler.tsx";
 
 test('renders knob with min height 300px', () => {
-  render(<Knob minHeight="300px" />);
+  render(<Knob
+    minHeight="300px"
+    startingRotation={135}
+    rotateCallback={null}
+  />);
 
   const knob = screen.getByTestId("knob");
   expect(knob).toBeInTheDocument();
@@ -36,50 +41,50 @@ test('renders and check for rotation via mouse movement', () => {
   expect(knob.getBoundingClientRect().height).toBe(110);
 
   // Test on document, but not on component
-  fireEvent.mouseMove(document, { clientX: 156, clientY: 139 });
-  fireEvent.mouseMove(document, { clientX: 139, clientY: 156 });
+  fireEvent.mouseMove(document, { button: DraggableHandler.MOUSE_BUTTON_LEFT, clientX: 156, clientY: 139 });
+  fireEvent.mouseMove(document, { button: DraggableHandler.MOUSE_BUTTON_LEFT, clientX: 139, clientY: 156 });
   fireEvent.mouseUp(document);
   expect(knob).toHaveStyle("transform: rotate(135.00deg)");
 
   // Rotate clockwise from right side
-  fireEvent.mouseDown(knob, { clientX: 160, clientY: 140 });
-  fireEvent.mouseMove(document, { clientX: 170, clientY: 150 });
+  fireEvent.mouseDown(knob, { button: DraggableHandler.MOUSE_BUTTON_LEFT, clientX: 160, clientY: 140 });
+  fireEvent.mouseMove(document, { button: DraggableHandler.MOUSE_BUTTON_LEFT, clientX: 170, clientY: 150 });
   fireEvent.mouseUp(document);
   expect(knob).toHaveStyle("transform: rotate(151.59deg)");
 
   // Rotate clockwise from left side
-  fireEvent.mouseDown(knob, { clientX: 120, clientY: 110 });
-  fireEvent.mouseMove(document, { clientX: 119, clientY: 100 });
+  fireEvent.mouseDown(knob, { button: DraggableHandler.MOUSE_BUTTON_LEFT, clientX: 120, clientY: 110 });
+  fireEvent.mouseMove(document, { button: DraggableHandler.MOUSE_BUTTON_LEFT, clientX: 119, clientY: 100 });
   fireEvent.mouseUp(document);
   expect(knob).toHaveStyle("transform: rotate(153.80deg)");
 
   // Rotate anti-clockwise from right side
-  fireEvent.mouseDown(knob, { clientX: 155, clientY: 140 });
-  fireEvent.mouseMove(document, { clientX: 156, clientY: 139 });
+  fireEvent.mouseDown(knob, { button: DraggableHandler.MOUSE_BUTTON_LEFT, clientX: 155, clientY: 140 });
+  fireEvent.mouseMove(document, { button: DraggableHandler.MOUSE_BUTTON_LEFT, clientX: 156, clientY: 139 });
   fireEvent.mouseUp(document);
   expect(knob).toHaveStyle("transform: rotate(152.11deg)");
 
   // Rotate anti-clockwise from left side
-  fireEvent.mouseDown(knob, { clientX: 110, clientY: 100 });
-  fireEvent.mouseMove(document, { clientX: 105, clientY: 110 });
+  fireEvent.mouseDown(knob, { button: DraggableHandler.MOUSE_BUTTON_LEFT, clientX: 110, clientY: 100 });
+  fireEvent.mouseMove(document, { button: DraggableHandler.MOUSE_BUTTON_LEFT, clientX: 105, clientY: 110 });
   fireEvent.mouseUp(document);
   expect(knob).toHaveStyle("transform: rotate(140.54deg)");
 
   // Test left boundary
-  fireEvent.mouseDown(knob, { clientX: 110, clientY: 100 });
-  fireEvent.mouseMove(document, { clientX: 105, clientY: 110 });
+  fireEvent.mouseDown(knob, { button: DraggableHandler.MOUSE_BUTTON_LEFT, clientX: 110, clientY: 100 });
+  fireEvent.mouseMove(document, { button: DraggableHandler.MOUSE_BUTTON_LEFT, clientX: 105, clientY: 110 });
   fireEvent.mouseUp(document);
   expect(knob).toHaveStyle("transform: rotate(135.00deg)");
 
   // Test right boundary
-  fireEvent.mouseDown(knob, { clientX: 120, clientY: 150 });
-  fireEvent.mouseMove(document, { clientX: 131, clientY: 150 });
+  fireEvent.mouseDown(knob, { button: DraggableHandler.MOUSE_BUTTON_LEFT, clientX: 120, clientY: 150 });
+  fireEvent.mouseMove(document, { button: DraggableHandler.MOUSE_BUTTON_LEFT, clientX: 131, clientY: 150 });
   fireEvent.mouseUp(document);
   expect(knob).toHaveStyle("transform: rotate(45.00deg)");
 
   // Test on document, but not on component
-  fireEvent.mouseMove(document, { clientX: 156, clientY: 139 });
-  fireEvent.mouseMove(document, { clientX: 139, clientY: 156 });
+  fireEvent.mouseMove(document, { button: DraggableHandler.MOUSE_BUTTON_LEFT, clientX: 156, clientY: 139 });
+  fireEvent.mouseMove(document, { button: DraggableHandler.MOUSE_BUTTON_LEFT, clientX: 139, clientY: 156 });
   fireEvent.mouseUp(document);
   expect(knob).toHaveStyle("transform: rotate(45.00deg)");
 
