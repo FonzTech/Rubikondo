@@ -4,7 +4,7 @@ import KnobSvg from "../assets/knob.svg";
 import {useEffect, useRef, useState} from "react";
 import * as THREE from "three";
 import DraggableHandler from "../DraggableHandler/DraggableHandler.tsx";
-import {Utils} from "../Utils/Utils.tsx";
+import Utils from "../Utils/Utils.tsx";
 
 interface KnobProps {
   minHeight: string

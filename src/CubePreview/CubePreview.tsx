@@ -1,5 +1,5 @@
 import {CanvasBase} from "../CanvasBase/CanvasBase.tsx";
-import {Utils} from "../Utils/Utils.tsx";
+import Utils from "../Utils/Utils.tsx";
 
 class CubePreview extends CanvasBase {
   static readonly ASSET_BASE_PATH = Utils.getAssetBasePath();

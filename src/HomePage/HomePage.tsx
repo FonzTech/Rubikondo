@@ -5,7 +5,7 @@ import {useState} from "react";
 import Knob from "../Knob/Knob.tsx";
 import CanvasGame from "../CanvasGame/CanvasGame.tsx";
 import CubePreview from "../CubePreview/CubePreview.tsx";
-import {Utils} from "../Utils/Utils.tsx";
+import Utils from "../Utils/Utils.tsx";
 import DebugOverlay from "../DebugOverlay/DebugOverlay.tsx";
 
 const STARTING_ROTATION_IN_DEGREES: Readonly<number> = 180;

@@ -1,14 +1,17 @@
 import * as THREE from "three";
 import {CanvasBase} from "../CanvasBase/CanvasBase.tsx";
 import {Vector2} from "three";
-import {RubikInfo, Utils} from "../Utils/Utils.tsx";
+import Utils from "../Utils/Utils.tsx";
+import RubikInfo from "../Model/RubikInfo.tsx";
 
-type GestureDirection = "up" | "down" | "left" | "right" | null;
+type GestureDirection = "up" | "down" | "left" | "right";
 
 interface SelectingInfo {
-  status: boolean,
+  status: 0 | 1 | 2,
   start: THREE.Vector2,
-  direction: GestureDirection
+  direction: GestureDirection,
+  selecteds: Set<string>,
+  frame: number
 }
 
 class CubeGame extends CanvasBase {
@@ -36,9 +39,11 @@ class CubeGame extends CanvasBase {
     this.dragAmount = 0;
     this.selectedAnim = 0.0;
     this.selectingInfo = {
-      status: false,
+      status: 0,
       start: new THREE.Vector2(0, 0),
-      direction: null
+      direction: "up",
+      selecteds: new Set<string>(),
+      frame: 0
     };
   }
 
@@ -67,6 +72,29 @@ class CubeGame extends CanvasBase {
         mat.material.uniforms.uSelectedAnim.value = this.selectedAnim;
         mat.material.needsUpdate = true;
       });
+
+    if (this.selectingInfo.status === 2) {
+      let angle: number;
+
+      if (this.selectingInfo.frame + dt > 1.0) {
+        this.selectingInfo.frame = 1.0;
+        angle = (1.0 - this.selectingInfo.frame) * 90;
+
+        this.selectingInfo.status = 0;
+      } else {
+        this.selectingInfo.frame += dt;
+        angle = dt * 90;
+      }
+
+      const zeroVector = new THREE.Vector3(0, 0, 0);
+
+      for (const [key, value] of this.rubikCube.rubikInfos.entries()) {
+        if (!this.selectingInfo.selecteds.has(key)) {
+          continue;
+        }
+        Utils.rotateAroundPoint(value.mesh, zeroVector, new THREE.Vector3(1, 0, 0), THREE.MathUtils.degToRad(angle));
+      }
+    }
   }
 
   assetLoaded() {
@@ -83,22 +111,28 @@ class CubeGame extends CanvasBase {
   }
 
   onDragStart(point: Vector2) {
-    if (this.selectingInfo.status) {
-      this.selectingInfo.start = point;
-
+    if (this.selectingInfo.status !== 0) {
       return;
     }
 
     super.onDragStart(point);
 
+    this.selectingInfo.start = point;
     this.dragAmount = 0;
   }
 
   onDragging(point: Vector2, delta: Vector2) {
-    if (this.selectingInfo.status) {
+    if (this.selectingInfo.status === 1) {
       if (this.computeGesture(point)) {
         console.log("Computed gesture is:", this.selectingInfo.direction);
-        this.selectingInfo.status = false;
+
+        // Status in "Wait for animation"
+        this.selectingInfo.status = 2;
+
+        // Perform rotation
+        this.setupForRotation();
+
+        // Deselect all faces
         this.deselectCubeFaces();
       }
       return;
@@ -110,7 +144,7 @@ class CubeGame extends CanvasBase {
   }
 
   onDragEnd(point: Vector2) {
-    if (!this.selectingInfo.status) {
+    if (this.selectingInfo.status === 0) {
       super.onDragEnd(point);
     }
 
@@ -120,8 +154,9 @@ class CubeGame extends CanvasBase {
 
     if (this.dragAmount > CubeGame.MAX_DRAG_AMOUNT) {
       return;
-    } else if (this.selectingInfo.status) {
+    } else if (this.selectingInfo.status === 1) {
       this.deselectCubeFaces();
+      this.selectingInfo.status = 0;
       return;
     }
 
@@ -155,31 +190,31 @@ class CubeGame extends CanvasBase {
     // frontObject.object.parent!.remove(frontObject.object);
     const name = object.name;
     const [ _, faceIndex, x, y ] = name.split("_").map(v => parseInt(v));
-    const selecteds = this.selectCubeRow(faceIndex, x, y);
-    console.log(`Selected object type is ${object.type} and name is ${name} and I select`, selecteds);
+    this.selectingInfo.selecteds = this.selectCubeRow(faceIndex, x, y);
+    console.log(`Selected object type is ${object.type} and name is ${name} and I select`, this.selectingInfo.selecteds);
 
     this.selectedAnim = 0;
 
-    for (const [key, material] of this.rubikCube.rubikInfos.entries()) {
+    for (const [key, value] of this.rubikCube.rubikInfos.entries()) {
       // Apply animation to shaders
-      const selected = selecteds.has(key);
-      material.material.uniforms.uSelected.value = selected ? name === key ? 1.0 : 0.5 : 0.0;
-      material.material.uniforms.uSelectedAnim.value = 0.0;
-      material.selected = selected;
-      material.material.needsUpdate = true;
+      const selected = this.selectingInfo.selecteds.has(key);
+      value.material.uniforms.uSelected.value = selected ? name === key ? 1.0 : 0.5 : 0.0;
+      value.material.uniforms.uSelectedAnim.value = 0.0;
+      value.material.needsUpdate = true;
+
+      value.selected = selected;
     }
 
-    this.selectingInfo.status = true;
+    this.selectingInfo.status = 1;
   }
 
   deselectCubeFaces() {
-    this.selectingInfo.status = false;
-
     for (const [_, material] of this.rubikCube.rubikInfos.entries()) {
       material.material.uniforms.uSelected.value = 0.0;
       material.material.uniforms.uSelectedAnim.value = 0.0;
-      material.selected = false;
       material.material.needsUpdate = true;
+
+      material.selected = false;
     }
   }
 
@@ -187,7 +222,14 @@ class CubeGame extends CanvasBase {
     const names = new Set<string>();
 
     const items = new Map<number, Set<THREE.Vector2>>();
-    [0, 1, 2, 3, 4, 5].forEach((fi) => items.set(fi, new Set<THREE.Vector2>()));
+    [
+      Utils.CUBE_FACE_INDEX_FRONT,
+      Utils.CUBE_FACE_INDEX_RIGHT,
+      Utils.CUBE_FACE_INDEX_BACK,
+      Utils.CUBE_FACE_INDEX_LEFT,
+      Utils.CUBE_FACE_INDEX_BOTTOM,
+      Utils.CUBE_FACE_INDEX_TOP,
+    ].forEach((fi) => items.set(fi, new Set<THREE.Vector2>()));
 
     const _add =
       (faceIndex: number, values: Array<THREE.Vector2>) =>
@@ -199,7 +241,7 @@ class CubeGame extends CanvasBase {
         .map((v, index) => v.clone().setComponent(axisToFill === "x" ? 0 : 1, index));
 
     switch (faceIndex) {
-      case 0:
+      case Utils.CUBE_FACE_INDEX_FRONT:
         _add(0, _inc(y, "x"));
         _add(1, _inc(y, "x"));
         _add(2, _inc(y, "x"));
@@ -210,60 +252,60 @@ class CubeGame extends CanvasBase {
         _add(4, _inc(x, "y"));
         _add(5, _inc(x, "y"));
         break;
-      case 1:
-        _add(0, _inc(y, "x"));
-        _add(1, _inc(y, "x"));
-        _add(2, _inc(y, "x"));
-        _add(3, _inc(y, "x"));
+      case Utils.CUBE_FACE_INDEX_RIGHT:
+        _add(Utils.CUBE_FACE_INDEX_FRONT, _inc(y, "x"));
+        _add(Utils.CUBE_FACE_INDEX_RIGHT, _inc(y, "x"));
+        _add(Utils.CUBE_FACE_INDEX_BACK, _inc(y, "x"));
+        _add(Utils.CUBE_FACE_INDEX_LEFT, _inc(y, "x"));
 
-        _add(1, _inc(x, "y"));
-        _add(3, _inc(2 - x, "y"));
-        _add(4, _inc(2 - x, "x"));
-        _add(5, _inc(x, "x"));
+        _add(Utils.CUBE_FACE_INDEX_RIGHT, _inc(x, "y"));
+        _add(Utils.CUBE_FACE_INDEX_LEFT, _inc(2 - x, "y"));
+        _add(Utils.CUBE_FACE_INDEX_BOTTOM, _inc(2 - x, "x"));
+        _add(Utils.CUBE_FACE_INDEX_TOP, _inc(x, "x"));
         break;
-      case 2:
-        _add(0, _inc(y, "x"));
-        _add(1, _inc(y, "x"));
-        _add(2, _inc(y, "x"));
-        _add(3, _inc(y, "x"));
+      case Utils.CUBE_FACE_INDEX_BACK:
+        _add(Utils.CUBE_FACE_INDEX_FRONT, _inc(y, "x"));
+        _add(Utils.CUBE_FACE_INDEX_RIGHT, _inc(y, "x"));
+        _add(Utils.CUBE_FACE_INDEX_BACK, _inc(y, "x"));
+        _add(Utils.CUBE_FACE_INDEX_LEFT, _inc(y, "x"));
 
-        _add(0, _inc(2 - x, "y"));
-        _add(2, _inc(x, "y"));
-        _add(4, _inc(2 - x, "y"));
-        _add(5, _inc(2 - x, "y"));
+        _add(Utils.CUBE_FACE_INDEX_FRONT, _inc(2 - x, "y"));
+        _add(Utils.CUBE_FACE_INDEX_BACK, _inc(x, "y"));
+        _add(Utils.CUBE_FACE_INDEX_BOTTOM, _inc(2 - x, "y"));
+        _add(Utils.CUBE_FACE_INDEX_TOP, _inc(2 - x, "y"));
         break;
-      case 3:
-        _add(0, _inc(y, "x"));
-        _add(1, _inc(y, "x"));
-        _add(2, _inc(y, "x"));
-        _add(3, _inc(y, "x"));
+      case Utils.CUBE_FACE_INDEX_LEFT:
+        _add(Utils.CUBE_FACE_INDEX_FRONT, _inc(y, "x"));
+        _add(Utils.CUBE_FACE_INDEX_RIGHT, _inc(y, "x"));
+        _add(Utils.CUBE_FACE_INDEX_BACK, _inc(y, "x"));
+        _add(Utils.CUBE_FACE_INDEX_LEFT, _inc(y, "x"));
 
-        _add(1, _inc(2 - x, "y"));
-        _add(3, _inc(x, "y"));
-        _add(4, _inc(x, "x"));
-        _add(5, _inc(2 - x, "x"));
+        _add(Utils.CUBE_FACE_INDEX_RIGHT, _inc(2 - x, "y"));
+        _add(Utils.CUBE_FACE_INDEX_LEFT, _inc(x, "y"));
+        _add(Utils.CUBE_FACE_INDEX_BOTTOM, _inc(x, "x"));
+        _add(Utils.CUBE_FACE_INDEX_TOP, _inc(2 - x, "x"));
         break;
-      case 4:
-        _add(0, _inc(x, "y"));
-        _add(2, _inc(2 - x, "y"));
-        _add(4, _inc(x, "y"));
-        _add(5, _inc(x, "y"));
+      case Utils.CUBE_FACE_INDEX_BOTTOM:
+        _add(Utils.CUBE_FACE_INDEX_FRONT, _inc(x, "y"));
+        _add(Utils.CUBE_FACE_INDEX_BACK, _inc(2 - x, "y"));
+        _add(Utils.CUBE_FACE_INDEX_BOTTOM, _inc(x, "y"));
+        _add(Utils.CUBE_FACE_INDEX_TOP, _inc(x, "y"));
 
-        _add(1, _inc(x, "y"));
-        _add(3, _inc(2 - x, "y"));
-        _add(4, _inc(y, "x"));
-        _add(5, _inc(2 - y, "x"));
+        _add(Utils.CUBE_FACE_INDEX_RIGHT, _inc(x, "y"));
+        _add(Utils.CUBE_FACE_INDEX_LEFT, _inc(2 - x, "y"));
+        _add(Utils.CUBE_FACE_INDEX_BOTTOM, _inc(y, "x"));
+        _add(Utils.CUBE_FACE_INDEX_TOP, _inc(2 - y, "x"));
         break;
-      case 5:
-        _add(0, _inc(x, "y"));
-        _add(2, _inc(2 - x, "y"));
-        _add(4, _inc(x, "y"));
-        _add(5, _inc(x, "y"));
+      case Utils.CUBE_FACE_INDEX_TOP:
+        _add(Utils.CUBE_FACE_INDEX_FRONT, _inc(x, "y"));
+        _add(Utils.CUBE_FACE_INDEX_BACK, _inc(2 - x, "y"));
+        _add(Utils.CUBE_FACE_INDEX_BOTTOM, _inc(x, "y"));
+        _add(Utils.CUBE_FACE_INDEX_TOP, _inc(x, "y"));
 
-        _add(1, _inc(x, "y"));
-        _add(3, _inc(2 - x, "y"));
-        _add(4, _inc(2 - y, "x"));
-        _add(5, _inc(y, "x"));
+        _add(Utils.CUBE_FACE_INDEX_RIGHT, _inc(x, "y"));
+        _add(Utils.CUBE_FACE_INDEX_LEFT, _inc(2 - x, "y"));
+        _add(Utils.CUBE_FACE_INDEX_BOTTOM, _inc(2 - y, "x"));
+        _add(Utils.CUBE_FACE_INDEX_TOP, _inc(y, "x"));
         break;
       default:
         throw `Invalid face index ${faceIndex}`;
@@ -311,6 +353,21 @@ class CubeGame extends CanvasBase {
 
     this.selectingInfo.direction = this.getGestureDirectionByAngle(angleInRad);
     return true;
+  }
+
+  setupForRotation() {
+    // Get row or column
+    this.selectingInfo.frame = 0;
+
+    if (["up", "down"].includes(this.selectingInfo.direction)) {
+      Array.from(this.rubikCube.rubikInfos.values())
+        .filter(item => item.selected)
+        .forEach(item => {
+          item.lastRotationAxis = new THREE.Vector3(1, 0, 0);
+        })
+    } else {
+      console.error("Not implemented yet");
+    }
   }
 }
 

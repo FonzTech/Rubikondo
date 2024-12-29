@@ -1,7 +1,7 @@
 import * as React from 'react'
 import {Button, Container, Modal} from "react-bootstrap";
 import CanvasGame from "../CanvasGame/CanvasGame.tsx";
-import {Utils} from "../Utils/Utils.tsx";
+import Utils from "../Utils/Utils.tsx";
 import DebugOverlay from "../DebugOverlay/DebugOverlay.tsx";
 import CubeGame from "../CubeGame/CubeGame.tsx";
 import {useState} from "react";

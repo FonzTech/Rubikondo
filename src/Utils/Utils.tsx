@@ -1,12 +1,6 @@
 import * as THREE from "three";
-import.meta.env.VITE_API_BASE_URL;
 
-export interface RubikInfo {
-  material: THREE.ShaderMaterial
-  selected: boolean
-}
-
-export class Utils {
+class Utils {
   static readonly MESH_CUBE_PATH = "/cube.obj";
   static readonly TEXTURE_CUBE_PATH = "/cube.png";
 
@@ -16,8 +10,8 @@ export class Utils {
   static readonly CUBE_FACE_INDEX_RIGHT = 1;
   static readonly CUBE_FACE_INDEX_LEFT = 2;
   static readonly CUBE_FACE_INDEX_BACK = 3;
-  static readonly CUBE_FACE_INDEX_TOP = 4;
-  static readonly CUBE_FACE_INDEX_BOTTOM = 5;
+  static readonly CUBE_FACE_INDEX_BOTTOM = 4;
+  static readonly CUBE_FACE_INDEX_TOP = 5;
 
   static readonly CUBE_COLOR_BLACK = new THREE.Color(THREE.Color.NAMES.black);
   static readonly CUBE_COLOR_WHITE = new THREE.Color(THREE.Color.NAMES.white);
@@ -34,6 +28,8 @@ export class Utils {
   static readonly ONE_AND_HALF_PI = Math.PI * 1.5;
 
   static readonly CUBE_VERTEX_SHADER = `
+    #define _DEBUG 1
+    
     varying vec3 vNormal;
     varying vec3 vPosition;
     varying vec2 vUv;
@@ -43,7 +39,13 @@ export class Utils {
         vPosition = (modelViewMatrix * vec4(position, 1.0)).xyz;
         vUv = uv;
         
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        vec4 fPosition = vec4(position, 1.0);
+        
+        #if _DEBUG == 1
+        fPosition.xyz = fPosition.xyz * 0.5;
+        #endif
+        
+        gl_Position = projectionMatrix * modelViewMatrix * fPosition;
     }`;
 
   static readonly CUBE_FRAGMENT_SHADER = `
@@ -153,4 +155,13 @@ export class Utils {
     dynamicTexture.needsUpdate = true;
     return dynamicTexture;
   }
+
+  static rotateAroundPoint = (object: THREE.Group<THREE.Object3DEventMap>, point: THREE.Vector3, axis: THREE.Vector3, angle: number) => {
+    const offset = new THREE.Vector3().subVectors(object.position, point);
+    offset.applyAxisAngle(axis, angle);
+    object.position.copy(point).add(offset);
+    object.rotateOnAxis(axis, angle);
+  }
 }
+
+export default Utils;

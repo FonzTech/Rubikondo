@@ -1,6 +1,7 @@
 import * as THREE from "three";
-import {Utils, RubikInfo} from "../Utils/Utils.tsx";
+import Utils from "../Utils/Utils.tsx";
 import {Vector2} from "three";
+import RubikInfo from "../Model/RubikInfo.tsx";
 
 interface RubikDragState {
   autoRotate: boolean | null,
@@ -60,13 +61,8 @@ class RubikCube {
     // Build cube colors
     this.buildCubeColors();
 
-    // Utility function
-    const _rotateAroundPoint = (object: THREE.Group<THREE.Object3DEventMap>, point: THREE.Vector3, axis: THREE.Vector3, angle: number) => {
-      const offset = new THREE.Vector3().subVectors(object.position, point);
-      offset.applyAxisAngle(axis, angle);
-      object.position.copy(point).add(offset);
-      object.rotateOnAxis(axis, angle);
-    };
+    // Common data
+    const zeroVector = new THREE.Vector3(0, 0, 0);
 
     // Create group of "N-squared" cubes
     this.group = this.getNewGroup();
@@ -111,7 +107,7 @@ class RubikCube {
             throw new Error(`Invalid face index ${fi}`);
           }
 
-          _rotateAroundPoint(clone, new THREE.Vector3(0, 0, 0), axis, angle);
+          Utils.rotateAroundPoint(clone, zeroVector, axis, angle);
 
           this.group.add(clone);
         }
@@ -189,8 +185,10 @@ class RubikCube {
       // Texturize mesh
       if (child.isMesh) {
         const shaderInfo: RubikInfo = {
+          mesh: mesh,
           material: Utils.getMaterialForCube(this.lightPosition, texture, color),
-          selected: false
+          selected: false,
+          lastRotationAxis: new THREE.Vector3(0, 0)
         };
         child.material = shaderInfo.material;
         child.name = meshName;

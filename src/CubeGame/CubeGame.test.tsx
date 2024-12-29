@@ -8,7 +8,7 @@ import * as THREE from "three";
 import {CanvasBase, CanvasUseEffectProps} from "../CanvasBase/CanvasBase.tsx";
 import CubePreview from "../CubePreview/CubePreview.tsx";
 import CubeGame from "./CubeGame.tsx";
-import {RubikInfo, Utils} from "../Utils/Utils.tsx";
+import Utils from "../Utils/Utils.tsx";
 
 CanvasBase.getRubikCubeImpl = mock_CanvasBase_getRubikCubeImpl;
 
@@ -173,7 +173,7 @@ describe('cube game implementation', () => {
     const cp = new CubeGame(6);
 
     expect(cp.computeGesture(new THREE.Vector2(1, 2))).toBe(false);
-    expect(cp.selectingInfo.direction).toBe(null);
+    expect(cp.selectingInfo.direction).toBe("up"); // default value
 
     cp.selectingInfo.start.set(100, 200);
 

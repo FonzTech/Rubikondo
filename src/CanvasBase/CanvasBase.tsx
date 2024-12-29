@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import RubikCube from "../RubikCube/RubikCube.tsx";
-import {Utils} from "../Utils/Utils.tsx";
+import Utils from "../Utils/Utils.tsx";
 import {Vector2} from "three";
 
 export interface CanvasUseEffectProps {
