@@ -242,15 +242,15 @@ class CubeGame extends CanvasBase {
 
     switch (faceIndex) {
       case Utils.CUBE_FACE_INDEX_FRONT:
-        _add(0, _inc(y, "x"));
-        _add(1, _inc(y, "x"));
-        _add(2, _inc(y, "x"));
-        _add(3, _inc(y, "x"));
+        _add(Utils.CUBE_FACE_INDEX_FRONT, _inc(y, "x"));
+        _add(Utils.CUBE_FACE_INDEX_RIGHT, _inc(y, "x"));
+        _add(Utils.CUBE_FACE_INDEX_BACK, _inc(y, "x"));
+        _add(Utils.CUBE_FACE_INDEX_LEFT, _inc(y, "x"));
 
-        _add(0, _inc(x, "y"));
-        _add(2, _inc(2 - x, "y"));
-        _add(4, _inc(x, "y"));
-        _add(5, _inc(x, "y"));
+        _add(Utils.CUBE_FACE_INDEX_FRONT, _inc(x, "y"));
+        _add(Utils.CUBE_FACE_INDEX_BACK, _inc(2 - x, "y"));
+        _add(Utils.CUBE_FACE_INDEX_TOP, _inc(x, "y"));
+        _add(Utils.CUBE_FACE_INDEX_BOTTOM, _inc(x, "y"));
         break;
       case Utils.CUBE_FACE_INDEX_RIGHT:
         _add(Utils.CUBE_FACE_INDEX_FRONT, _inc(y, "x"));

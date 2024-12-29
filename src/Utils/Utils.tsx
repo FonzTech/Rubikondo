@@ -8,8 +8,8 @@ class Utils {
 
   static readonly CUBE_FACE_INDEX_FRONT = 0;
   static readonly CUBE_FACE_INDEX_RIGHT = 1;
-  static readonly CUBE_FACE_INDEX_LEFT = 2;
-  static readonly CUBE_FACE_INDEX_BACK = 3;
+  static readonly CUBE_FACE_INDEX_BACK = 2;
+  static readonly CUBE_FACE_INDEX_LEFT = 3;
   static readonly CUBE_FACE_INDEX_BOTTOM = 4;
   static readonly CUBE_FACE_INDEX_TOP = 5;
 
