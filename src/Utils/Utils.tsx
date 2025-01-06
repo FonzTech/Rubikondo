@@ -27,6 +27,8 @@ class Utils {
   static readonly DOUBLE_PI = Math.PI * 2.0;
   static readonly ONE_AND_HALF_PI = Math.PI * 1.5;
 
+  static readonly CUBE_KEY_PREFIX = "Cube";
+
   static readonly CUBE_VERTEX_SHADER = `
     #define _DEBUG 1
     
@@ -124,7 +126,13 @@ class Utils {
   }
 
   static getCubeKeyForGame(faceIndex: number, x: number, y: number): string {
-    return "Cube_" + Utils.getCubeKey(faceIndex, x, y);
+    return Utils.CUBE_KEY_PREFIX + "_" + Utils.getCubeKey(faceIndex, x, y);
+  }
+
+  static getComponentsFromCubeKey(value: string): number[] {
+    return value.split("_")
+      .filter(v => v !== Utils.CUBE_KEY_PREFIX)
+      .map(v => parseInt(v));
   }
 
   static generateCubeTextureForDebug(baseTexture: THREE.Texture, text: string): THREE.CanvasTexture {
@@ -156,9 +164,9 @@ class Utils {
     return dynamicTexture;
   }
 
-  static rotateAroundPoint = (object: THREE.Group<THREE.Object3DEventMap>, point: THREE.Vector3, axis: THREE.Vector3, angle: number) => {
+  static rotateAroundPoint = (object: THREE.Group<THREE.Object3DEventMap>, point: THREE.Vector3, axis: THREE.Vector3, angle: number, firstSign: number = 1) => {
     const offset = new THREE.Vector3().subVectors(object.position, point);
-    offset.applyAxisAngle(axis, angle);
+    offset.applyAxisAngle(axis, angle * firstSign);
     object.position.copy(point).add(offset);
     object.rotateOnAxis(axis, angle);
   }

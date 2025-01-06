@@ -80,7 +80,7 @@ describe('cube game implementation', () => {
   });
 
   it('select cube row', () => {
-    const cp = new CubeGame(6);
+    const cp = new CubeGame(3);
 
     expect(cp.selectCubeRow(0, 1, 2)).toStrictEqual(new Set<string>([
       "Cube_0_0_2","Cube_0_1_2","Cube_0_2_2","Cube_0_3_2","Cube_0_4_2","Cube_0_5_2",
@@ -177,16 +177,16 @@ describe('cube game implementation', () => {
 
     cp.selectingInfo.start.set(100, 200);
 
-    expect(cp.computeGesture(new THREE.Vector2(130, 200))).toBe(true);
+    expect(cp.computeGesture(new THREE.Vector2(160, 200))).toBe(true);
     expect(cp.selectingInfo.direction).toBe("right");
 
-    expect(cp.computeGesture(new THREE.Vector2(-130, 200))).toBe(true);
+    expect(cp.computeGesture(new THREE.Vector2(-160, 200))).toBe(true);
     expect(cp.selectingInfo.direction).toBe("left");
 
-    expect(cp.computeGesture(new THREE.Vector2(100, -230))).toBe(true);
+    expect(cp.computeGesture(new THREE.Vector2(100, -260))).toBe(true);
     expect(cp.selectingInfo.direction).toBe("up");
 
-    expect(cp.computeGesture(new THREE.Vector2(100, 230))).toBe(true);
+    expect(cp.computeGesture(new THREE.Vector2(100, 260))).toBe(true);
     expect(cp.selectingInfo.direction).toBe("down");
   });
 });
