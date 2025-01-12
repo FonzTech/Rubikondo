@@ -40,13 +40,16 @@ class CubeGame extends CanvasBase {
 
   static readonly X_AXIS_VECTOR = new THREE.Vector2(1, 0);
 
+  isKeyPressed: (key: string) => boolean;
+
   raycaster: THREE.Raycaster;
   dragAmount: number;
   selectedAnim: number;
   selectingInfo: SelectingInfo;
 
-  constructor(gameSize: number) {
+  constructor(gameSize: number, isKeyPressed: (key: string) => boolean) {
     super(CanvasBase.getRubikCubeImpl(gameSize), gameSize);
+    this.isKeyPressed = isKeyPressed;
 
     this.raycaster = new THREE.Raycaster();
     this.dragAmount = 0;
@@ -94,12 +97,12 @@ class CubeGame extends CanvasBase {
     };
 
     if (this.selectingInfo.status === 2) {
-      dt *= 0.1;
+      dt *= this.isKeyPressed(" ") ? 10.0 : 0.1;
       let angle: number;
 
       if (this.selectingInfo.frame + dt > 1.0) {
-        this.selectingInfo.frame = 1.0;
         angle = (1.0 - this.selectingInfo.frame) * 90;
+        this.selectingInfo.frame = 1.0;
 
         this.selectingInfo.status = 0;
       } else {
@@ -135,21 +138,20 @@ class CubeGame extends CanvasBase {
   }
 
   onDragStart(point: Vector2) {
+    this.selectingInfo.start = point;
+
     if (this.selectingInfo.status !== 0) {
       return;
     }
 
     super.onDragStart(point);
 
-    this.selectingInfo.start = point;
     this.dragAmount = 0;
   }
 
   onDragging(point: Vector2, delta: Vector2) {
     if (this.selectingInfo.status === 1) {
       if (this.computeGesture(point)) {
-        console.log("Computed gesture is:", this.selectingInfo.direction);
-
         // Status in "Wait for animation"
         this.selectingInfo.status = 2;
 
@@ -324,8 +326,8 @@ class CubeGame extends CanvasBase {
         _add(Utils.CUBE_FACE_INDEX_BOTTOM, _inc(x, "y"));
         _add(Utils.CUBE_FACE_INDEX_TOP, _inc(x, "y"));
 
-        _add(Utils.CUBE_FACE_INDEX_RIGHT, _inc(x, "y"));
-        _add(Utils.CUBE_FACE_INDEX_LEFT, _inc(gs - x, "y"));
+        _add(Utils.CUBE_FACE_INDEX_RIGHT, _inc(gs - y, "y"));
+        _add(Utils.CUBE_FACE_INDEX_LEFT, _inc(y, "y"));
         _add(Utils.CUBE_FACE_INDEX_BOTTOM, _inc(y, "x"));
         _add(Utils.CUBE_FACE_INDEX_TOP, _inc(gs - y, "x"));
         break;
@@ -335,8 +337,8 @@ class CubeGame extends CanvasBase {
         _add(Utils.CUBE_FACE_INDEX_BOTTOM, _inc(x, "y"));
         _add(Utils.CUBE_FACE_INDEX_TOP, _inc(x, "y"));
 
-        _add(Utils.CUBE_FACE_INDEX_RIGHT, _inc(x, "y"));
-        _add(Utils.CUBE_FACE_INDEX_LEFT, _inc(gs - x, "y"));
+        _add(Utils.CUBE_FACE_INDEX_RIGHT, _inc(y, "y"));
+        _add(Utils.CUBE_FACE_INDEX_LEFT, _inc(gs - y, "y"));
         _add(Utils.CUBE_FACE_INDEX_BOTTOM, _inc(gs - y, "x"));
         _add(Utils.CUBE_FACE_INDEX_TOP, _inc(y, "x"));
         break;
@@ -380,11 +382,14 @@ class CubeGame extends CanvasBase {
     // Compute gesture direction
     const vdiff = point.clone().sub(this.selectingInfo.start);
     let angleInRad = vdiff.angleTo(CubeGame.X_AXIS_VECTOR);
-    if (point.y > this.selectingInfo.start.y) {
-      angleInRad += Math.PI;
+
+    // Adjust angle based on direction
+    if (vdiff.cross(CubeGame.X_AXIS_VECTOR) < 0) {
+      angleInRad = 2 * Math.PI - angleInRad;
     }
 
     this.selectingInfo.direction = this.getGestureDirectionByAngle(angleInRad);
+    console.log("Computed gesture direction is:", this.selectingInfo.direction);
     return true;
   }
 
@@ -410,22 +415,36 @@ class CubeGame extends CanvasBase {
 
     const gs = this.gameSize - 1;
 
-    if (this.selectingInfo.selectedFace.faceIndex == Utils.CUBE_FACE_INDEX_FRONT) {
+    const _isForFace =
+      (...faces: number[]): boolean =>
+        faces.includes(this.selectingInfo.selectedFace.faceIndex);
+
+    /*
+    ====================
+    FRONT
+    ====================
+    */
+    if (_isForFace(
+      Utils.CUBE_FACE_INDEX_FRONT
+    )) {
+      /*
+      --------------------
+      VERTICAL
+      --------------------
+      */
       if (this.isSwipeVertical()) {
         switch (faceIndex) {
+
           case Utils.CUBE_FACE_INDEX_FRONT:
           case Utils.CUBE_FACE_INDEX_BOTTOM:
           case Utils.CUBE_FACE_INDEX_TOP:
-            if (this.isSwipeVertical()) {
-              if (this.selectingInfo.selectedFace.x !== x) {
-                return null;
-              }
-            } else if (this.selectingInfo.selectedFace.y !== y) {
+            if (this.selectingInfo.selectedFace.x !== x) {
               return null;
             }
             sign = 1;
             axis.set(1, 0, 0);
             break;
+
           case Utils.CUBE_FACE_INDEX_BACK:
             if (this.isSwipeVertical()) {
               if (this.selectingInfo.selectedFace.x !== gs - x) {
@@ -438,20 +457,24 @@ class CubeGame extends CanvasBase {
             signFirst = -1;
             axis.set(1, 0, 0);
             break;
+
           default:
             return null;
         }
-      } else {
+      }
+      /*
+      --------------------
+      HORIZONTAL
+      --------------------
+      */
+      else {
         switch (faceIndex) {
+
           case Utils.CUBE_FACE_INDEX_FRONT:
           case Utils.CUBE_FACE_INDEX_RIGHT:
           case Utils.CUBE_FACE_INDEX_BACK:
           case Utils.CUBE_FACE_INDEX_LEFT:
-            if (this.isSwipeVertical()) {
-              if (this.selectingInfo.selectedFace.x !== x) {
-                return null;
-              }
-            } else if (this.selectingInfo.selectedFace.y !== y) {
+            if (this.selectingInfo.selectedFace.y !== y) {
               return null;
             }
             sign = 1;
@@ -460,9 +483,158 @@ class CubeGame extends CanvasBase {
         }
       }
     }
+    /*
+    ====================
+    TOP_
+    ====================
+    */
+    if (_isForFace(
+      Utils.CUBE_FACE_INDEX_TOP
+    )) {
+      /*
+      --------------------
+      VERTICAL
+      --------------------
+      */
+      if (this.isSwipeVertical()) {
+        switch (faceIndex) {
 
+          case Utils.CUBE_FACE_INDEX_FRONT:
+          case Utils.CUBE_FACE_INDEX_BOTTOM:
+          case Utils.CUBE_FACE_INDEX_TOP:
+            if (this.selectingInfo.selectedFace.x !== x) {
+              return null;
+            }
+            sign = 1;
+            axis.set(1, 0, 0);
+            break;
+
+          case Utils.CUBE_FACE_INDEX_BACK:
+            if (this.isSwipeVertical()) {
+              if (this.selectingInfo.selectedFace.x !== gs - x) {
+                return null;
+              }
+            } else if (this.selectingInfo.selectedFace.y !== gs - y) {
+              return null;
+            }
+            sign = -1;
+            signFirst = -1;
+            axis.set(1, 0, 0);
+            break;
+
+          default:
+            return null;
+        }
+      }
+      /*
+      --------------------
+      HORIZONTAL
+      --------------------
+      */
+      else {
+        switch (faceIndex) {
+
+          case Utils.CUBE_FACE_INDEX_TOP:
+            if (this.selectingInfo.selectedFace.y !== y) {
+              return null;
+            }
+            sign = -1;
+            signFirst = 1;
+            axis.set(0, 0, 1);
+            break;
+
+          case Utils.CUBE_FACE_INDEX_BOTTOM:
+            if (this.selectingInfo.selectedFace.y !== gs - y) {
+              return null;
+            }
+            sign = -1;
+            signFirst = 1;
+            axis.set(0, 0, 1);
+            break;
+
+          case Utils.CUBE_FACE_INDEX_LEFT:
+            if (this.selectingInfo.selectedFace.y !== gs - x) {
+              return null;
+            }
+            sign = 1;
+            signFirst = 1;
+            axis.set(0, 0, 1);
+            break;
+
+          case Utils.CUBE_FACE_INDEX_RIGHT:
+            if (this.selectingInfo.selectedFace.y !== x) {
+              return null;
+            }
+            sign = 1;
+            signFirst = -1;
+            axis.set(0, 0, 1);
+            break;
+        }
+      }
+    }
+    /*
+    ====================
+    BACK
+    ====================
+    */
+    else if (_isForFace(
+      Utils.CUBE_FACE_INDEX_BACK
+    )) {
+      /*
+      --------------------
+      VERTICAL
+      --------------------
+      */
+      if (this.isSwipeVertical()) {
+        switch (faceIndex) {
+
+          case Utils.CUBE_FACE_INDEX_FRONT:
+          case Utils.CUBE_FACE_INDEX_BOTTOM:
+          case Utils.CUBE_FACE_INDEX_TOP:
+            if (this.selectingInfo.selectedFace.x !== gs - x) {
+              return null;
+            }
+            sign = -1;
+            axis.set(1, 0, 0);
+            break;
+
+          case Utils.CUBE_FACE_INDEX_BACK:
+            if (this.selectingInfo.selectedFace.x !== x) {
+              return null;
+            }
+            sign = 1;
+            signFirst = -1;
+            axis.set(1, 0, 0);
+            break;
+
+          default:
+            return null;
+        }
+      }
+      /*
+      --------------------
+      HORIZONTAL
+      --------------------
+      */
+      else {
+        switch (faceIndex) {
+
+          case Utils.CUBE_FACE_INDEX_FRONT:
+          case Utils.CUBE_FACE_INDEX_RIGHT:
+          case Utils.CUBE_FACE_INDEX_BACK:
+          case Utils.CUBE_FACE_INDEX_LEFT:
+            if (this.selectingInfo.selectedFace.y !== y) {
+              return null;
+            }
+            sign = 1;
+            axis.set(0, 1, 0);
+            break;
+        }
+      }
+    }
+    
     return {
-      sign: sign,
+      sign: this.isSwipeNegative() ? -sign : sign,
       signFirst: signFirst,
       axis: axis
     };
@@ -471,6 +643,11 @@ class CubeGame extends CanvasBase {
   isSwipeVertical(): boolean {
     return this.selectingInfo.direction == "up" ||
       this.selectingInfo.direction == "down";
+  }
+
+  isSwipeNegative(): boolean {
+    return this.selectingInfo.direction == "up" ||
+      this.selectingInfo.direction == "left";
   }
 }
 

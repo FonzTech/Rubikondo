@@ -4,12 +4,14 @@ import CanvasGame from "../CanvasGame/CanvasGame.tsx";
 import Utils from "../Utils/Utils.tsx";
 import DebugOverlay from "../DebugOverlay/DebugOverlay.tsx";
 import CubeGame from "../CubeGame/CubeGame.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import {useInputKeys} from "../Hooks/useInputKeys.ts";
 
 interface GameSizeInterface {
   gameSize: number;
   startNewGame: boolean;
 }
+
 
 const GamePage: React.FC<GameSizeInterface> = ({
   gameSize = Utils.DEFAULT_GAME_SIZE,
@@ -27,6 +29,16 @@ const GamePage: React.FC<GameSizeInterface> = ({
 
   const [showTutorial, setShowTutorial] = useState<boolean>(startNewGame);
   const handleCloseTutorial = () => setShowTutorial(false);
+
+  const [isKeyPressed, setupFunc, cleanUpFunc] = useInputKeys(document.body);
+
+  useEffect(() => {
+    setupFunc();
+
+    return () => {
+      cleanUpFunc();
+    };
+  }, []);
 
   return (
     <DebugOverlay
@@ -52,7 +64,7 @@ const GamePage: React.FC<GameSizeInterface> = ({
                   minHeight: "256px",
                   height: "100%"
                 }}
-                canvasLogicInstantiator={() => new CubeGame(gameSize)}
+                canvasLogicInstantiator={() => new CubeGame(gameSize, isKeyPressed)}
                 gameSize={gameSize}
               />
             </div>
