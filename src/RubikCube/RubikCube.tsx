@@ -107,7 +107,7 @@ class RubikCube {
             throw new Error(`Invalid face index ${fi}`);
           }
 
-          Utils.rotateAroundPoint(clone, zeroVector, axis, angle);
+          Utils.rotateAroundPoint(clone, zeroVector, axis, angle, axis);
 
           this.group.add(clone);
         }

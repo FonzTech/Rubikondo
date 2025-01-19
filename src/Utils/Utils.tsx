@@ -164,9 +164,9 @@ class Utils {
     return dynamicTexture;
   }
 
-  static rotateAroundPoint = (object: THREE.Group<THREE.Object3DEventMap>, point: THREE.Vector3, axis: THREE.Vector3, angle: number, firstSign: number = 1) => {
+  static rotateAroundPoint = (object: THREE.Group<THREE.Object3DEventMap>, point: THREE.Vector3, axis: THREE.Vector3, angle: number, firstAxis: THREE.Vector3, firstSign: number = 1) => {
     const offset = new THREE.Vector3().subVectors(object.position, point);
-    offset.applyAxisAngle(axis, angle * firstSign);
+    offset.applyAxisAngle(firstAxis, angle * firstSign);
     object.position.copy(point).add(offset);
     object.rotateOnAxis(axis, angle);
   }

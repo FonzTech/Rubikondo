@@ -2,20 +2,10 @@ import * as THREE from "three";
 import {CanvasBase} from "../CanvasBase/CanvasBase.tsx";
 import {Vector2} from "three";
 import Utils from "../Utils/Utils.tsx";
+import {RotateInfo, SelectedFace} from "./commonDataStructs.ts";
+import getRotateInfo from "./getRotateInfo.ts";
 
 type GestureDirection = "up" | "down" | "left" | "right";
-
-interface RotateInfo {
-  sign: number,
-  signFirst: number,
-  axis: THREE.Vector3
-}
-
-interface SelectedFace {
-  faceIndex: number,
-  x: number,
-  y: number
-}
 
 interface SelectingInfo {
   status: 0 | 1 | 2,
@@ -118,7 +108,7 @@ class CubeGame extends CanvasBase {
         }
         const rotateInfo = this.selectingInfo.rotateInfos.get(key);
         if (rotateInfo) {
-          Utils.rotateAroundPoint(value.mesh, zeroVector, rotateInfo.axis, THREE.MathUtils.degToRad(angle * rotateInfo.sign), rotateInfo.signFirst);
+          Utils.rotateAroundPoint(value.mesh, zeroVector, rotateInfo.axis, THREE.MathUtils.degToRad(angle * rotateInfo.sign), rotateInfo.axisFirst, rotateInfo.signFirst);
         }
       }
     }
@@ -402,242 +392,10 @@ class CubeGame extends CanvasBase {
       if (!value.selected) {
         continue;
       }
-      const [ faceIndex, x, y ] = Utils.getComponentsFromCubeKey(key);
-      const rotateInfo = this.getRotateInfo(faceIndex, x, y);
+      const [faceIndex, x, y] = Utils.getComponentsFromCubeKey(key);
+      const rotateInfo = getRotateInfo(this.isSwipeVertical(), this.isSwipeNegative(), this.gameSize, this.selectingInfo.selectedFace, faceIndex, x, y);
       this.selectingInfo.rotateInfos.set(key, rotateInfo);
     }
-  }
-
-  getRotateInfo(faceIndex: number, x: number, y: number): RotateInfo | null {
-    let sign = 0;
-    let signFirst = 1;
-    let axis = new THREE.Vector3(0, 0, 0);
-
-    const gs = this.gameSize - 1;
-
-    const _isForFace =
-      (...faces: number[]): boolean =>
-        faces.includes(this.selectingInfo.selectedFace.faceIndex);
-
-    /*
-    ====================
-    FRONT
-    ====================
-    */
-    if (_isForFace(
-      Utils.CUBE_FACE_INDEX_FRONT
-    )) {
-      /*
-      --------------------
-      VERTICAL
-      --------------------
-      */
-      if (this.isSwipeVertical()) {
-        switch (faceIndex) {
-
-          case Utils.CUBE_FACE_INDEX_FRONT:
-          case Utils.CUBE_FACE_INDEX_BOTTOM:
-          case Utils.CUBE_FACE_INDEX_TOP:
-            if (this.selectingInfo.selectedFace.x !== x) {
-              return null;
-            }
-            sign = 1;
-            axis.set(1, 0, 0);
-            break;
-
-          case Utils.CUBE_FACE_INDEX_BACK:
-            if (this.isSwipeVertical()) {
-              if (this.selectingInfo.selectedFace.x !== gs - x) {
-                return null;
-              }
-            } else if (this.selectingInfo.selectedFace.y !== gs - y) {
-              return null;
-            }
-            sign = -1;
-            signFirst = -1;
-            axis.set(1, 0, 0);
-            break;
-
-          default:
-            return null;
-        }
-      }
-      /*
-      --------------------
-      HORIZONTAL
-      --------------------
-      */
-      else {
-        switch (faceIndex) {
-
-          case Utils.CUBE_FACE_INDEX_FRONT:
-          case Utils.CUBE_FACE_INDEX_RIGHT:
-          case Utils.CUBE_FACE_INDEX_BACK:
-          case Utils.CUBE_FACE_INDEX_LEFT:
-            if (this.selectingInfo.selectedFace.y !== y) {
-              return null;
-            }
-            sign = 1;
-            axis.set(0, 1, 0);
-            break;
-        }
-      }
-    }
-    /*
-    ====================
-    TOP_
-    ====================
-    */
-    if (_isForFace(
-      Utils.CUBE_FACE_INDEX_TOP
-    )) {
-      /*
-      --------------------
-      VERTICAL
-      --------------------
-      */
-      if (this.isSwipeVertical()) {
-        switch (faceIndex) {
-
-          case Utils.CUBE_FACE_INDEX_FRONT:
-          case Utils.CUBE_FACE_INDEX_BOTTOM:
-          case Utils.CUBE_FACE_INDEX_TOP:
-            if (this.selectingInfo.selectedFace.x !== x) {
-              return null;
-            }
-            sign = 1;
-            axis.set(1, 0, 0);
-            break;
-
-          case Utils.CUBE_FACE_INDEX_BACK:
-            if (this.isSwipeVertical()) {
-              if (this.selectingInfo.selectedFace.x !== gs - x) {
-                return null;
-              }
-            } else if (this.selectingInfo.selectedFace.y !== gs - y) {
-              return null;
-            }
-            sign = -1;
-            signFirst = -1;
-            axis.set(1, 0, 0);
-            break;
-
-          default:
-            return null;
-        }
-      }
-      /*
-      --------------------
-      HORIZONTAL
-      --------------------
-      */
-      else {
-        switch (faceIndex) {
-
-          case Utils.CUBE_FACE_INDEX_TOP:
-            if (this.selectingInfo.selectedFace.y !== y) {
-              return null;
-            }
-            sign = -1;
-            signFirst = 1;
-            axis.set(0, 0, 1);
-            break;
-
-          case Utils.CUBE_FACE_INDEX_BOTTOM:
-            if (this.selectingInfo.selectedFace.y !== gs - y) {
-              return null;
-            }
-            sign = -1;
-            signFirst = 1;
-            axis.set(0, 0, 1);
-            break;
-
-          case Utils.CUBE_FACE_INDEX_LEFT:
-            if (this.selectingInfo.selectedFace.y !== gs - x) {
-              return null;
-            }
-            sign = 1;
-            signFirst = 1;
-            axis.set(0, 0, 1);
-            break;
-
-          case Utils.CUBE_FACE_INDEX_RIGHT:
-            if (this.selectingInfo.selectedFace.y !== x) {
-              return null;
-            }
-            sign = 1;
-            signFirst = -1;
-            axis.set(0, 0, 1);
-            break;
-        }
-      }
-    }
-    /*
-    ====================
-    BACK
-    ====================
-    */
-    else if (_isForFace(
-      Utils.CUBE_FACE_INDEX_BACK
-    )) {
-      /*
-      --------------------
-      VERTICAL
-      --------------------
-      */
-      if (this.isSwipeVertical()) {
-        switch (faceIndex) {
-
-          case Utils.CUBE_FACE_INDEX_FRONT:
-          case Utils.CUBE_FACE_INDEX_BOTTOM:
-          case Utils.CUBE_FACE_INDEX_TOP:
-            if (this.selectingInfo.selectedFace.x !== gs - x) {
-              return null;
-            }
-            sign = -1;
-            axis.set(1, 0, 0);
-            break;
-
-          case Utils.CUBE_FACE_INDEX_BACK:
-            if (this.selectingInfo.selectedFace.x !== x) {
-              return null;
-            }
-            sign = 1;
-            signFirst = -1;
-            axis.set(1, 0, 0);
-            break;
-
-          default:
-            return null;
-        }
-      }
-      /*
-      --------------------
-      HORIZONTAL
-      --------------------
-      */
-      else {
-        switch (faceIndex) {
-
-          case Utils.CUBE_FACE_INDEX_FRONT:
-          case Utils.CUBE_FACE_INDEX_RIGHT:
-          case Utils.CUBE_FACE_INDEX_BACK:
-          case Utils.CUBE_FACE_INDEX_LEFT:
-            if (this.selectingInfo.selectedFace.y !== y) {
-              return null;
-            }
-            sign = 1;
-            axis.set(0, 1, 0);
-            break;
-        }
-      }
-    }
-    
-    return {
-      sign: this.isSwipeNegative() ? -sign : sign,
-      signFirst: signFirst,
-      axis: axis
-    };
   }
 
   isSwipeVertical(): boolean {
