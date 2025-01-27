@@ -1,28 +1,27 @@
 import * as THREE from "three";
 import Utils from "../Utils/Utils.tsx";
 import {RotateInfo, SelectedFace} from "./commonDataStructs.ts";
+import {getEdgeIndex, isForFaceFx} from "./getRotateInfoCommon.ts";
 
-const getRotateInfo = (swipeVertical: boolean, swipeNegative: boolean, gameSize: number, selectedFace: SelectedFace, faceIndex: number, x: number, y: number): RotateInfo | null => {
+const getRotateInfoForRowsAndColumns = (swipeVertical: boolean, swipeNegative: boolean, gameSize: number, selectedFace: SelectedFace, faceIndex: number, x: number, y: number): RotateInfo | null => {
   let sign = 0;
   let signFirst = 0;
   let axis = new THREE.Vector3(0, 0, 0);
   let axisFirst = new THREE.Vector3(0, 0, 0);
 
-  const gs = gameSize - 1;
+  const gs = getEdgeIndex(gameSize);
 
-  const _isForFace =
-    (...faces: number[]): boolean =>
-      faces.includes(selectedFace.faceIndex);
+  const isForFace = isForFaceFx(selectedFace.faceIndex);
 
   /*
   ====================
   FRONT
   ====================
   */
-  if (_isForFace(
+  if (isForFace(
     Utils.CUBE_FACE_INDEX_FRONT
   )) {
-    /*7
+    /*
     --------------------
     VERTICAL
     --------------------
@@ -47,7 +46,7 @@ const getRotateInfo = (swipeVertical: boolean, swipeNegative: boolean, gameSize:
             return null;
           }
           sign = -1;
-          signFirst = 1;
+          signFirst = -1;
           axis.set(1, 0, 0);
           axisFirst.set(1, 0, 0);
           break;
@@ -76,6 +75,9 @@ const getRotateInfo = (swipeVertical: boolean, swipeNegative: boolean, gameSize:
           axis.set(0, 1, 0);
           axisFirst.set(0, 1, 0);
           break;
+
+        default:
+          return null;
       }
     }
   }
@@ -84,7 +86,7 @@ const getRotateInfo = (swipeVertical: boolean, swipeNegative: boolean, gameSize:
   LEFT
   ====================
   */
-  else if (_isForFace(
+  else if (isForFace(
     Utils.CUBE_FACE_INDEX_LEFT
   )) {
     /*
@@ -159,6 +161,9 @@ const getRotateInfo = (swipeVertical: boolean, swipeNegative: boolean, gameSize:
           axis.set(0, 1, 0);
           axisFirst.set(0, 1, 0);
           break;
+
+        default:
+          return null;
       }
     }
   }
@@ -167,7 +172,7 @@ const getRotateInfo = (swipeVertical: boolean, swipeNegative: boolean, gameSize:
   RIGHT
   ====================
   */
-  else if (_isForFace(
+  else if (isForFace(
     Utils.CUBE_FACE_INDEX_RIGHT
   )) {
     /*
@@ -242,6 +247,9 @@ const getRotateInfo = (swipeVertical: boolean, swipeNegative: boolean, gameSize:
           axis.set(0, 1, 0);
           axisFirst.set(0, 1, 0);
           break;
+
+        default:
+          return null;
       }
     }
   }
@@ -250,7 +258,7 @@ const getRotateInfo = (swipeVertical: boolean, swipeNegative: boolean, gameSize:
   TOP
   ====================
   */
-  else if (_isForFace(
+  else if (isForFace(
     Utils.CUBE_FACE_INDEX_TOP
   )) {
     /*
@@ -334,6 +342,9 @@ const getRotateInfo = (swipeVertical: boolean, swipeNegative: boolean, gameSize:
           axis.set(1, 0, 0);
           axisFirst.set(0, 0, 1);
           break;
+
+        default:
+          return null;
       }
     }
   }
@@ -342,7 +353,7 @@ const getRotateInfo = (swipeVertical: boolean, swipeNegative: boolean, gameSize:
   BACK
   ====================
   */
-  else if (_isForFace(
+  else if (isForFace(
     Utils.CUBE_FACE_INDEX_BACK
   )) {
     /*
@@ -399,6 +410,9 @@ const getRotateInfo = (swipeVertical: boolean, swipeNegative: boolean, gameSize:
           axis.set(0, 1, 0);
           axisFirst.set(0, 1, 0);
           break;
+
+        default:
+          return null;
       }
     }
   }
@@ -407,7 +421,7 @@ const getRotateInfo = (swipeVertical: boolean, swipeNegative: boolean, gameSize:
   BOTTOM
   ====================
   */
-  else if (_isForFace(
+  else if (isForFace(
     Utils.CUBE_FACE_INDEX_BOTTOM
   )) {
     /*
@@ -491,8 +505,19 @@ const getRotateInfo = (swipeVertical: boolean, swipeNegative: boolean, gameSize:
           axis.set(1, 0, 0);
           axisFirst.set(0, 0, 1);
           break;
+
+        default:
+          return null;
       }
     }
+  }
+  /*
+  ====================
+  UNRECOGNIZED FACE
+  ====================
+  */
+  else {
+    throw `Unrecognized face index ${selectedFace.faceIndex}`;
   }
 
   return {
@@ -503,4 +528,4 @@ const getRotateInfo = (swipeVertical: boolean, swipeNegative: boolean, gameSize:
   };
 }
 
-export default getRotateInfo;
+export default getRotateInfoForRowsAndColumns;

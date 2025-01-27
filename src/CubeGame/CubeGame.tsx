@@ -3,7 +3,7 @@ import {CanvasBase} from "../CanvasBase/CanvasBase.tsx";
 import {Vector2} from "three";
 import Utils from "../Utils/Utils.tsx";
 import {RotateInfo, SelectedFace} from "./commonDataStructs.ts";
-import getRotateInfo from "./getRotateInfo.ts";
+import getRotateInfoAggregate from "./getRotateInfoAggregate.ts";
 
 type GestureDirection = "up" | "down" | "left" | "right";
 
@@ -103,9 +103,6 @@ class CubeGame extends CanvasBase {
       const zeroVector = new THREE.Vector3(0, 0, 0);
 
       for (const [key, value] of this.rubikCube.rubikInfos.entries()) {
-        if (!this.selectingInfo.selecteds.has(key)) {
-          continue;
-        }
         const rotateInfo = this.selectingInfo.rotateInfos.get(key);
         if (rotateInfo) {
           Utils.rotateAroundPoint(value.mesh, zeroVector, rotateInfo.axis, THREE.MathUtils.degToRad(angle * rotateInfo.sign), rotateInfo.axisFirst, rotateInfo.signFirst);
@@ -389,11 +386,8 @@ class CubeGame extends CanvasBase {
     this.selectingInfo.rotateInfos.clear();
 
     for (const [key, value] of this.rubikCube.rubikInfos.entries()) {
-      if (!value.selected) {
-        continue;
-      }
       const [faceIndex, x, y] = Utils.getComponentsFromCubeKey(key);
-      const rotateInfo = getRotateInfo(this.isSwipeVertical(), this.isSwipeNegative(), this.gameSize, this.selectingInfo.selectedFace, faceIndex, x, y);
+      const rotateInfo = getRotateInfoAggregate(this.isSwipeVertical(), this.isSwipeNegative(), this.gameSize, this.selectingInfo.selectedFace, faceIndex, x, y);
       this.selectingInfo.rotateInfos.set(key, rotateInfo);
     }
   }
