@@ -43,11 +43,7 @@ const getRotateInfo = (swipeVertical: boolean, swipeNegative: boolean, gameSize:
           break;
 
         case Utils.CUBE_FACE_INDEX_BACK:
-          if (swipeVertical) {
-            if (selectedFace.x !== gs - x) {
-              return null;
-            }
-          } else if (selectedFace.y !== gs - y) {
+          if (selectedFace.x !== gs - x) {
             return null;
           }
           sign = -1;
@@ -85,13 +81,12 @@ const getRotateInfo = (swipeVertical: boolean, swipeNegative: boolean, gameSize:
   }
   /*
   ====================
-  RIGHT
+  LEFT
   ====================
   */
   else if (_isForFace(
-    Utils.CUBE_FACE_INDEX_RIGHT
+    Utils.CUBE_FACE_INDEX_LEFT
   )) {
-    console.error("TODO HEREEE");
     /*
     --------------------
     VERTICAL
@@ -100,30 +95,127 @@ const getRotateInfo = (swipeVertical: boolean, swipeNegative: boolean, gameSize:
     if (swipeVertical) {
       switch (faceIndex) {
 
-        case Utils.CUBE_FACE_INDEX_RIGHT:
-        case Utils.CUBE_FACE_INDEX_BOTTOM:
         case Utils.CUBE_FACE_INDEX_TOP:
+          if (selectedFace.x !== gs - y) {
+            return null;
+          }
+          sign = -1;
+          signFirst = -1;
+          axis.set(0, 1, 0);
+          axisFirst.set(0, 0, 1);
+          break;
+
+        case Utils.CUBE_FACE_INDEX_BOTTOM:
+          if (selectedFace.x !== y) {
+            return null;
+          }
+          sign = 1;
+          signFirst = 1;
+          axis.set(0, 1, 0);
+          axisFirst.set(0, 0, 1);
+          break;
+
+        case Utils.CUBE_FACE_INDEX_RIGHT:
+          if (selectedFace.x !== gs - x) {
+            return null;
+          }
+          sign = -1;
+          signFirst = -1;
+          axis.set(1, 0, 0);
+          axisFirst.set(0, 0, 1);
+          break;
+
+        case Utils.CUBE_FACE_INDEX_LEFT:
           if (selectedFace.x !== x) {
             return null;
           }
           sign = 1;
           signFirst = 1;
           axis.set(1, 0, 0);
-          axisFirst.set(1, 0, 0);
+          axisFirst.set(0, 0, 1);
+          break;
+
+        default:
+          return null;
+      }
+    }
+    /*
+    --------------------
+    HORIZONTAL
+    --------------------
+    */
+    else {
+      switch (faceIndex) {
+
+        case Utils.CUBE_FACE_INDEX_FRONT:
+        case Utils.CUBE_FACE_INDEX_RIGHT:
+        case Utils.CUBE_FACE_INDEX_BACK:
+        case Utils.CUBE_FACE_INDEX_LEFT:
+          if (selectedFace.y !== y) {
+            return null;
+          }
+          sign = 1;
+          signFirst = 1;
+          axis.set(0, 1, 0);
+          axisFirst.set(0, 1, 0);
+          break;
+      }
+    }
+  }
+  /*
+  ====================
+  RIGHT
+  ====================
+  */
+  else if (_isForFace(
+    Utils.CUBE_FACE_INDEX_RIGHT
+  )) {
+    /*
+    --------------------
+    VERTICAL
+    --------------------
+    */
+    if (swipeVertical) {
+      switch (faceIndex) {
+
+        case Utils.CUBE_FACE_INDEX_TOP:
+          if (selectedFace.x !== y) {
+            return null;
+          }
+          sign = 1;
+          signFirst = -1;
+          axis.set(0, 1, 0);
+          axisFirst.set(0, 0, 1);
+          break;
+
+        case Utils.CUBE_FACE_INDEX_BOTTOM:
+          if (selectedFace.x !== gs - y) {
+            return null;
+          }
+          sign = -1;
+          signFirst = 1;
+          axis.set(0, 1, 0);
+          axisFirst.set(0, 0, 1);
+          break;
+
+        case Utils.CUBE_FACE_INDEX_RIGHT:
+          if (selectedFace.x !== x) {
+            return null;
+          }
+          sign = 1;
+          signFirst = -1;
+          axis.set(1, 0, 0);
+          axisFirst.set(0, 0, 1);
           break;
 
         case Utils.CUBE_FACE_INDEX_LEFT:
-          if (swipeVertical) {
-            if (selectedFace.x !== gs - x) {
-              return null;
-            }
-          } else if (selectedFace.y !== gs - y) {
+          if (selectedFace.x !== gs - x) {
             return null;
           }
           sign = -1;
           signFirst = 1;
           axis.set(1, 0, 0);
-          axisFirst.set(1, 0, 0);
+          axisFirst.set(0, 0, 1);
           break;
 
         default:
@@ -182,11 +274,7 @@ const getRotateInfo = (swipeVertical: boolean, swipeNegative: boolean, gameSize:
           break;
 
         case Utils.CUBE_FACE_INDEX_BACK:
-          if (swipeVertical) {
-            if (selectedFace.x !== gs - x) {
-              return null;
-            }
-          } else if (selectedFace.y !== gs - y) {
+          if (selectedFace.x !== gs - x) {
             return null;
           }
           sign = -1;
@@ -343,11 +431,7 @@ const getRotateInfo = (swipeVertical: boolean, swipeNegative: boolean, gameSize:
           break;
 
         case Utils.CUBE_FACE_INDEX_BACK:
-          if (swipeVertical) {
-            if (selectedFace.x !== gs - x) {
-              return null;
-            }
-          } else if (selectedFace.y !== gs - y) {
+          if (selectedFace.x !== gs - x) {
             return null;
           }
           sign = -1;
