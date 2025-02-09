@@ -343,7 +343,7 @@ const getRotateInfoForEdgeFace = (swipeVertical: boolean, swipeNegative: boolean
       --------------------
       END
       --------------------
-      */ 
+      */
       else if (
         isAtEdgeEnd(selectedFace.y) &&
         isCurrentFaceEqualTo(Utils.CUBE_FACE_INDEX_TOP)
@@ -366,7 +366,82 @@ const getRotateInfoForEdgeFace = (swipeVertical: boolean, swipeNegative: boolean
   else if (isForFace(
     Utils.CUBE_FACE_INDEX_TOP
   )) {
-    return null;
+    /*
+    --------------------
+    VERTICAL
+    --------------------
+    */
+    if (swipeVertical) {
+      /*
+      --------------------
+      START
+      --------------------
+      */
+      if (
+        isAtEdgeStart(selectedFace.x) &&
+        isCurrentFaceEqualTo(Utils.CUBE_FACE_INDEX_LEFT)
+      ) {
+        sign = 1;
+        signFirst = -1;
+        axis.set(0, 0, 1);
+        axisFirst.set(1, 0, 0);
+      }
+      /*
+      --------------------
+      END
+      --------------------
+      */
+      else if (
+        isAtEdgeEnd(selectedFace.x) &&
+        isCurrentFaceEqualTo(Utils.CUBE_FACE_INDEX_RIGHT)
+      ) {
+        sign = 1;
+        signFirst = 1;
+        axis.set(0, 0, 1);
+        axisFirst.set(1, 0, 0);
+      }
+      else {
+        return null;
+      }
+    }
+    /*
+    --------------------
+    HORIZONTAL
+    --------------------
+    */
+    else {
+      /*
+      --------------------
+      START
+      --------------------
+      */
+      if (
+        isAtEdgeStart(selectedFace.y) &&
+        isCurrentFaceEqualTo(Utils.CUBE_FACE_INDEX_FRONT)
+      ) {
+        sign = -1;
+        signFirst = 1;
+        axis.set(0, 0, 1);
+        axisFirst.set(0, 0, 1);
+      }
+      /*
+      --------------------
+      END
+      --------------------
+      */
+      else if (
+        isAtEdgeEnd(selectedFace.y) &&
+        isCurrentFaceEqualTo(Utils.CUBE_FACE_INDEX_BACK)
+      ) {
+        sign = 1;
+        signFirst = -1;
+        axis.set(0, 0, 1);
+        axisFirst.set(0, 0, 1);
+      }
+      else {
+        return null;
+      }
+    }
   }
   /*
   ====================
@@ -376,7 +451,82 @@ const getRotateInfoForEdgeFace = (swipeVertical: boolean, swipeNegative: boolean
   else if (isForFace(
     Utils.CUBE_FACE_INDEX_BOTTOM
   )) {
-    return null;
+    /*
+    --------------------
+    VERTICAL
+    --------------------
+    */
+    if (swipeVertical) {
+      /*
+      --------------------
+      START
+      --------------------
+      */
+      if (
+        isAtEdgeStart(selectedFace.x) &&
+        isCurrentFaceEqualTo(Utils.CUBE_FACE_INDEX_LEFT)
+      ) {
+        sign = -1;
+        signFirst = -1;
+        axis.set(0, 0, 1);
+        axisFirst.set(1, 0, 0);
+      }
+      /*
+      --------------------
+      END
+      --------------------
+      */
+      else if (
+        isAtEdgeEnd(selectedFace.x) &&
+        isCurrentFaceEqualTo(Utils.CUBE_FACE_INDEX_RIGHT)
+      ) {
+        sign = 1;
+        signFirst = 1;
+        axis.set(0, 0, 1);
+        axisFirst.set(1, 0, 0);
+      }
+      else {
+        return null;
+      }
+    }
+    /*
+    --------------------
+    HORIZONTAL
+    --------------------
+    */
+    else {
+      /*
+      --------------------
+      START
+      --------------------
+      */
+      if (
+        isAtEdgeEnd(selectedFace.y) &&
+        isCurrentFaceEqualTo(Utils.CUBE_FACE_INDEX_FRONT)
+      ) {
+        sign = 1;
+        signFirst = 1;
+        axis.set(0, 0, 1);
+        axisFirst.set(0, 0, 1);
+      }
+      /*
+      --------------------
+      END
+      --------------------
+      */
+      else if (
+        isAtEdgeStart(selectedFace.y) &&
+        isCurrentFaceEqualTo(Utils.CUBE_FACE_INDEX_BACK)
+      ) {
+        sign = -1;
+        signFirst = -1;
+        axis.set(0, 0, 1);
+        axisFirst.set(0, 0, 1);
+      }
+      else {
+        return null;
+      }
+    }
   }
   /*
   ====================

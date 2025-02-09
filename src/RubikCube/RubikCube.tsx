@@ -147,7 +147,7 @@ class RubikCube {
     }
 
     // Update rotation
-    this.group.rotation.setFromQuaternion(this.rotation, "XYZ");
+    // this.group.rotation.setFromQuaternion(this.rotation, "XYZ");
   }
 
   onDragStart(point: THREE.Vector2) {
@@ -260,6 +260,22 @@ class RubikCube {
     ));
 
     this.rotation.multiply(newQuat);
+  }
+
+  endRotateCallback() {
+    // this.group.rotation.setFromQuaternion(new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, 0)), "XYZ");
+
+    const inverseQuat = this.rotation.clone().invert();
+
+    for (const [key, value] of this.rubikInfos.entries()) {
+      // Get absolute point position
+      const p = new THREE.Vector3();
+      value.mesh.getWorldPosition(p);
+      p.applyQuaternion(inverseQuat);
+      console.log("End rotation is:", key, p);
+    }
+
+    // this.group.rotation.setFromQuaternion(this.rotation, "XYZ");
   }
 }
 

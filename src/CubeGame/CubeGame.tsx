@@ -84,7 +84,7 @@ class CubeGame extends CanvasBase {
       }
       value.material.uniforms.uSelectedAnim.value = this.selectedAnim;
       value.material.needsUpdate = true;
-    };
+    }
 
     if (this.selectingInfo.status === 2) {
       dt *= this.isKeyPressed(" ") ? 10.0 : 0.1;
@@ -95,6 +95,8 @@ class CubeGame extends CanvasBase {
         this.selectingInfo.frame = 1.0;
 
         this.selectingInfo.status = 0;
+
+        this.rubikCube.endRotateCallback();
       } else {
         this.selectingInfo.frame += dt;
         angle = dt * 90;
@@ -385,7 +387,7 @@ class CubeGame extends CanvasBase {
     this.selectingInfo.frame = 0;
     this.selectingInfo.rotateInfos.clear();
 
-    for (const [key, value] of this.rubikCube.rubikInfos.entries()) {
+    for (const [key, _] of this.rubikCube.rubikInfos.entries()) {
       const [faceIndex, x, y] = Utils.getComponentsFromCubeKey(key);
       const rotateInfo = getRotateInfoAggregate(this.isSwipeVertical(), this.isSwipeNegative(), this.gameSize, this.selectingInfo.selectedFace, faceIndex, x, y);
       this.selectingInfo.rotateInfos.set(key, rotateInfo);
