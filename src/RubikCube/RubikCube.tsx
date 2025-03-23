@@ -12,7 +12,6 @@ interface RubikDragState {
 }
 
 class RubikCube {
-  static readonly APPLY_DEBUG_TEXTURE = process.env.NODE_ENV !== "test";
   static readonly MAX_ANIM_MULT_FACTOR = 0.35;
   static readonly X_AXIS = new THREE.Vector3(1, 0, 0);
   static readonly Y_AXIS = new THREE.Vector3(0, 1, 0);
@@ -85,7 +84,7 @@ class RubikCube {
             throw new Error(`Could not get color for face ${key}`);
           }
 
-          const _texture = RubikCube.APPLY_DEBUG_TEXTURE ?
+          const _texture = Utils.IS_DEBUG ?
             Utils.generateCubeTextureForDebug(texture, key) :
             texture;
 
@@ -147,7 +146,7 @@ class RubikCube {
     }
 
     // Update rotation
-    // this.group.rotation.setFromQuaternion(this.rotation, "XYZ");
+    this.group.rotation.setFromQuaternion(this.rotation, "XYZ");
   }
 
   onDragStart(point: THREE.Vector2) {
@@ -262,20 +261,43 @@ class RubikCube {
     this.rotation.multiply(newQuat);
   }
 
-  endRotateCallback() {
-    // this.group.rotation.setFromQuaternion(new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, 0)), "XYZ");
-
+  endRotateCallback(selecteds: Set<string>) {
     const inverseQuat = this.rotation.clone().invert();
 
+    const faces = new Map<string, THREE.Color>();
+
     for (const [key, value] of this.rubikInfos.entries()) {
+      // Skip unselected faces
+      if (!selecteds.has(key)) {
+        continue;
+      }
+
       // Get absolute point position
       const p = new THREE.Vector3();
+      value.mesh.updateMatrixWorld(true);
       value.mesh.getWorldPosition(p);
       p.applyQuaternion(inverseQuat);
       console.log("End rotation is:", key, p);
-    }
 
-    // this.group.rotation.setFromQuaternion(this.rotation, "XYZ");
+      const pk = [
+        this.getFaceStartingPositionCoord(p.x),
+        this.getFaceStartingPositionCoord(p.y),
+        this.getFaceStartingPositionCoord(p.z)
+      ].join("_");
+
+      if (faces.has(pk)) {
+        // This should never happen!!
+        console.error(`endRotateCallback - Computed face for PosKey ${pk} and FaceKey ${key} collides with ${faces.get(pk)}`);
+      } else {
+        faces.set(pk, this.cubeColors.get(key.replace(Utils.getCubeKeyPrefix(), ""))!);
+        /// TODO Link face "pk" to "getCubeKeyForGame"
+      }
+    }
+    console.log("Computed Faces is", faces);
+  }
+
+  getFaceStartingPositionCoord(value: number): string {
+    return (Math.round(value / 0.5) * 0.5).toFixed(2);
   }
 }
 

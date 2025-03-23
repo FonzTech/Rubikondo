@@ -1,6 +1,8 @@
 import * as THREE from "three";
 
 class Utils {
+  static readonly IS_DEBUG = process.env.NODE_ENV !== "test";
+
   static readonly MESH_CUBE_PATH = "/cube.obj";
   static readonly TEXTURE_CUBE_PATH = "/cube.png";
 
@@ -125,8 +127,12 @@ class Utils {
     return `${faceIndex}_${x}_${y}`;
   }
 
+  static getCubeKeyPrefix(): string {
+    return Utils.CUBE_KEY_PREFIX + "_";
+  }
+
   static getCubeKeyForGame(faceIndex: number, x: number, y: number): string {
-    return Utils.CUBE_KEY_PREFIX + "_" + Utils.getCubeKey(faceIndex, x, y);
+    return Utils.getCubeKeyPrefix() + Utils.getCubeKey(faceIndex, x, y);
   }
 
   static getComponentsFromCubeKey(value: string): number[] {

@@ -87,7 +87,7 @@ class CubeGame extends CanvasBase {
     }
 
     if (this.selectingInfo.status === 2) {
-      dt *= this.isKeyPressed(" ") ? 10.0 : 0.1;
+      dt *= Utils.IS_DEBUG && this.isKeyPressed(" ") ? 10.0 : 0.1;
       let angle: number;
 
       if (this.selectingInfo.frame + dt > 1.0) {
@@ -96,7 +96,9 @@ class CubeGame extends CanvasBase {
 
         this.selectingInfo.status = 0;
 
-        this.rubikCube.endRotateCallback();
+        this.props!.scene.updateMatrixWorld(true);
+
+        this.rubikCube.endRotateCallback(this.selectingInfo.selecteds);
       } else {
         this.selectingInfo.frame += dt;
         angle = dt * 90;
@@ -225,18 +227,22 @@ class CubeGame extends CanvasBase {
       value.material.needsUpdate = true;
 
       value.selected = selected;
+
+      this.rubikCube.rubikInfos.set(key, value);
     }
 
     this.selectingInfo.status = 1;
   }
 
   deselectCubeFaces() {
-    for (const [_, material] of this.rubikCube.rubikInfos.entries()) {
-      material.material.uniforms.uSelected.value = 0.0;
-      material.material.uniforms.uSelectedAnim.value = 0.0;
-      material.material.needsUpdate = true;
+    for (const [key, value] of this.rubikCube.rubikInfos.entries()) {
+      value.material.uniforms.uSelected.value = 0.0;
+      value.material.uniforms.uSelectedAnim.value = 0.0;
+      value.material.needsUpdate = true;
 
-      material.selected = false;
+      value.selected = false;
+
+      this.rubikCube.rubikInfos.set(key, value);
     }
   }
 
