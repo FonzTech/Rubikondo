@@ -11,6 +11,12 @@ interface RubikDragState {
   signX: number
 }
 
+interface EndRotateItem {
+  color: THREE.Color,
+  current: string,
+  target: string
+}
+
 class RubikCube {
   static readonly MAX_ANIM_MULT_FACTOR = 0.35;
   static readonly X_AXIS = new THREE.Vector3(1, 0, 0);
@@ -67,7 +73,7 @@ class RubikCube {
     this.group = this.getNewGroup();
 
     const limit = this.gameSize;
-    const offset = this.gameSize * -0.5;
+    const offset = this.gameSize * -0.5 + 0.5;
 
     for (let fi = 0; fi < 6; ++fi) {
       for (let x = 0; x < limit; ++x) {
@@ -75,7 +81,7 @@ class RubikCube {
           const position = new THREE.Vector3(
             offset + x,
             offset + y,
-            offset + this.gameSize
+            offset + this.gameSize - 0.5
           );
 
           const key = Utils.getCubeKey(fi, x, y);
@@ -264,20 +270,18 @@ class RubikCube {
   endRotateCallback(selecteds: Set<string>) {
     const inverseQuat = this.rotation.clone().invert();
 
-    const faces = new Map<string, THREE.Color>();
+    const references = this.getReferenceForFaces();
+    // console.log("Computed references for faces is", references);
+
+    const faces = new Map<string, EndRotateItem>();
 
     for (const [key, value] of this.rubikInfos.entries()) {
-      // Skip unselected faces
-      if (!selecteds.has(key)) {
-        continue;
-      }
-
       // Get absolute point position
       const p = new THREE.Vector3();
       value.mesh.updateMatrixWorld(true);
       value.mesh.getWorldPosition(p);
       p.applyQuaternion(inverseQuat);
-      console.log("End rotation is:", key, p);
+      // console.log("End rotation is:", key, p);
 
       const pk = [
         this.getFaceStartingPositionCoord(p.x),
@@ -289,8 +293,18 @@ class RubikCube {
         // This should never happen!!
         console.error(`endRotateCallback - Computed face for PosKey ${pk} and FaceKey ${key} collides with ${faces.get(pk)}`);
       } else {
-        faces.set(pk, this.cubeColors.get(key.replace(Utils.getCubeKeyPrefix(), ""))!);
-        /// TODO Link face "pk" to "getCubeKeyForGame"
+        const color = this.cubeColors.get(key.replace(Utils.getCubeKeyPrefix(), ""))!;
+
+        const targetKey = references.get(pk);
+        if (!targetKey) {
+          throw `Could not get target for key ${pk}`;
+        }
+
+        faces.set(pk, {
+          color: color,
+          current: key,
+          target: targetKey!
+        });
       }
     }
     console.log("Computed Faces is", faces);
@@ -298,6 +312,62 @@ class RubikCube {
 
   getFaceStartingPositionCoord(value: number): string {
     return (Math.round(value / 0.5) * 0.5).toFixed(2);
+  }
+
+  getReferenceForFaces(): Map<string, string> {
+    const items = new Map<string, string>();
+
+    const limit = this.gameSize;
+    const offset = this.gameSize * -0.5 + 0.5;
+
+    for (let fi = 0; fi < 6; ++fi) {
+      for (let x = 0; x < limit; ++x) {
+        for (let y = 0; y < limit; ++y) {
+          // Compute position in "game space"
+          const position = new THREE.Vector3(
+            offset + x,
+            offset + y,
+            offset + this.gameSize - 0.5
+          );
+
+          const key = Utils.getCubeKey(fi, x, y);
+
+          let axis = new THREE.Vector3();
+          let angle = 0;
+
+          if (fi < 0) {
+            throw new Error(`Invalid face index ${fi}`);
+          } else if (fi < 4) {
+            axis.setY(1);
+            angle = THREE.MathUtils.degToRad(90 * fi);
+          } else if (fi < 6) {
+            axis.setX(1);
+            angle = THREE.MathUtils.degToRad(90 + 180 * (fi - 4));
+          } else {
+            throw new Error(`Invalid face index ${fi}`);
+          }
+
+          position.applyAxisAngle(axis, angle);
+
+          const pk = [
+            this.getFaceStartingPositionCoord(position.x),
+            this.getFaceStartingPositionCoord(position.y),
+            this.getFaceStartingPositionCoord(position.z)
+          ].join("_");
+
+          const currentKey = items.get(pk);
+          if (currentKey) {
+            Utils.spawnDebugSphere(position, this.group);
+            throw `Reference Face ${pk} has already key ${currentKey!} while trying to set ${key}`;
+          }
+          items.set(pk, key);
+
+          // console.log(`I just set ${pk} for ${key} - Raw pos is ${position.x} - ${position.y} - ${position.z}`);
+        }
+      }
+    }
+
+    return items;
   }
 }
 

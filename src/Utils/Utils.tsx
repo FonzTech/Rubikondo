@@ -176,6 +176,17 @@ class Utils {
     object.position.copy(point).add(offset);
     object.rotateOnAxis(axis, angle);
   }
+
+  static spawnDebugSphere = (position: THREE.Vector3, group: THREE.Group, color = 0xff0000, size = 0.1): THREE.Mesh<any> => {
+    const geometry = new THREE.SphereGeometry(size, 16, 16); // Small sphere
+    const material = new THREE.MeshBasicMaterial({ color: color });
+    const sphere = new THREE.Mesh(geometry, material);
+
+    sphere.position.copy(position); // Set position
+    group.add(sphere); // Add to group
+
+    return sphere;
+  }
 }
 
 export default Utils;
