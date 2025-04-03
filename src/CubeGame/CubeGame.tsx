@@ -98,7 +98,7 @@ class CubeGame extends CanvasBase {
 
         this.props!.scene.updateMatrixWorld(true);
 
-        this.rubikCube.endRotateCallback(this.selectingInfo.selecteds);
+        this.rubikCube.endRotateCallback();
       } else {
         this.selectingInfo.frame += dt;
         angle = dt * 90;

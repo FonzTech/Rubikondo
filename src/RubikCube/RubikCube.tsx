@@ -14,7 +14,7 @@ interface RubikDragState {
 interface EndRotateItem {
   color: THREE.Color,
   current: string,
-  target: string
+  reference: string
 }
 
 class RubikCube {
@@ -31,6 +31,8 @@ class RubikCube {
   cubeColors: Map<string, THREE.Color>;
 
   dragState: RubikDragState;
+  weakRefCube: WeakRef<THREE.Group<THREE.Object3DEventMap>> | null;
+  weakRefTexture: WeakRef<THREE.Texture> | null;
 
   constructor(gameSize: number) {
     // Assign variables
@@ -50,6 +52,9 @@ class RubikCube {
       angleY: 0,
       signX: 1.0
     };
+
+    this.weakRefCube = null;
+    this.weakRefTexture = null;
   }
 
   spawnFullCube(scene: THREE.Scene, cube: THREE.Group<THREE.Object3DEventMap>, texture: THREE.Texture): void {
@@ -66,11 +71,23 @@ class RubikCube {
     // Build cube colors
     this.buildCubeColors();
 
-    // Common data
-    const zeroVector = new THREE.Vector3(0, 0, 0);
-
     // Create group of "N-squared" cubes
     this.group = this.getNewGroup();
+
+    // Save (weak) references for later
+    this.weakRefCube = new WeakRef<THREE.Group<THREE.Object3DEventMap>>(cube);
+    this.weakRefTexture = new WeakRef<THREE.Texture>(texture);
+
+    // Build cube faces
+    this.buildCubeFaces(cube, texture);
+
+    // Add group to scene
+    scene.add(this.group);
+  }
+
+  buildCubeFaces(cube: THREE.Group<THREE.Object3DEventMap>, texture: THREE.Texture): void {
+    // Build cube faces
+    const zeroVector = new THREE.Vector3(0, 0, 0);
 
     const limit = this.gameSize;
     const offset = this.gameSize * -0.5 + 0.5;
@@ -118,9 +135,6 @@ class RubikCube {
         }
       }
     }
-
-    // Add group to scene
-    scene.add(this.group);
   }
 
   advanceFrame(dt: number): void {
@@ -267,7 +281,7 @@ class RubikCube {
     this.rotation.multiply(newQuat);
   }
 
-  endRotateCallback(selecteds: Set<string>) {
+  endRotateCallback() {
     const inverseQuat = this.rotation.clone().invert();
 
     const references = this.getReferenceForFaces();
@@ -275,6 +289,7 @@ class RubikCube {
 
     const faces = new Map<string, EndRotateItem>();
 
+    // Iterate through all faces
     for (const [key, value] of this.rubikInfos.entries()) {
       // Get absolute point position
       const p = new THREE.Vector3();
@@ -293,21 +308,41 @@ class RubikCube {
         // This should never happen!!
         console.error(`endRotateCallback - Computed face for PosKey ${pk} and FaceKey ${key} collides with ${faces.get(pk)}`);
       } else {
-        const color = this.cubeColors.get(key.replace(Utils.getCubeKeyPrefix(), ""))!;
+        const cubeKey = key.replace(Utils.getCubeKeyPrefix(), "");
+        const color = this.cubeColors.get(cubeKey)!;
 
-        const targetKey = references.get(pk);
-        if (!targetKey) {
+        const referenceValueOpt = references.get(pk);
+        if (!referenceValueOpt) {
           throw `Could not get target for key ${pk}`;
         }
+        const referenceValue = referenceValueOpt!;
 
         faces.set(pk, {
           color: color,
-          current: key,
-          target: targetKey!
+          current: cubeKey,
+          reference: referenceValue
         });
       }
     }
     console.log("Computed Faces is", faces);
+
+    // Swap colors
+    for (const [_, faceItem] of faces.entries()) {
+      this.cubeColors.set(faceItem.reference, faceItem.color);
+    }
+
+    // Rebuild cube faces with updated rotated colors
+    requestAnimationFrame((() => {
+      if (!this.weakRefCube) {
+        throw "WeakRef for Cube is null";
+      }
+      if (!this.weakRefTexture) {
+        throw "WeakRef for Texture is null";
+      }
+
+      this.group.clear();
+      this.buildCubeFaces(this.weakRefCube.deref()!, this.weakRefTexture.deref()!);
+    }).bind(this));
   }
 
   getFaceStartingPositionCoord(value: number): string {
@@ -368,6 +403,10 @@ class RubikCube {
     }
 
     return items;
+  }
+
+  getKeyForSwap(k1: string, k2: string): string {
+    return [k1, k2].sort().join(",");
   }
 }
 
