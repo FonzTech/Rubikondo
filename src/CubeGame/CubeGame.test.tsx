@@ -8,7 +8,6 @@ import * as THREE from "three";
 import {CanvasBase, CanvasUseEffectProps} from "../CanvasBase/CanvasBase.tsx";
 import CubePreview from "../CubePreview/CubePreview.tsx";
 import CubeGame from "./CubeGame.tsx";
-import Utils from "../Utils/Utils.tsx";
 import RubikInfo from "../Model/RubikInfo.tsx";
 import {IsKeyPressedNullAction} from "../Hooks/useInputKeys.ts";
 

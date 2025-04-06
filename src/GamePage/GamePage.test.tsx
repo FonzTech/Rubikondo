@@ -1,12 +1,12 @@
-import {render, screen, within} from '@testing-library/react';
+import {render, within} from '@testing-library/react';
 import '@testing-library/jest-dom';
 import GamePage from "./GamePage.tsx";
 
 describe('renders game page', () => {
   it('game size correct', () => {
-    render(<GamePage gameSize={5} startNewGame={true} />);
+    const renderResult = render(<GamePage gameSize={5} startNewGame={true} />);
 
-    const page = screen.getByTestId("game-page");
+    const page = renderResult.getByTestId("game-page");
     expect(page).toBeInTheDocument();
     expect(page).toHaveAttribute("data-game-size", "5");
 
@@ -26,16 +26,16 @@ describe('renders game page', () => {
   });
 
   it('modal tutorial present', () => {
-    render(<GamePage gameSize={5} startNewGame={true} />);
+    const renderResult = render(<GamePage gameSize={5} startNewGame={true} />);
 
-    const modalTutorial = screen.getByTestId("modal-tutorial");
+    const modalTutorial = renderResult.getByTestId("modal-tutorial");
     expect(modalTutorial).toBeInTheDocument();
   });
 
   it('modal tutorial absent', () => {
-    render(<GamePage gameSize={5} startNewGame={false} />);
+    const renderResult = render(<GamePage gameSize={5} startNewGame={false} />);
 
-    const modalTutorial = screen.queryByTestId("modal-tutorial");
+    const modalTutorial = renderResult.queryByTestId("modal-tutorial");
     expect(modalTutorial).not.toBeInTheDocument();
   });
 });

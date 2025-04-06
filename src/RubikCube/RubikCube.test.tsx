@@ -50,7 +50,7 @@ describe('cube preview logic', () => {
     const mock_spawnFullCube = vi.fn();
 
     const mock_Three_Scene = vi.fn();
-    const mock_Three_Cube = vi.fn();;
+    const mock_Three_Cube = vi.fn();
     const mock_Three_Texture = vi.fn();
 
     // First test

@@ -2,6 +2,7 @@
 
 import { vi } from 'vitest';
 import * as THREE from "three";
+import {cleanup} from "@testing-library/react";
 
 // Globals
 export const mock_Global_requestAnimationFrame = vi.fn();
@@ -70,5 +71,6 @@ vi.mock('three', async () => {
 // This will run before each test
 beforeEach(() => {
   // Clear all mocks before each test
+  vi.clearAllTimers();
   vi.clearAllMocks();
 });

@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import CanvasGame from "./CanvasGame.tsx";
 import {CanvasUseEffectProps, CanvasBase} from "../CanvasBase/CanvasBase.tsx";
@@ -54,7 +54,7 @@ test('renders canvas preview', () => {
   canvasLogicTest.mockedWidth = 640;
   canvasLogicTest.mockedHeight = 480;
 
-  render(<CanvasGame
+  const renderResult = render(<CanvasGame
     addStyle={{}}
     canvasLogicInstantiator={() => canvasLogicTest}
     gameSize={3}
@@ -64,7 +64,7 @@ test('renders canvas preview', () => {
   expect(canvasLogicTest.framesStepped).toBe(1);
 
   // Test canvas
-  const canvas = screen.getByTestId("canvas-game");
+  const canvas = renderResult.getByTestId("canvas-game");
   expect(canvas).toBeInTheDocument();
   expect(mock_Three_WebGLRenderer_setSize).toHaveBeenCalledWith(640, 480);
 

@@ -20,6 +20,8 @@ function App() {
     size = Utils.DEFAULT_GAME_SIZE;
   }
 
+  // TODO startNewGame -> true
+
   return (
     <BrowserRouter>
       <Routes>

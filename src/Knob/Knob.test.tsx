@@ -1,16 +1,16 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Knob from "./Knob.tsx";
 import DraggableHandler from "../DraggableHandler/DraggableHandler.tsx";
 
 test('renders knob with min height 300px', () => {
-  render(<Knob
+  const renderResult = render(<Knob
     minHeight="300px"
     startingRotation={135}
     rotateCallback={null}
   />);
 
-  const knob = screen.getByTestId("knob");
+  const knob = renderResult.getByTestId("knob");
   expect(knob).toBeInTheDocument();
   expect(knob).toHaveStyle("minHeight: 300px");
 });
@@ -18,13 +18,13 @@ test('renders knob with min height 300px', () => {
 test('renders and check for rotation via mouse movement', () => {
   const mock_rotateCallback = vi.fn();
 
-  render(<Knob
+  const renderResult = render(<Knob
     minHeight="300px"
     startingRotation={135}
     rotateCallback={mock_rotateCallback}
   />);
 
-  const knob = screen.getByTestId("knob");
+  const knob = renderResult.getByTestId("knob");
   expect(knob).toBeInTheDocument();
   expect(knob).toHaveStyle("transform: rotate(135.00deg)");
 
