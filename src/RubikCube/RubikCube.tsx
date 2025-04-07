@@ -155,14 +155,6 @@ class RubikCube {
         const f = this.dragState.animMultFactory * dt;
         this.rotateInScreenSpace(f, f);
       }
-
-      // Log
-      {
-        const otherInfo = document.getElementsByClassName("debug-data");
-        if (otherInfo.length) {
-          otherInfo[0].innerHTML = "dragState.animMultFactory = " + this.dragState.animMultFactory.toFixed(2);
-        }
-      }
     }
 
     // Update rotation

@@ -112,7 +112,10 @@ class Utils {
   }
 
   static isDev(): boolean {
-    return process.env.NODE_ENV === "development";
+    return [
+      "development",
+      "test"
+    ].includes(process.env.NODE_ENV);
   }
 
   static getAxesLength(): number {
