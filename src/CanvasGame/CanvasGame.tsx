@@ -12,24 +12,22 @@ interface CanvasGameProps {
 
 const CanvasGame: React.FC<CanvasGameProps> = ({
   addStyle = {},
-  canvasLogicInstantiator = null,
+  canvasLogicInstantiator = () => { throw "Please, implement this"; },
   gameSize = 3
 }) => {
   // Enable cache for ThreeJs
   THREE.Cache.enabled = true;
 
   // Store component ref
+  // We never check for null, because it should never happen.
   const canvasRef = useRef<HTMLDivElement | null>(null);
-  const canvasLogic = useRef<CanvasBase | null>(null);
+  const canvasLogic = useRef<CanvasBase>(canvasLogicInstantiator());
 
   const dragPoint = useRef<THREE.Vector2 | null>(null);
 
   // Draggable handler
   const draggableHandler: DraggableHandler = new (class extends DraggableHandler {
     onMovementStart(event: React.UIEvent<Document>, pointX: number, pointY: number): boolean {
-      if (canvasRef.current === null) {
-        return false;
-      }
       event.preventDefault();
 
       dragPoint.current = new THREE.Vector2(pointX, pointY);
@@ -39,7 +37,7 @@ const CanvasGame: React.FC<CanvasGameProps> = ({
     }
 
     onMovementMove(event: React.UIEvent<Document>, pointX: number, pointY: number): boolean {
-      if (canvasRef.current === null || dragPoint.current === null) {
+      if (dragPoint.current === null) {
         return false;
       }
       event.preventDefault();
@@ -54,7 +52,7 @@ const CanvasGame: React.FC<CanvasGameProps> = ({
     }
 
     onMovementEnd(event: React.UIEvent<Document>, pointX: number, pointY: number): boolean {
-      if (canvasRef.current === null || dragPoint.current === null) {
+      if (dragPoint.current === null) {
         return false;
       }
       event.preventDefault();
@@ -68,13 +66,6 @@ const CanvasGame: React.FC<CanvasGameProps> = ({
 
   // Use effect
   useEffect(() => {
-    if (!canvasRef.current || canvasLogicInstantiator === null) {
-      return;
-    }
-
-    // Instantiate canvas logic
-    canvasLogic.current = canvasLogicInstantiator();
-
     // Get bounding rect
     let rect = canvasLogic.current!.getBoundingClientRect(canvasRef.current!);
 
@@ -88,6 +79,7 @@ const CanvasGame: React.FC<CanvasGameProps> = ({
 
     // Setup
     renderer.setSize(rect.width, rect.height);
+    renderer.domElement.setAttribute("data-testid", "canvas-gl");
     canvasRef.current!.appendChild(renderer.domElement);
 
     // Handle game logic
@@ -128,9 +120,6 @@ const CanvasGame: React.FC<CanvasGameProps> = ({
 
   // Game size change
   useEffect(() => {
-    if (canvasLogic === null) {
-      return;
-    }
     canvasLogic.current!.gameSizeChange(gameSize);
   }, [gameSize]);
 

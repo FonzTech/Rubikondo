@@ -14,7 +14,7 @@ const HomePage: React.FC = () => {
   const [gameSize, setGameSize] = useState<number>(STARTING_GAME_SIZE);
 
   return (
-    <Container id="home-page" fluid className="vh-100 text-center d-flex flex-column" data-testid="home-page">
+    <Container id="home-page" fluid className="vh-100 text-center d-flex flex-column" data-testid="home-page" data-game-size={`${gameSize}`}>
       <Row>
         <Col xs={12}>
           <div className="d-none d-lg-block fs-3 pt-2 pb-2">

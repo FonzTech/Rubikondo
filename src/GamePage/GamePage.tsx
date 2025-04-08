@@ -16,9 +16,6 @@ const GamePage: React.FC<GameSizeInterface> = ({
   gameSize = Utils.DEFAULT_GAME_SIZE,
   startNewGame = true
 }) => {
-  if (gameSize == null) {
-    throw `Input game size cannot be null`;
-  }
   if (gameSize < 2) {
     throw `Input game size ${gameSize} cannot be less than two`;
   }

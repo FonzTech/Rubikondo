@@ -3,6 +3,8 @@ import * as THREE from "three";
 
 abstract class DraggableHandler {
   static readonly MOUSE_BUTTON_LEFT = 0;
+  static readonly MOUSE_BUTTON_MIDDLE = 1;
+  static readonly MOUSE_BUTTON_RIGHT = 2;
 
   trackingTouch: THREE.Vector2;
 
