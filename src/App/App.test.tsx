@@ -16,13 +16,12 @@ describe('test app entrypoint', () => {
   });
 
   test('test game size', () => {
-    expect(__TEST__.getGameSize("?size=-3")).toBe(-3);
-    expect(__TEST__.getGameSize("?size=14")).toBe(14);
-    expect(__TEST__.getGameSize("?size=5")).toBe(5);
-    expect(__TEST__.getGameSize(null)).toBe(Utils.DEFAULT_GAME_SIZE);
-    expect(__TEST__.getGameSize("")).toBe(Utils.DEFAULT_GAME_SIZE);
-    expect(__TEST__.getGameSize("?")).toBe(Utils.DEFAULT_GAME_SIZE);
-    expect(__TEST__.getGameSize("?size=")).toBe(Utils.DEFAULT_GAME_SIZE);
-    expect(__TEST__.getGameSize("?size=bad")).toBe(Utils.DEFAULT_GAME_SIZE);
+    expect(__TEST__.getGameSize(__TEST__.getUrlSearchParams("?size=-3"))).toBe(-3);
+    expect(__TEST__.getGameSize(__TEST__.getUrlSearchParams("?size=14"))).toBe(14);
+    expect(__TEST__.getGameSize(__TEST__.getUrlSearchParams("?size=5"))).toBe(5);
+    expect(__TEST__.getGameSize(__TEST__.getUrlSearchParams(""))).toBe(Utils.DEFAULT_GAME_SIZE);
+    expect(__TEST__.getGameSize(__TEST__.getUrlSearchParams("?"))).toBe(Utils.DEFAULT_GAME_SIZE);
+    expect(__TEST__.getGameSize(__TEST__.getUrlSearchParams("?size="))).toBe(Utils.DEFAULT_GAME_SIZE);
+    expect(__TEST__.getGameSize(__TEST__.getUrlSearchParams("?size=bad"))).toBe(Utils.DEFAULT_GAME_SIZE);
   });
 });

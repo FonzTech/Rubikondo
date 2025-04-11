@@ -4,7 +4,7 @@ import DraggableHandler from "./DraggableHandler.tsx";
 import * as React from "react";
 
 describe('draggable handler', () => {
-  it('test events', () => {
+  it('test events allowed', () => {
     // Mocks
     const mock_onMovementStart = vi.fn();
     const mock_onMovementMove = vi.fn();
@@ -43,5 +43,34 @@ describe('draggable handler', () => {
     expect(mock_onMovementStart).toHaveBeenCalledTimes(2);
     expect(mock_onMovementMove).toHaveBeenCalledTimes(2);
     expect(mock_onMovementEnd).toHaveBeenCalledTimes(2);
+  });
+
+  it('test events not allowed', () => {
+    // Actual test
+    const draggableHandler: DraggableHandler = new (class extends DraggableHandler {
+      onMovementStart(event: React.UIEvent<Document>, pointX: number, pointY: number): boolean {
+        return false;
+      }
+
+      onMovementMove(event: React.UIEvent<Document>, pointX: number, pointY: number): boolean {
+        return false;
+      }
+
+      onMovementEnd(event: React.UIEvent<Document>, pointX: number, pointY: number): boolean {
+        return false;
+      }
+    })();
+
+    draggableHandler.onMouseDown({ button: DraggableHandler.MOUSE_BUTTON_LEFT, clientX: 1, clientY: 2 } as React.MouseEvent<HTMLElement>);
+    draggableHandler.onMovementMove({ button: DraggableHandler.MOUSE_BUTTON_LEFT, clientX: 3, clientY: 4 } as React.MouseEvent<Document>);
+    draggableHandler.onMovementEnd({ button: DraggableHandler.MOUSE_BUTTON_LEFT, clientX: 5, clientY: 6 } as React.MouseEvent<Document>);
+
+    draggableHandler.onMouseDown({ button: DraggableHandler.MOUSE_BUTTON_RIGHT, clientX: 1, clientY: 2 } as React.MouseEvent<HTMLElement>);
+    draggableHandler.onMovementMove({ button: DraggableHandler.MOUSE_BUTTON_RIGHT, clientX: 3, clientY: 4 } as React.MouseEvent<Document>);
+    draggableHandler.onMovementEnd({ button: DraggableHandler.MOUSE_BUTTON_RIGHT, clientX: 5, clientY: 6 } as React.MouseEvent<Document>);
+
+    draggableHandler.onTouchStart({ touches: [ { button: DraggableHandler.MOUSE_BUTTON_LEFT, clientX: 1, clientY: 2 } ] } as React.TouchEvent<HTMLElement>);
+    draggableHandler.onTouchMove({ touches: [ { button: DraggableHandler.MOUSE_BUTTON_LEFT, clientX: 3, clientY: 4 } ] } as React.TouchEvent<Document>);
+    draggableHandler.onTouchEnd({ touches: [ { button: DraggableHandler.MOUSE_BUTTON_LEFT, clientX: 5, clientY: 6 } ] } as React.TouchEvent<Document>);
   });
 });

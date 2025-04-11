@@ -144,6 +144,7 @@ class Utils {
       .map(v => parseInt(v));
   }
 
+  // istanbul ignore next
   static generateCubeTextureForDebug(baseTexture: THREE.Texture, text: string): THREE.CanvasTexture {
     // Create a canvas to draw on
     const canvas = document.createElement('canvas');
@@ -180,6 +181,7 @@ class Utils {
     object.rotateOnAxis(axis, angle);
   }
 
+  // istanbul ignore next
   static spawnDebugSphere = (position: THREE.Vector3, group: THREE.Group, color = 0xff0000, size = 0.1): THREE.Mesh<any> => {
     const geometry = new THREE.SphereGeometry(size, 16, 16); // Small sphere
     const material = new THREE.MeshBasicMaterial({ color: color });

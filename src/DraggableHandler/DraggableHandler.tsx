@@ -37,7 +37,7 @@ abstract class DraggableHandler {
   }
 
   onTouchStart(event: React.TouchEvent<HTMLElement>) {
-    if (!event.touches) {
+    if (!event.touches || !event.touches.length) {
       return;
     }
     if (!this.onMovementStart(event, event.touches[0].clientX, event.touches[0].clientY)) {
@@ -61,7 +61,7 @@ abstract class DraggableHandler {
   }
 
   onTouchMove(event: React.TouchEvent<Document>) {
-    if (!event.touches) {
+    if (!event.touches || !event.touches.length) {
       return;
     }
     this.onMovementMove(event, event.touches[0].clientX, event.touches[0].clientY);

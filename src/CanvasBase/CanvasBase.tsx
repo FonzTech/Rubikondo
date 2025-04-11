@@ -60,6 +60,10 @@ export abstract class CanvasBase {
   }
 
   onDragEnd(point: Vector2) {
+    if (!this.startDragging) {
+      return;
+    }
+
     this.startDragging = false;
     this.rubikCube.onDragEnd(point);
   }

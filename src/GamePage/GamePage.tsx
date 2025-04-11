@@ -24,7 +24,12 @@ const GamePage: React.FC<GameSizeInterface> = ({
   }
 
   const [showTutorial, setShowTutorial] = useState<boolean>(startNewGame);
+  const [showGameOver, setShowGameOver] = useState<boolean>(false);
+
   const handleCloseTutorial = () => setShowTutorial(false);
+
+  const handleResetGame = () => { window.location.href = "/"; };
+  const handleNewGame = () => { window.location.reload(); };
 
   const [isKeyPressed, setupFunc, cleanUpFunc] = useInputKeys(document.body);
 
@@ -58,13 +63,13 @@ const GamePage: React.FC<GameSizeInterface> = ({
               minHeight: "256px",
               height: "100%"
             }}
-            canvasLogicInstantiator={() => new CubeGame(gameSize, isKeyPressed)}
+            canvasLogicInstantiator={() => new CubeGame(gameSize, isKeyPressed, () => { setShowGameOver(true); })}
             gameSize={gameSize}
           />
         </div>
       </Container>
       <Modal show={showTutorial} data-testid={"modal-tutorial"}>
-        <Modal.Header closeButton>
+        <Modal.Header>
           <Modal.Title>Game Tutorial</Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -94,7 +99,26 @@ const GamePage: React.FC<GameSizeInterface> = ({
           </ul>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary" onClick={handleCloseTutorial}>Start Game!</Button>
+          <Button variant="primary" onClick={handleCloseTutorial}>Start Game</Button>
+        </Modal.Footer>
+      </Modal>
+      <Modal show={showGameOver} data-testid={"modal-tutorial"}>
+        <Modal.Header>
+          <Modal.Title>Game Over</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <h6>Congratulation, game is over!</h6>
+          <div>
+            You’ve cracked the cube and completed the challenge!<br/>
+            Your skills, patience, and persistence paid off.<br/>
+            <br/>
+            Feel proud, 'cause not everyone makes it this far.<br/>
+            Ready to change cube size or go for another round?
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleResetGame}>Change Cube Size</Button>
+          <Button variant="primary" onClick={handleNewGame}>Start New Game</Button>
         </Modal.Footer>
       </Modal>
     </>
