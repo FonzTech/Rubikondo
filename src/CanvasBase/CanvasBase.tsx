@@ -25,8 +25,8 @@ export abstract class CanvasBase {
 
   startDragging: boolean;
 
-  static getRubikCubeImpl(gameSize?: number): RubikCube {
-    return new RubikCube(gameSize || Utils.DEFAULT_GAME_SIZE);
+  static getRubikCubeImpl(gameSize?: number, gameOverCallback?: () => void): RubikCube {
+    return new RubikCube(gameSize || Utils.DEFAULT_GAME_SIZE, gameOverCallback);
   }
 
   constructor(rubikCube: RubikCube, gameSize: number) {

@@ -39,7 +39,7 @@ class CubeGame extends CanvasBase {
   selectingInfo: SelectingInfo;
 
   constructor(gameSize: number, isKeyPressed: (key: string) => boolean, gameOverCallback: () => void) {
-    super(CanvasBase.getRubikCubeImpl(gameSize), gameSize);
+    super(CanvasBase.getRubikCubeImpl(gameSize, gameOverCallback), gameSize);
     this.isKeyPressed = isKeyPressed;
     this.gameOverCallback = gameOverCallback;
 
@@ -93,7 +93,7 @@ class CubeGame extends CanvasBase {
     }
 
     if (this.selectingInfo.status === 2) {
-      dt *= Utils.IS_DEBUG && this.isKeyPressed(" ") ? 10.0 : 0.1;
+      dt *= Utils.IS_DEBUG && this.isKeyPressed(" ") ? 10.0 : (Utils.IS_DEBUG ? 0.1 : 5.0);
       let angle: number;
 
       if (this.selectingInfo.frame + dt > 1.0) {

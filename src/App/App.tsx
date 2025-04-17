@@ -16,6 +16,8 @@ const getGameSize = (queryString: URLSearchParams) => {
 };
 
 function App() {
+  console.log("VITE_APP_DEBUG is", import.meta.env.VITE_APP_DEBUG);
+  console.log("VITE_APP_FIXED_CUBE is", import.meta.env.VITE_APP_FIXED_CUBE);
   const queryString = getUrlSearchParams(window.location.search);
   const size = getGameSize(queryString);
   return (

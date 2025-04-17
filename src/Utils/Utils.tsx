@@ -1,7 +1,8 @@
 import * as THREE from "three";
 
 class Utils {
-  static readonly IS_DEBUG = process.env.NODE_ENV !== "test";
+  static readonly IS_DEBUG = process.env.NODE_ENV === "test" || import.meta.env.VITE_APP_DEBUG === "true";
+  static readonly RANDOMIZE_CUBE = import.meta.env.VITE_APP_FIXED_CUBE !== "true";
 
   static readonly MESH_CUBE_PATH = "/cube.obj";
   static readonly TEXTURE_CUBE_PATH = "/cube.png";
@@ -32,7 +33,7 @@ class Utils {
   static readonly CUBE_KEY_PREFIX = "Cube";
 
   static readonly CUBE_VERTEX_SHADER = `
-    #define _DEBUG 1
+    #define _DEBUG ${Utils.IS_DEBUG ? 1 : 0}
     
     varying vec3 vNormal;
     varying vec3 vPosition;

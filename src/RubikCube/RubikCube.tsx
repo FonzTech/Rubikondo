@@ -23,6 +23,7 @@ class RubikCube {
   static readonly Y_AXIS = new THREE.Vector3(0, 1, 0);
 
   gameSize: number;
+  gameOverCallback?: () => void;
 
   group: THREE.Group;
   rotation: THREE.Quaternion;
@@ -34,9 +35,10 @@ class RubikCube {
   weakRefCube: WeakRef<THREE.Group<THREE.Object3DEventMap>> | null;
   weakRefTexture: WeakRef<THREE.Texture> | null;
 
-  constructor(gameSize: number) {
+  constructor(gameSize: number, gameOverCallback?: () => void) {
     // Assign variables
     this.gameSize = gameSize;
+    this.gameOverCallback = gameOverCallback;
 
     // Initialize variables
     this.group = new THREE.Group();
@@ -231,7 +233,7 @@ class RubikCube {
     for (let fi = 0; fi < 6; ++fi) {
       for (let x = 0; x < limit; ++x) {
         for (let y = 0; y < limit; ++y) {
-          const index = Math.floor(Math.random() * colors.length);
+          const index = Utils.RANDOMIZE_CUBE ? Math.floor(Math.random() * colors.length) : 0;
           const key = Utils.getCubeKey(fi, x, y);
           this.cubeColors.set(key, colors[index]);
           colors.splice(index, 1);
@@ -334,6 +336,8 @@ class RubikCube {
 
       this.group.clear();
       this.buildCubeFaces(this.weakRefCube.deref()!, this.weakRefTexture.deref()!);
+
+      this.checkForGameEnd();
     }).bind(this));
   }
 
@@ -397,8 +401,36 @@ class RubikCube {
     return items;
   }
 
-  getKeyForSwap(k1: string, k2: string): string {
-    return [k1, k2].sort().join(",");
+  checkForGameEnd(): number {
+    const limit = this.gameSize;
+
+    for (let fi = 0; fi < 6; ++fi) {
+      let color: THREE.Color | null = null;
+
+      for (let x = 0; x < limit; ++x) {
+        for (let y = 0; y < limit; ++y) {
+
+          const item = this.cubeColors.get(`${fi}_${x}_${y}`)!;
+          if (x === 0 && y === 0) {
+            color = item;
+            continue;
+          }
+
+          if (!color?.equals(item)) {
+            return 1;
+          }
+
+        }
+      }
+    }
+
+    if (this.gameOverCallback) {
+      this.gameOverCallback();
+      return 0;
+    }
+
+    console.log("Game Over detected, but no callback was provided");
+    return 1;
   }
 }
 
