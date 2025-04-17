@@ -20,5 +20,6 @@ by fragment shader to colorize the face accordingly:
 - 5 -> Bottom -> 96
 
 ### Environment variables
+- `VITE_APP_HASH_ROUTER`, use `HashRouter` instead of `BrowserRouter`. Useful for GitHub Pages.
 - `VITE_APP_DEBUG`, behaves the same when `NODE_ENV === "test"`, to trigger some debugging measures, like console logging and visual eyecandy for debugging purposes.
 - `VITE_APP_FIXED_CUBE`, to spawn the Rubik Cube always with the same color on a given face. Basically, the Cube is already completed when game is started.

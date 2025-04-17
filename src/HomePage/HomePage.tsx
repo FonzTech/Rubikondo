@@ -6,6 +6,7 @@ import Knob from "../Knob/Knob.tsx";
 import CanvasGame from "../CanvasGame/CanvasGame.tsx";
 import CubePreview from "../CubePreview/CubePreview.tsx";
 import Utils from "../Utils/Utils.tsx";
+import {Link} from "react-router-dom";
 
 const STARTING_ROTATION_IN_DEGREES: Readonly<number> = 180;
 const STARTING_GAME_SIZE: Readonly<number> = Utils.DEFAULT_GAME_SIZE;
@@ -61,9 +62,15 @@ const HomePage: React.FC = () => {
       <Row>
         <Col xs={12}>
           <div className="pb-4">
-            <a className="fs-3" href={`/game?size=${gameSize}`}>
-              <b>Start Now &gt;</b>
-            </a>
+            {
+              Utils.HASH_ROUTER ?
+                (<Link className="fs-3" to={`/game?size=${gameSize}`}>
+                  <b>Start Now &gt;</b>
+                </Link>) :
+                (<a className="fs-3" href={`/game?size=${gameSize}`}>
+                  <b>Start Now &gt;</b>
+                </a>)
+            }
           </div>
         </Col>
       </Row>

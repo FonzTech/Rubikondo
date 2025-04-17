@@ -1,5 +1,5 @@
 import './App.css'
-import {Routes, Route, BrowserRouter} from "react-router-dom";
+import {Routes, Route, BrowserRouter, HashRouter} from "react-router-dom";
 import HomePage from "../HomePage/HomePage.tsx";
 import PageNotFound from "../PageNotFound/PageNotFound.tsx";
 import GamePage from "../GamePage/GamePage.tsx";
@@ -20,9 +20,12 @@ function App() {
   console.log("VITE_APP_FIXED_CUBE is", import.meta.env.VITE_APP_FIXED_CUBE);
   const queryString = getUrlSearchParams(window.location.search);
   const size = getGameSize(queryString);
+
+  const RouterComponent = Utils.HASH_ROUTER ? HashRouter : BrowserRouter;
+
   return (
     <DebugOverlayProvider>
-      <BrowserRouter>
+      <RouterComponent>
         <Routes>
           <Route path="*" element={<PageNotFound />} />
           <Route path="/" element={<HomePage />} />
@@ -33,7 +36,7 @@ function App() {
             />
           } />
         </Routes>
-      </BrowserRouter>
+      </RouterComponent>
     </DebugOverlayProvider>
   )
 }

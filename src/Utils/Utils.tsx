@@ -3,6 +3,7 @@ import * as THREE from "three";
 class Utils {
   static readonly IS_DEBUG = process.env.NODE_ENV === "test" || import.meta.env.VITE_APP_DEBUG === "true";
   static readonly RANDOMIZE_CUBE = import.meta.env.VITE_APP_FIXED_CUBE !== "true";
+  static readonly HASH_ROUTER = import.meta.env.VITE_APP_HASH_ROUTER === "true" || true;
 
   static readonly MESH_CUBE_PATH = "/cube.obj";
   static readonly TEXTURE_CUBE_PATH = "/cube.png";
