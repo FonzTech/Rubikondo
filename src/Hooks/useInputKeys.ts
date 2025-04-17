@@ -1,6 +1,9 @@
 import {useState} from "react";
 
-export const IsKeyPressedNullAction = (key: string): void => console.log(`Check Key ${key}`);
+export const IsKeyPressedNullAction = (key: string): boolean => {
+  console.log(`Check Key ${key}`);
+  return false;
+};
 
 export const useInputKeys = (sourceNode: Node) => {
   const [ inputKeys, setInputKeys ] = useState<Map<string, boolean>>(new Map<string, boolean>());

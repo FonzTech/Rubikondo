@@ -2,7 +2,6 @@
 
 import { vi } from 'vitest';
 import * as THREE from "three";
-import {cleanup} from "@testing-library/react";
 
 // Globals
 export const mock_Global_requestAnimationFrame = vi.fn();

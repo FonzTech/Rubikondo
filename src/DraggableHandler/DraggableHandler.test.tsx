@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
-import {vi} from "vitest";
 import DraggableHandler from "./DraggableHandler.tsx";
 import * as React from "react";
+import { vi, describe, it, expect } from 'vitest';
 
 describe('draggable handler', () => {
   it('test events allowed', () => {

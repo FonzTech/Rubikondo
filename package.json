@@ -3,10 +3,11 @@
   "private": true,
   "version": "0.0.1",
   "type": "module",
+  "homepage": "https://fonztech.github.com/rubikondo",
   "scripts": {
     "dev": "vite",
     "dev_fixed": "VITE_APP_FIXED_CUBE=true vite",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "dev-test": "vitest",

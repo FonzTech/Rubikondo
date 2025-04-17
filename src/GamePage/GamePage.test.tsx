@@ -1,6 +1,7 @@
 import {render, within} from '@testing-library/react';
 import '@testing-library/jest-dom';
 import GamePage from "./GamePage.tsx";
+import { describe, it, expect } from 'vitest';
 
 describe('renders game page', () => {
   it('game size correct', () => {

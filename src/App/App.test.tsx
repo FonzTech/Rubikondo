@@ -3,6 +3,7 @@ import '@testing-library/jest-dom';
 import App from '../App/App';
 import {mock_CanvasBase_getRubikCubeImpl} from "../../vitest.setup.ts";
 import {CanvasBase} from "../CanvasBase/CanvasBase.tsx";
+import { test, describe, expect } from 'vitest';
 
 import { __TEST__ } from './App.tsx';
 import Utils from "../Utils/Utils.tsx";

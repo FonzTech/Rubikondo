@@ -3,6 +3,8 @@
 
 This is a project to show my capabilities as a front-end engineer and game developer!! :)
 
+Build on Node `v20.12.0` and NPM `10.5.0`
+
 ### Cube Model and Texture
 
 Cube's texture is composed of six "main faces", formed by 2x3 squares.

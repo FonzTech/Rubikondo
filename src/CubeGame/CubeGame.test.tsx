@@ -10,6 +10,7 @@ import CubePreview from "../CubePreview/CubePreview.tsx";
 import CubeGame from "./CubeGame.tsx";
 import RubikInfo from "../Model/RubikInfo.tsx";
 import {IsKeyPressedNullAction} from "../Hooks/useInputKeys.ts";
+import { vi, describe, it, expect } from 'vitest';
 
 CanvasBase.getRubikCubeImpl = mock_CanvasBase_getRubikCubeImpl;
 
@@ -53,7 +54,7 @@ describe('cube game implementation', () => {
     cp.gameSizeChange(2);
     expect(mock_setCameraPosition).toHaveBeenCalledTimes(0);
 
-    cp.props!.camera = vi.fn();
+    cp.props.camera = vi.fn();
     cp.gameSizeChange(3);
     expect(mock_setCameraPosition).toHaveBeenCalledTimes(1);
   });

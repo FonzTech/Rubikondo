@@ -11,7 +11,7 @@ import {
   mock_Three_WebGLRenderer_render
 } from "../../vitest.setup.ts";
 import * as THREE from "three";
-import {vi} from "vitest";
+import { vi, describe, it, test, expect } from 'vitest';
 
 CanvasBase.getRubikCubeImpl = mock_CanvasBase_getRubikCubeImpl;
 

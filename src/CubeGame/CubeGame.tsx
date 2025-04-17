@@ -31,14 +31,14 @@ class CubeGame extends CanvasBase {
   static readonly X_AXIS_VECTOR = new THREE.Vector2(1, 0);
 
   isKeyPressed: (key: string) => boolean;
-  gameOverCallback: () => void;
+  gameOverCallback?: () => void;
 
   raycaster: THREE.Raycaster;
   dragAmount: number;
   selectedAnim: number;
   selectingInfo: SelectingInfo;
 
-  constructor(gameSize: number, isKeyPressed: (key: string) => boolean, gameOverCallback: () => void) {
+  constructor(gameSize: number, isKeyPressed: (key: string) => boolean, gameOverCallback?: () => void) {
     super(CanvasBase.getRubikCubeImpl(gameSize, gameOverCallback), gameSize);
     this.isKeyPressed = isKeyPressed;
     this.gameOverCallback = gameOverCallback;
@@ -74,7 +74,11 @@ class CubeGame extends CanvasBase {
 
   advanceFrame(dt: number): void {
     if (Utils.IS_DEBUG && this.isKeyPressed("E")) {
-      this.gameOverCallback();
+      if (this.gameOverCallback) {
+        this.gameOverCallback();
+      } else {
+        console.log("Game Over detected, but no callback was provided");
+      }
     }
 
     this.rubikCube.advanceFrame(dt);

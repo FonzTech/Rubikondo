@@ -4,6 +4,7 @@ import HomePage from "./HomePage.tsx";
 import {mock_CanvasBase_getRubikCubeImpl} from "../../vitest.setup.ts";
 import {CanvasBase} from "../CanvasBase/CanvasBase.tsx";
 import DraggableHandler from "../DraggableHandler/DraggableHandler.tsx";
+import { vi, test, expect } from 'vitest';
 
 CanvasBase.getRubikCubeImpl = mock_CanvasBase_getRubikCubeImpl;
 

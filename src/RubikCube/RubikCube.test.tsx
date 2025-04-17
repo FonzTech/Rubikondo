@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import RubikCube from "./RubikCube.tsx";
 import * as THREE from "three";
-import {vi} from "vitest";
+import { vi, describe, it, expect } from 'vitest';
 
 describe('cube preview logic', () => {
   [ true, false ].forEach((existentGroup) => {
