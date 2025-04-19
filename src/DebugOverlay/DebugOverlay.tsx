@@ -1,5 +1,6 @@
 import * as React from 'react'
 import {createContext, useContext, useEffect, useRef, useState} from "react";
+import Utils from "../Utils/Utils.tsx";
 
 type DebugOverlayAPI = {
   debugMap: Map<string, string>;
@@ -18,24 +19,26 @@ export const DebugOverlayProvider = ({ children }: { children: React.ReactNode }
 
   return (
     <DebugOverlayContext.Provider value={debugMapRef.current}>
-      <div className="debug-overlay" data-testid={"debug-overlay"}>
-        <div
-          className={"position-absolute left-0 top-0 z3 pt-1 ps-2"}>
-          <div className={"fw-bold"}>DEBUG LOGS</div>
-          <div className={"debug-data"}>
-            {debugMap.size > 0 ? (
-              Array.from(debugMap.entries()).map(([key, value]) => (
-                <li key={key} data-testid={`debug-item-${key}`}>
-                  <strong>{key}</strong>: {value}
-                </li>
-              ))
-            ) : (
-              <p>This map is empty</p>
-            )}
+      {
+        Utils.IS_DEBUG && (<div className="debug-overlay" data-testid={"debug-overlay"}>
+          <div
+            className={"position-absolute left-0 top-0 z3 pt-1 ps-2"}>
+            <div className={"fw-bold"}>DEBUG LOGS</div>
+            <div className={"debug-data"}>
+              {debugMap.size > 0 ? (
+                Array.from(debugMap.entries()).map(([key, value]) => (
+                  <li key={key} data-testid={`debug-item-${key}`}>
+                    <strong>{key}</strong>: {value}
+                  </li>
+                ))
+              ) : (
+                <p>This map is empty</p>
+              )}
+            </div>
           </div>
-        </div>
-        {children}
-      </div>
+          {children}
+        </div>)
+      }
     </DebugOverlayContext.Provider>
   );
 };
