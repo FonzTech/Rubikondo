@@ -5,8 +5,8 @@ class Utils {
   static readonly RANDOMIZE_CUBE = import.meta.env.VITE_APP_FIXED_CUBE !== "true";
   static readonly HASH_ROUTER = import.meta.env.VITE_APP_HASH_ROUTER === "true" || true;
 
-  static readonly MESH_CUBE_PATH = "/cube.obj";
-  static readonly TEXTURE_CUBE_PATH = "/cube.png";
+  static readonly MESH_CUBE_PATH = "./cube.obj";
+  static readonly TEXTURE_CUBE_PATH = "./cube.png";
 
   static readonly DEFAULT_GAME_SIZE = 3;
 
@@ -125,7 +125,7 @@ class Utils {
   }
 
   static getAssetBasePath(): string {
-    return window.location.origin;
+    return window.location.origin + window.location.pathname;
   }
 
   static getCubeKey(faceIndex: number, x: number, y: number): string {
