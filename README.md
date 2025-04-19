@@ -7,7 +7,7 @@ Build on Node `v20.12.0` and NPM `10.5.0`
 
 ### Live Demo
 
-Live demo here -> `https://fonztech.github.io/Rubikondo/`
+Live demo here -> [https://fonztech.github.io/Rubikondo/](https://fonztech.github.io/Rubikondo/)
 
 ### Cube Model and Texture
 
