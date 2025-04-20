@@ -153,13 +153,15 @@ describe('cube game implementation', () => {
   });
 
   [
-    Utils.CUBE_FACE_INDEX_FRONT,
-    Utils.CUBE_FACE_INDEX_RIGHT,
-    Utils.CUBE_FACE_INDEX_BACK,
-    Utils.CUBE_FACE_INDEX_LEFT,
-    Utils.CUBE_FACE_INDEX_TOP,
-    Utils.CUBE_FACE_INDEX_BOTTOM
-  ].forEach((faceIndex) => {
+    [ Utils.CUBE_FACE_INDEX_FRONT, 1 ],
+    [ Utils.CUBE_FACE_INDEX_RIGHT, 1 ],
+    [ Utils.CUBE_FACE_INDEX_BACK, 1 ],
+    [ Utils.CUBE_FACE_INDEX_LEFT, 1 ],
+    [ Utils.CUBE_FACE_INDEX_TOP, 1 ],
+    [ Utils.CUBE_FACE_INDEX_BOTTOM, 1 ],
+    [ Utils.CUBE_FACE_INDEX_TOP, -1 ],
+    [ Utils.CUBE_FACE_INDEX_BOTTOM, -1 ]
+  ].forEach((faceIndex, signX) => {
     it('gesture direction by angle', () => {
       const cp = new CubeGame(6, IsKeyPressedNullAction);
       // noinspection TypeScriptValidateTypes
@@ -170,7 +172,7 @@ describe('cube game implementation', () => {
       };
       // noinspection TypeScriptValidateTypes
       cp.rubikCube.dragState = {
-        signX: 1
+        signX: signX
       };
 
       expect(cp.getGestureDirectionByAngle(0)).toBe("right");
@@ -195,9 +197,7 @@ describe('cube game implementation', () => {
     Utils.CUBE_FACE_INDEX_FRONT,
     Utils.CUBE_FACE_INDEX_RIGHT,
     Utils.CUBE_FACE_INDEX_BACK,
-    Utils.CUBE_FACE_INDEX_LEFT,
-    Utils.CUBE_FACE_INDEX_TOP,
-    Utils.CUBE_FACE_INDEX_BOTTOM
+    Utils.CUBE_FACE_INDEX_LEFT
   ].forEach((faceIndex) => {
     it('gesture direction by angle rotated', () => {
       const cp = new CubeGame(6, IsKeyPressedNullAction);
