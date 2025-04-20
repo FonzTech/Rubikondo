@@ -11,6 +11,7 @@ import CubeGame from "./CubeGame.tsx";
 import RubikInfo from "../Model/RubikInfo.tsx";
 import {IsKeyPressedNullAction} from "../Hooks/useInputKeys.ts";
 import { vi, describe, it, expect } from 'vitest';
+import Utils from "../Utils/Utils.tsx";
 
 CanvasBase.getRubikCubeImpl = mock_CanvasBase_getRubikCubeImpl;
 
@@ -151,24 +152,82 @@ describe('cube game implementation', () => {
     ]));
   });
 
-  it('gesture direction by angle', () => {
-    const cp = new CubeGame(6, IsKeyPressedNullAction);
+  [
+    Utils.CUBE_FACE_INDEX_FRONT,
+    Utils.CUBE_FACE_INDEX_RIGHT,
+    Utils.CUBE_FACE_INDEX_BACK,
+    Utils.CUBE_FACE_INDEX_LEFT,
+    Utils.CUBE_FACE_INDEX_TOP,
+    Utils.CUBE_FACE_INDEX_BOTTOM
+  ].forEach((faceIndex) => {
+    it('gesture direction by angle', () => {
+      const cp = new CubeGame(6, IsKeyPressedNullAction);
+      // noinspection TypeScriptValidateTypes
+      cp.selectingInfo = {
+        selectedFace: {
+          faceIndex: faceIndex
+        }
+      };
+      // noinspection TypeScriptValidateTypes
+      cp.rubikCube.dragState = {
+        signX: 1
+      };
 
-    expect(cp.getGestureDirectionByAngle(0)).toBe("right");
-    expect(cp.getGestureDirectionByAngle(0.001)).toBe("right");
-    expect(cp.getGestureDirectionByAngle(0.785398)).toBe("right");
+      expect(cp.getGestureDirectionByAngle(0)).toBe("right");
+      expect(cp.getGestureDirectionByAngle(0.001)).toBe("right");
+      expect(cp.getGestureDirectionByAngle(0.785398)).toBe("right");
 
-    expect(cp.getGestureDirectionByAngle(0.785399)).toBe("up");
-    expect(cp.getGestureDirectionByAngle(2.35619)).toBe("up");
+      expect(cp.getGestureDirectionByAngle(0.785399)).toBe("up");
+      expect(cp.getGestureDirectionByAngle(2.35619)).toBe("up");
 
-    expect(cp.getGestureDirectionByAngle(2.35620)).toBe("left");
-    expect(cp.getGestureDirectionByAngle(3.92699)).toBe("left");
+      expect(cp.getGestureDirectionByAngle(2.35620)).toBe("left");
+      expect(cp.getGestureDirectionByAngle(3.92699)).toBe("left");
 
-    expect(cp.getGestureDirectionByAngle(3.927)).toBe("down");
-    expect(cp.getGestureDirectionByAngle(5.49699)).toBe("down");
+      expect(cp.getGestureDirectionByAngle(3.927)).toBe("down");
+      expect(cp.getGestureDirectionByAngle(5.49699)).toBe("down");
 
-    expect(cp.getGestureDirectionByAngle(5.4978)).toBe("right");
-    expect(cp.getGestureDirectionByAngle(6.28319)).toBe("right");
+      expect(cp.getGestureDirectionByAngle(5.4978)).toBe("right");
+      expect(cp.getGestureDirectionByAngle(6.28319)).toBe("right");
+    });
+  });
+
+  [
+    Utils.CUBE_FACE_INDEX_FRONT,
+    Utils.CUBE_FACE_INDEX_RIGHT,
+    Utils.CUBE_FACE_INDEX_BACK,
+    Utils.CUBE_FACE_INDEX_LEFT,
+    Utils.CUBE_FACE_INDEX_TOP,
+    Utils.CUBE_FACE_INDEX_BOTTOM
+  ].forEach((faceIndex) => {
+    it('gesture direction by angle rotated', () => {
+      const cp = new CubeGame(6, IsKeyPressedNullAction);
+      // noinspection TypeScriptValidateTypes
+      cp.selectingInfo = {
+        selectedFace: {
+          faceIndex: faceIndex
+        }
+      };
+      // noinspection TypeScriptValidateTypes
+      cp.rubikCube.dragState = {
+        signX: -1
+      };
+
+      expect(cp.getGestureDirectionByAngle(0)).toBe("left");
+      expect(cp.getGestureDirectionByAngle(0.001)).toBe("left");
+      expect(cp.getGestureDirectionByAngle(0.785398)).toBe("left");
+
+      expect(cp.getGestureDirectionByAngle(0.785399)).toBe("down");
+      expect(cp.getGestureDirectionByAngle(2.35619)).toBe("down");
+
+      expect(cp.getGestureDirectionByAngle(2.35620)).toBe("right");
+      expect(cp.getGestureDirectionByAngle(3.92699)).toBe("right");
+
+      expect(cp.getGestureDirectionByAngle(3.927)).toBe("up");
+      expect(cp.getGestureDirectionByAngle(5.49699)).toBe("up");
+
+      expect(cp.getGestureDirectionByAngle(5.4978)).toBe("left");
+      expect(cp.getGestureDirectionByAngle(6.28319)).toBe("left");
+    });
   });
 
   it('compute gesture', () => {

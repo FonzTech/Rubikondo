@@ -370,11 +370,32 @@ class CubeGame extends CanvasBase {
    * @param angleInRad angle in radians to compute the gesture direction for.
    */
   getGestureDirectionByAngle(angleInRad: number): GestureDirection {
-    return angleInRad < CubeGame.BISECT_QUADRANT_FIRST ? "right" :
-      angleInRad < CubeGame.BISECT_QUADRANT_SECOND ? "up" :
-        angleInRad < CubeGame.BISECT_QUADRANT_THIRD ? "left" :
-          angleInRad < CubeGame.BISECT_QUADRANT_FOURTH ? "down" :
-            "right";
+    let v: "h" | "v";
+    let m: number;
+
+    if (angleInRad < CubeGame.BISECT_QUADRANT_FIRST) {
+      v = "h";
+      m = 1;
+    } else if (angleInRad < CubeGame.BISECT_QUADRANT_SECOND) {
+      v = "v";
+      m = 1;
+    } else if (angleInRad < CubeGame.BISECT_QUADRANT_THIRD) {
+      v = "h";
+      m = -1;
+    } else if (angleInRad < CubeGame.BISECT_QUADRANT_FOURTH) {
+      v = "v";
+      m = -1;
+    } else {
+      v = "h";
+      m = 1;
+    }
+
+    if (Utils.CUBE_FACE_HORIZONTALS.includes(this.selectingInfo.selectedFace.faceIndex)) {
+      m *= this.rubikCube.dragState.signX;
+    }
+
+    const mc = m > 0;
+    return v === "h" ? (mc ? "right" : "left") : (mc ? "up" : "down");
   }
 
   computeGesture(point: THREE.Vector2) {

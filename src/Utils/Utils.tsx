@@ -17,6 +17,13 @@ class Utils {
   static readonly CUBE_FACE_INDEX_BOTTOM = 4;
   static readonly CUBE_FACE_INDEX_TOP = 5;
 
+  static readonly CUBE_FACE_HORIZONTALS = [
+    Utils.CUBE_FACE_INDEX_FRONT,
+    Utils.CUBE_FACE_INDEX_RIGHT,
+    Utils.CUBE_FACE_INDEX_BACK,
+    Utils.CUBE_FACE_INDEX_LEFT
+  ];
+
   static readonly CUBE_COLOR_BLACK = new THREE.Color(THREE.Color.NAMES.black);
   static readonly CUBE_COLOR_WHITE = new THREE.Color(THREE.Color.NAMES.white);
   static readonly CUBE_COLOR_ORANGE = new THREE.Color(THREE.Color.NAMES.orange);
