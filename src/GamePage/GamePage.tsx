@@ -5,6 +5,7 @@ import Utils from "../Utils/Utils.tsx";
 import CubeGame from "../CubeGame/CubeGame.tsx";
 import {useEffect, useState} from "react";
 import {useInputKeys} from "../Hooks/useInputKeys.ts";
+import Utils_Hotfix from "../Utils/Utils_Hotfix.ts";
 
 interface GameSizeInterface {
   gameSize: number;
@@ -16,6 +17,10 @@ const GamePage: React.FC<GameSizeInterface> = ({
   gameSize = Utils.DEFAULT_GAME_SIZE,
   startNewGame = true
 }) => {
+  if (Utils_Hotfix.GAME_SIZE) {
+    gameSize = Utils_Hotfix.GAME_SIZE!;
+  }
+
   if (gameSize < 2) {
     throw `Input game size ${gameSize} cannot be less than two`;
   }

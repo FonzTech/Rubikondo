@@ -9,7 +9,7 @@ import Utils from "../Utils/Utils.tsx";
 interface KnobProps {
   minHeight: string
   startingRotation: number,
-  rotateCallback: ((value: number) => void) | null
+  rotateCallback: ((value: number, rotation: number) => void) | null
 }
 
 const ANGLE_BOUNDARY_LEFT: Readonly<number> = THREE.MathUtils.degToRad(135);
@@ -95,7 +95,7 @@ const Knob: React.FC<KnobProps> = ({
         // Call callback, if possible
         if (rotateCallback !== null) {
           const value = getValueForCallback(viewAngle);
-          rotateCallback(value);
+          rotateCallback(value, viewAngle);
         }
 
         return true;

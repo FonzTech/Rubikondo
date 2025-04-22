@@ -6,7 +6,6 @@
   "homepage": "https://fonztech.github.io/Rubikondo/",
   "scripts": {
     "dev": "vite",
-    "dev_fixed": "VITE_APP_FIXED_CUBE=true vite",
     "build": "rm -rf dist && mkdir dist && vite build",
     "build-hashrouter": "rm -rf dist && mkdir dist && VITE_APP_HASH_ROUTER=true vite build",
     "lint": "eslint .",

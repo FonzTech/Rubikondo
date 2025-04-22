@@ -16,6 +16,15 @@ describe('test app entrypoint', () => {
     expect(renderResult.getByTestId("home-page")).toBeVisible();
   });
 
+  test('get query string', () => {
+    expect(__TEST__.getQueryString("", "")).toBe("");
+    expect(__TEST__.getQueryString("#hello", "")).toBe("");
+    expect(__TEST__.getQueryString("", "hello")).toBe("hello");
+    expect(__TEST__.getQueryString("#hello?var=false", "")).toBe("var=false");
+    expect(__TEST__.getQueryString("#hello?var=false", "alt=true")).toBe("var=false");
+    expect(__TEST__.getQueryString("#hello", "alt=true")).toBe("alt=true");
+  });
+
   test('test game size', () => {
     expect(__TEST__.getGameSize(__TEST__.getUrlSearchParams("?size=-3"))).toBe(-3);
     expect(__TEST__.getGameSize(__TEST__.getUrlSearchParams("?size=14"))).toBe(14);

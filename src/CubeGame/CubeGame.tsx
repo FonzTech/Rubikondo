@@ -43,6 +43,8 @@ class CubeGame extends CanvasBase {
     this.isKeyPressed = isKeyPressed;
     this.gameOverCallback = gameOverCallback;
 
+    console.log("CubeGame Game size is", gameSize);
+
     this.raycaster = new THREE.Raycaster();
     this.dragAmount = 0;
     this.selectedAnim = 0.0;

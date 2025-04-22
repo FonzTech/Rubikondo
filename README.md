@@ -3,6 +3,8 @@
 
 This is a project to show my capabilities as a front-end engineer and game developer!! :)
 
+Run with HashRouter: `VITE_APP_FIXED_CUBE=true VITE_APP_HASH_ROUTER=true npm run dev`
+
 Build on Node `v20.12.0` and NPM `10.5.0`
 
 ### Live Demo
